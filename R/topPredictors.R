@@ -73,6 +73,7 @@ topPredictors.default <- function(object, n = 1L, ...) {
 #' @rdname topPredictors
 #' @export
 topPredictors.train <- function(object, n = 1L, ...) {
+  # FIXEME: What about filterVarImp?
   imp <- caret::varImp(object, ...)$importance
   if (n > nrow(imp)) {
     n <- nrow(imp)

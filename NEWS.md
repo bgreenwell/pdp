@@ -2,6 +2,7 @@
 
 ### Changes for version 0.6.1
 * Added support for `e1071::naiveBayes`, an implementation of the standard naive Bayes classifier [(#42)](https://github.com/bgreenwell/pdp/issues/42).
+* Fixed a bug in `plotPartial` that caused the `col.regions` argument to have no effects when `levelplot = FALSE` [(#58)](https://github.com/bgreenwell/pdp/issues/58).
 
 ### Changes for version 0.6.0
 * Properly registered native routines and disabled symbol search.

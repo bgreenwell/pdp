@@ -50,10 +50,10 @@
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
 #'
-#' @param col.regions Color vector to be used if \code{levelplot} is
-#' \code{TRUE}. Defaults to the wonderful Matplotlib 'viridis' color map
-#' provided by the \code{viridis} package. See \code{\link[viridis]{viridis}}
-#' for details.
+#' @param col.regions Color vector to be used for trivariate displays. If
+#' \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
+#' 'viridis' color map provided by the \code{viridis} package. See
+#' \code{\link[viridis]{viridis}} for details.
 #'
 #' @param ... Additional optional arguments to be passed onto \code{dotplot},
 #' \code{levelplot}, \code{xyplot}, or \code{wireframe}.
@@ -132,7 +132,7 @@ plotPartial.partial <- function(x, center = FALSE, plot.pdp = TRUE,
                                 smooth = FALSE, rug = FALSE, chull = FALSE,
                                 levelplot = TRUE, contour = FALSE, number = 4,
                                 overlap = 0.1, train = NULL,
-                                col.regions = viridis::viridis,
+                                col.regions = NULL,
                                 ...) {
 
   # Determine of x contains multiple curves
@@ -302,6 +302,10 @@ plotTwoPredictorPDP <- function(x, smooth, levelplot, rug, chull, train,
       # Draw a three-dimensional surface
       if (levelplot) {
 
+        if (is.null(col.regions)) {
+          col.regions <- viridis::viridis
+        }
+
         # Draw a false color level plot
         levelplot(form, data = x, col.regions = col.regions, contour = contour,
                   ...,
@@ -334,8 +338,12 @@ plotTwoPredictorPDP <- function(x, smooth, levelplot, rug, chull, train,
 
       } else {
 
+        if (is.null(col.regions)) {
+          col.regions <- viridis::viridis(100)
+        }
+
         # Draw a wireframe plot
-        wireframe(form, data = x, ...)
+        wireframe(form, data = x, col.regions = col.regions, ...)
 
       }
 
@@ -405,14 +413,22 @@ plotThreePredictorPDP <- function(x, nx, smooth, levelplot, rug, chull, train,
     # Draw a three-dimensional surface
     if (levelplot) {
 
+      if (is.null(col.regions)) {
+        col.regions <- viridis::viridis
+      }
+
       # Draw a false color level plot
       levelplot(form, data = x, col.regions = col.regions, contour = contour,
                 ...)
 
     } else {
 
+      if (is.null(col.regions)) {
+        col.regions <- viridis::viridis(100)
+      }
+
       # Draw a wireframe plot
-      wireframe(form, data = x, ...)
+      wireframe(form, data = x, col.regions = col.regions, ...)
 
     }
 

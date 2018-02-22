@@ -8,7 +8,7 @@
 #' vector machines.
 #'
 #' The development version can be found on GitHub: https://github.com/bgreenwell/pdp.
-#' As of right now, \code{pdp} only exports two functions:
+#' As of right now, \code{pdp} exports four functions:
 #' \itemize{
 #'   \item{\code{partial}} - construct partial dependence functions (i.e., objects of class \code{"partial"}) from various fitted model objects;
 #'   \item{\code{plotPartial}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[lattice]{lattice}} graphics;

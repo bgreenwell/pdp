@@ -19,8 +19,7 @@ plotPartial(x, ...)
 \method{plotPartial}{partial}(x, center = FALSE, plot.pdp = TRUE,
   pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, smooth = FALSE,
   rug = FALSE, chull = FALSE, levelplot = TRUE, contour = FALSE,
-  number = 4, overlap = 0.1, train = NULL,
-  col.regions = viridis::viridis, ...)
+  number = 4, overlap = 0.1, train = NULL, col.regions = NULL, ...)
 }
 \arguments{
 \item{x}{An object that inherits from the \code{"partial"} class.}
@@ -73,10 +72,10 @@ and \code{\link[lattice]{equal.count}} for further details.}
 \code{\link[graphics]{co.intervals}} and \code{\link[lattice]{equal.count}}
 for further details.}
 
-\item{col.regions}{Color vector to be used if \code{levelplot} is
-\code{TRUE}. Defaults to the wonderful Matplotlib 'viridis' color map
-provided by the \code{viridis} package. See \code{\link[viridis]{viridis}}
-for details.}
+\item{col.regions}{Color vector to be used for trivariate displays. If
+\code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
+'viridis' color map provided by the \code{viridis} package. See
+\code{\link[viridis]{viridis}} for details.}
 }
 \description{
 Plots partial dependence functions (i.e., marginal effects) using

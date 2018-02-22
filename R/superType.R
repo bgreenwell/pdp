@@ -156,6 +156,12 @@ superType.multinom <- function(object) {
 
 
 #' @keywords internal
+superType.naiveBayes <- function(object) {
+  "classification"
+}
+
+
+#' @keywords internal
 superType.nls <- function(object) {
   "regression"
 }

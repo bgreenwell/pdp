@@ -164,6 +164,20 @@ getIceClsProb.lda <- function(object, newdata, which.class, ...) {
 
 
 #' @keywords internal
+getIceClsLogit.naiveBayes <- function(object, newdata, which.class, ...) {
+  pr <- stats::predict(object, newdata = newdata, type = "raw", ...)
+  multiClassLogit(pr, which.class = which.class)
+}
+
+
+#' @keywords internal
+getIceClsProb.naiveBayes <- function(object, newdata, which.class, ...) {
+  pr <- stats::predict(object, newdata = newdata, type = "raw", ...)
+  pr[, which.class]
+}
+
+
+#' @keywords internal
 getIceClsLogit.nnet <- function(object, newdata, which.class, ...) {
   pr <- if (inherits(object, "multinom")) {
     stats::predict(object, newdata = newdata, type = "probs", ...)

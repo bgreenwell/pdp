@@ -183,6 +183,20 @@ getParClsProb.lda <- function(object, newdata, which.class, ...) {
 
 
 #' @keywords internal
+getParClsLogit.naiveBayes <- function(object, newdata, which.class, ...) {
+  pr <- stats::predict(object, newdata = newdata, type = "raw", ...)
+  mean(multiClassLogit(pr, which.class = which.class), na.rm = TRUE)
+}
+
+
+#' @keywords internal
+getParClsProb.naiveBayes <- function(object, newdata, which.class, ...) {
+  pr <- stats::predict(object, newdata = newdata, type = "raw", ...)
+  mean(pr[, which.class], na.rm = TRUE)
+}
+
+
+#' @keywords internal
 getParClsLogit.nnet <- function(object, newdata, which.class, ...) {
   pr <- if (inherits(object, "multinom")) {
     stats::predict(object, newdata = newdata, type = "probs", ...)

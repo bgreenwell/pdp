@@ -1,5 +1,5 @@
 ---
-title: "Bouston  Tests"
+title: "Pima  Tests"
 author: "Brandon M. Greenwell"
 date: "July 15, 2017"
 output: html_document
@@ -39,7 +39,7 @@ pimaIndiansTest <- function(object, ...) {
 
   # Display plots
   grid.arrange(
-    autoplot(pd1, rug = TRUE, train = pima, main = "PDP for lstat"),
+    autoplot(pd1, rug = TRUE, train = pima, main = "PDP for glucose"),
     autoplot(pd2, main = "PDP for glucose and age"),
     autoplot(pd3, rug = TRUE, train = pima,
              main = "ICE curves for glucose", alpha = 0.25),
@@ -195,7 +195,7 @@ pimaIndiansTest(pima.boosting, quantiles = TRUE, prob = TRUE)
 
 ```{r}
 set.seed(101)
-pima.gbm <- gbm::gbm(unclass(diabetes) - 1 ~ ., 
+pima.gbm <- gbm::gbm(ifelse(diabetes == "neg", 1, 0) ~ ., 
                      data = na.omit(pima),
                      distribution = "bernoulli",
                      n.trees = 5000,

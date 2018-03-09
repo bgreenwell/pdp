@@ -18,6 +18,15 @@ getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
     object$num.classes <- 1
   }
 
+  # Convert categorical variables to integer (i.e., 0, 1, 2, ..., K)
+  for (i in seq_len(length(pred.grid))) {
+    if (!is.numeric(pred.grid[[i]])) {
+      factor.vals <- as.character(pred.grid[[i]])  # save original factor values
+      pred.grid[[i]] <- as.numeric(pred.grid[[i]]) - 1  # convert to 0, 1, ..., K
+      attr(pred.grid[[i]], which = "factor.vals") <- factor.vals  # store as attribute
+    }
+  }
+
   # Partial dependence values
   y <- .Call("PartialGBM",
              X = as.double(data.matrix(pred.grid)),
@@ -59,6 +68,15 @@ getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
   } else {
     pd.df$yhat <- y
   }
+
+  # Transform categorical variables back to factors
+  for (i in seq_len(length(pred.var))) {
+    if (!is.null(attr(pd.df[[i]], which = "factor.vals"))) {
+      pd.df[[i]] <- attr(pd.df[[i]], which = "factor.vals")
+    }
+  }
+
+  ##############################################################################
 
   # Return data frame of predictor and partial dependence values
   pd.df

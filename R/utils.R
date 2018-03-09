@@ -86,6 +86,11 @@ centerIceCurves.ice <- function(object) {
 
 
 #' @keywords internal
+checkFactorLevels <- function(x, y) {
+
+}
+
+#' @keywords internal
 copyClasses <- function(x, y) {
   x.names <- names(x)
   y.names <- names(y)
@@ -112,7 +117,15 @@ copyClasses <- function(x, y) {
         } else {
           x[[name]] <- as.factor(x[[name]])
         }
-        levels(x[[name]]) <- levels(y[[name]])
+        if (!all(levels(y[[name]]) %in% x[[name]])) {
+          stop("Factors levels ", paste0("{", paste(
+            levels(y[[name]])[!(levels(y[[name]]) %in% x[[name]])],
+            collapse = ", "), "}"), " for predictor variable", name,
+            " found in training data, but not in data supplied to `pred.grid`.",
+            call. = FALSE)
+        } else {
+          levels(x[[name]]) <- levels(y[[name]])
+        }
       }
       # Convert to character
       if (is.character(y[[name]])) {

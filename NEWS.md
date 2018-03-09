@@ -8,6 +8,8 @@
 
 * Fixed a bug with categorical variables in `gbm` models when `recursive = TRUE` [(#63)](https://github.com/bgreenwell/pdp/issues/63).
 
+* More informative progress bars powered by the [`progress`](https://cran.r-project.org/package=progress) package. To use, simply call `partial` with the option `progress = "progress"` [(#66)](https://github.com/bgreenwell/pdp/issues/66).
+
 
 ### Changes for version 0.6.0
 

@@ -26,6 +26,7 @@ Suggests:
     nnet,
     party,
     partykit,
+    progress,
     randomForest,
     ranger,
     rpart,

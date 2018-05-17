@@ -4,8 +4,6 @@ output:
     variant: markdown_github
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -16,7 +14,7 @@ knitr::opts_chunk$set(
 
 # pdp <img src="tools/pdp-logo.png" align="right" width="120" height="139" />
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
 [![Build Status](https://travis-ci.org/bgreenwell/pdp.svg?branch=master)](https://travis-ci.org/bgreenwell/pdp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bgreenwell/pdp?branch=master&svg=true)](https://ci.appveyor.com/project/bgreenwell/pdp)
 [![Coverage Status](https://img.shields.io/codecov/c/github/bgreenwell/pdp.svg)](https://codecov.io/github/bgreenwell/pdp?branch=master)

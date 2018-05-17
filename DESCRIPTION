@@ -3,7 +3,7 @@ Type: Package
 Title: Partial Dependence Plots
 Version: 0.6.0.9000
 Authors@R: person("Brandon", "Greenwell", email = "greenwell.brandon@gmail.com",
-  role = c("aut", "cre"))
+  role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8120-0084"))
 Description: A general framework for constructing partial dependence (i.e., 
   marginal effect) plots from various types machine learning models in R.
 License: GPL (>= 2)

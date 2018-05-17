@@ -1,4 +1,3 @@
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 pdp <img src="tools/pdp-logo.png" align="right" width="120" height="139" />
 ===========================================================================
 
@@ -48,12 +47,12 @@ library(pdp)
 pd <- partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE)
 head(pd)  # print first 6 rows
 #>     lstat      rm     yhat
-#> 1  7.5284 3.66538 24.13683
-#> 2  8.2532 3.66538 23.24916
-#> 3  8.9780 3.66538 23.13119
-#> 4  9.7028 3.66538 22.13531
-#> 5 10.4276 3.66538 20.62331
-#> 6 11.1524 3.66538 20.51258
+#> 1  7.5284 3.66538 24.47697
+#> 2  8.2532 3.66538 23.63350
+#> 3  8.9780 3.66538 23.47622
+#> 4  9.7028 3.66538 22.38777
+#> 5 10.4276 3.66538 20.88819
+#> 6 11.1524 3.66538 20.79452
 
 # Lattice version
 p1 <- plotPartial(pd, main = "lattice version")

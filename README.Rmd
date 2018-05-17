@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# pdp <img src="tools/pdp-logo.png" align="right" width="120" height="139" />
+# pdp <img src="tools/pdp-logo.png" align="right" width="125" height="144" />
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
 [![Build Status](https://travis-ci.org/bgreenwell/pdp.svg?branch=master)](https://travis-ci.org/bgreenwell/pdp)

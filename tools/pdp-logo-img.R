@@ -1,5 +1,5 @@
 # Load required packages
-library(ggimage)
+library(earth)
 library(ggplot2)
 library(grid)
 library(pdp)
@@ -10,6 +10,11 @@ library(randomForest)
 data (boston)  # load the boston housing data
 set.seed(101)  # for reproducibility
 boston.rf <- randomForest(cmedv ~ ., data = boston)
+boston.earth <- earth(cmedv ~ ., data = boston, degree = 2,
+                      pmethod = "exhaustive", nfold = 5, ncross = 5)
+
+# Print MARS model coefficients
+coef(boston.earth)
 
 # Function to rescale vector to be between a and b
 rescale <- function(x, a, b) {
@@ -63,7 +68,7 @@ make_pdp_sticker <- function(option) {
 
 # Plot range of different logos
 logos <- lapply(LETTERS[1L:5L], make_pdp_sticker)
-png("tools/pdp-logol.png", width = 900, height = 500, bg = "transparent",
+png("tools/pdp-logos.png", width = 900, height = 500, bg = "transparent",
     type = "cairo-png")
 grid.arrange(grobs = logos, ncol = 3)
 dev.off()

@@ -1,4 +1,4 @@
-pdp <img src="tools/pdp-logo.png" align="right" width="125" height="144" />
+pdp <img src="tools/pdp-logo.png" align="right" width="130" height="150" />
 ===========================================================================
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)

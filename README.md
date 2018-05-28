@@ -102,7 +102,20 @@ p2 <- autoplot(pd, contour = TRUE, main = "ggplot2 version",
 grid.arrange(p1, p2, ncol = 2)
 ```
 
-![](tools/README-example-rf-1.png)
+<img src="tools/README-example-rf-1.png" style="display: block; margin: auto;" />
+
+You can also plot the output directly from `partial()` (although, this
+is typically not recommended; see the [above-mentioned
+paper](https://journal.r-project.org/archive/2017/RJ-2017-016/index.html)
+for details):
+
+``` r
+partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE, plot = TRUE,
+        plot.engine = "ggplot2", palette = "magma", alpha = 0.9,
+        contour = TRUE, contour.color = "white")
+```
+
+<img src="tools/README-example-rf-2-1.png" style="display: block; margin: auto;" />
 
 Next, we’ll fit a classification model to the Pima Indians Diabetes
 data.
@@ -114,7 +127,7 @@ As a second example, we’ll fit an SVM to the Pima Indians diabetes data
 included with the package (see `?pima` for details). Note that for some
 fitted model objects (e.g., `"ksvm"` objects) it is necessary to supply
 the original training data via the `train` argument in the call to
-`partial`.
+`partial()`.
 
 ``` r
 # Fit an SVM to the Pima Indians diabetes data
@@ -136,4 +149,4 @@ grid.arrange(autoplot(pd.glucose, main = "Logit scale"),
              ncol = 2)
 ```
 
-![](tools/README-example-svm-1.png)
+<img src="tools/README-example-svm-1.png" style="display: block; margin: auto;" />

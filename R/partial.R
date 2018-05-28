@@ -85,6 +85,13 @@
 #' function directly (\code{TRUE}). Default is \code{FALSE}. See
 #' \code{\link{plotPartial}} for plotting details.
 #'
+#' @param plot.engine Character string specifying which plotting engine to use
+#' whenever \code{plot = TRUE}. Options include \code{"lattice"} (defasult) or
+#' \code{"ggplot2"}.
+#'
+#' @param alpha Numeric values between 0 and 1 indicating the alpha-transparency
+#' to use for ICE anc-ICE curves. Default is 0.5.
+#'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
 #' Default is \code{FALSE}.
 #'
@@ -93,6 +100,21 @@
 #' predictor distributions. This helps reduce the risk of interpreting the
 #' partial dependence plot outside the region of the data (i.e., extrapolating).
 #' Only used when \code{plot = TRUE}. Default is \code{FALSE}.
+#'
+#' @param contour Logical indicating whether or not to add contour lines to the
+#' level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.
+#'
+#' @param contour.color Character string specifying the color to use for the
+#' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
+#'
+#' @param palette Character string indicating the colormap option to use. Five
+#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
+#' and "cividis".
+#'
+#' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
+#' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
+#' transparency). In fact, this option only affects ICE/c-ICE curves and level
+#' plots.
 #'
 #' @param chull Logical indicating wether or not to restrict the values of the
 #' first two variables in \code{pred.var} to lie within the convex hull of their
@@ -244,18 +266,20 @@ partial <- function(object, ...) {
 
 
 #' @rdname partial
+#'
 #' @export
-partial.default <- function(object, pred.var, pred.grid, pred.fun = NULL,
-                            grid.resolution = NULL, ice = FALSE, center = FALSE,
-                            quantiles = FALSE, probs = 1:9/10,
-                            trim.outliers = FALSE,
-                            type = c("auto", "regression", "classification"),
-                            inv.link = NULL,
-                            which.class = 1L, prob = FALSE, recursive = TRUE,
-                            plot = FALSE, smooth = FALSE, rug = FALSE,
-                            chull = FALSE, train, cats = NULL,
-                            check.class = TRUE, progress = "none",
-                            parallel = FALSE, paropts = NULL, ...) {
+partial.default <- function(
+  object, pred.var, pred.grid, pred.fun = NULL, grid.resolution = NULL,
+  ice = FALSE, center = FALSE, quantiles = FALSE, probs = 1:9/10,
+  trim.outliers = FALSE, type = c("auto", "regression", "classification"),
+  inv.link = NULL, which.class = 1L, prob = FALSE, recursive = TRUE,
+  plot = FALSE, plot.engine = c("lattice", "ggplot2"),
+  smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
+  contour = FALSE, contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"), alpha = 1,
+  train, cats = NULL, check.class = TRUE, progress = "none", parallel = FALSE,
+  paropts = NULL, ...
+) {
 
   # Check prediction function if given
   if (!is.null(pred.fun)) {
@@ -427,9 +451,9 @@ partial.default <- function(object, pred.var, pred.grid, pred.fun = NULL,
     if (ice || any(grepl("^yhat\\.", names(pd.df)))) {  # multiple curves
 
       # Convert from wide to long format
-      pd.df <- stats::reshape(pd.df,
-                              varying = (length(pred.var) + 1):ncol(pd.df),
-                              direction = "long")  # wide to long format
+      pd.df <- stats::reshape(
+        pd.df, varying = (length(pred.var) + 1):ncol(pd.df), direction = "long"
+      )
       pd.df$id <- NULL  # remove id column
       pd.df <- pd.df[, c(pred.var, "yhat", "time")]  # rearrange columns
       names(pd.df)[ncol(pd.df)] <- "yhat.id"  # rename "time" column
@@ -456,17 +480,34 @@ partial.default <- function(object, pred.var, pred.grid, pred.fun = NULL,
 
   # Plot partial dependence function (if requested)
   if (plot) {  # return a graph (i.e., a "trellis" object)
+    plot.engine <- match.arg(plot.engine)
     res <- if (ice) {
-      if (center) {
-        plotPartial(pd.df, plot.pdp = TRUE, rug = rug, train = train,
-                    col.regions = viridis::viridis, alpha = 0.5)
+      if (plot.engine == "ggplot2") {
+        autoplot(
+          object = pd.df, center = center, plot.pdp = TRUE, rug = rug,
+          train = train, alpha = alpha
+        )
       } else {
-        plotPartial(pd.df, center = FALSE, plot.pdp = TRUE, rug = rug,
-                    train = train, col.regions = viridis::viridis, alpha = 0.5)
+        plotPartial(
+          x = pd.df, center = center, plot.pdp = TRUE, rug = rug,
+          train = train, alpha = alpha,
+        )
       }
     } else {
-      plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
-                  col.regions = viridis::viridis)
+      # palette = match.arg(palette)
+      if (plot.engine == "ggplot2") {
+        autoplot(
+          pd.df, smooth = smooth, rug = rug, train = train, contour = contour,
+          contour.color = contour.color, palette = palette, alpha = alpha
+        )
+      } else {
+        plotPartial(
+          pd.df, smooth = smooth, rug = rug, train = train,
+          levelplot = levelplot, contour = contour,
+          contour.color = contour.color, screen = list(z = -30, x = -60),  # sensible default?
+          palette = palette, alpha = alpha
+        )
+      }
     }
     attr(res, "partial.data") <- pd.df  # attach partial data as an attribute
   } else {  # return a data frame (i.e., a "data.frame" and "partial" object)

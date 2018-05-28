@@ -39,6 +39,17 @@
 #' @param contour Logical indicating whether or not to add contour lines to the
 #' level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.
 #'
+#' @param contour.color Character string specifying the color to use for the
+#' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
+#'
+#' @param palette Character string indicating the colormap option to use. Five
+#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
+#' and "cividis".
+#'
+#' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
+#' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
+#' transparency).
+#'
 #' @param number Integer specifying the number of conditional intervals to use
 #' for the continuous panel variables. See \code{\link[graphics]{co.intervals}}
 #' and \code{\link[lattice]{equal.count}} for further details.
@@ -106,34 +117,37 @@ plotPartial <- function(x, ...) {
 
 #' @rdname plotPartial
 #' @export
-plotPartial.ice <- function(x, center = FALSE, plot.pdp = TRUE,
-                            pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1,
-                            rug = FALSE, train = NULL, ...) {
+plotPartial.ice <- function(
+  x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
+  pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...
+) {
   plotIceCurves(x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
                 pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-                ...)
+                alpha = alpha, ...)
 }
 
 
 #' @rdname plotPartial
 #' @export
-plotPartial.cice <- function(x, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
-                             pdp.lty = 1, rug = FALSE, train = NULL, ...) {
+plotPartial.cice <- function(
+  x, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, rug = FALSE,
+  train = NULL, alpha = 1, ...
+) {
   plotIceCurves(x, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
                 pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-                ...)
+                alpha = alpha, ...)
 }
 
 
 #' @rdname plotPartial
 #' @export
-plotPartial.partial <- function(x, center = FALSE, plot.pdp = TRUE,
-                                pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1,
-                                smooth = FALSE, rug = FALSE, chull = FALSE,
-                                levelplot = TRUE, contour = FALSE, number = 4,
-                                overlap = 0.1, train = NULL,
-                                col.regions = NULL,
-                                ...) {
+plotPartial.partial <- function(
+  x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
+  pdp.lty = 1, smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
+  contour = FALSE, contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  alpha = 1, number = 4, overlap = 0.1, train = NULL, ...
+) {
 
   # Determine of x contains multiple curves
   multi <- "yhat.id" %in% names(x)
@@ -156,7 +170,7 @@ plotPartial.partial <- function(x, center = FALSE, plot.pdp = TRUE,
     # Multiple curves from user-specified prediction function
     plotIceCurves(x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
                   pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug,
-                  train = train, ...)
+                  train = train, alpha = alpha, ...)
 
   } else if (nx == 1L) {
 
@@ -166,17 +180,21 @@ plotPartial.partial <- function(x, center = FALSE, plot.pdp = TRUE,
   } else if (nx == 2) {
 
     # Two predictors
+    palette <- match.arg(palette)
     plotTwoPredictorPDP(x, smooth = smooth, levelplot = levelplot, rug = rug,
                         chull = chull, train = train, contour = contour,
-                        col.regions = col.regions, ...)
+                        contour.color = contour.color, palette = palette,
+                        alpha = alpha, ...)
 
   } else {
 
     # Three predictors (paneled version of plotTwoPredictorPDP)
+    palette <- match.arg(palette)
     plotThreePredictorPDP(x, nx = nx, smooth = smooth, levelplot = levelplot,
                           rug = rug, chull = chull, train = train,
-                          contour = contour, col.regions = col.regions,
-                          number = number, overlap = overlap, ...)
+                          contour = contour, contour.color = contour.color,
+                          palette = palette, alpha = alpha, number = number,
+                          overlap = overlap, ...)
 
   }
 
@@ -185,7 +203,7 @@ plotPartial.partial <- function(x, center = FALSE, plot.pdp = TRUE,
 
 #' @keywords internal
 plotIceCurves <- function(x, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty, rug,
-                          train, ...) {
+                          train, alpha = 1, ...) {
 
   # Determine if ICE curves should be centered
   if (center) {
@@ -201,7 +219,7 @@ plotIceCurves <- function(x, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty, rug,
 
   # Draw ICE curves
   xyplot(stats::as.formula(paste("yhat ~", names(x)[1L])), data = x,
-         groups = x$yhat.id, type = plot.type, ...,
+         groups = x$yhat.id, type = plot.type, alpha = alpha, ...,
          panel = function(xx, yy, ...) {
            panel.xyplot(xx, yy, col = "black", ...)
            if (plot.pdp) {
@@ -255,8 +273,10 @@ plotOnePredictorPDP <- function(x, smooth, rug, train = NULL, ...) {
 
 
 #' @keywords internal
-plotTwoPredictorPDP <- function(x, smooth, levelplot, rug, chull, train,
-                                contour, col.regions, ...) {
+plotTwoPredictorPDP <- function(
+  x, smooth, levelplot, rug, chull, train, contour, contour.color, palette,
+  alpha, ...
+) {
 
   # Use the first two columns to determine which type of plot to construct
   if (is.factor(x[[1L]]) && is.factor(x[[2L]])) {
@@ -299,51 +319,46 @@ plotTwoPredictorPDP <- function(x, smooth, levelplot, rug, chull, train,
         paste("yhat ~", paste(names(x)[1L:2L], collapse = "*"))
       )
 
+      # Define color regions
+      col.regions <- viridis::viridis_pal(option = palette, alpha = alpha)(100)
+
       # Draw a three-dimensional surface
       if (levelplot) {
 
-        if (is.null(col.regions)) {
-          col.regions <- viridis::viridis
-        }
-
         # Draw a false color level plot
-        levelplot(form, data = x, col.regions = col.regions, contour = contour,
-                  ...,
-                  panel = function(x1, y1, ...) {
-                    panel.levelplot(x1, y1, ...)
-                    if (rug || chull) {
-                      if (is.null(train)) {
-                        stop("The training data must be supplied for convex hull display.")
-                      }
-                    }
-                    # Add a rug display
-                    if (rug) {
-                      panel.rug(stats::quantile(train[, names(x)[1L]],
-                                                probs = 0:10/10, na.rm = TRUE),
-                                stats::quantile(train[, names(x)[2L]],
-                                                probs = 0:10/10, na.rm = TRUE),
-                                col = "black")
-                    }
-                    # Plot the convex hull of the predictor space of interest
-                    if (chull) {
-                      if (is.null(train)) {
-                        stop("The training data must be supplied for convex hull display.")
-                      }
-                      hpts <- grDevices::chull(stats::na.omit(train[names(x)[1L:2L]]))
-                      hpts <- c(hpts, hpts[1])
-                      panel.lines(train[hpts, names(x)[1L:2L]],
-                                  col = "black")
-                    }
-                  })
+        levelplot(
+          form, data = x, col.regions = col.regions, contour = contour,
+          col = contour.color, ...,
+          panel = function(x1, y1, ...) {
+            panel.levelplot(x1, y1, ...)
+            if (rug || chull) {
+              if (is.null(train)) {
+                stop("The training data must be supplied for convex hull display.")
+              }
+            }
+            # Add a rug display
+            if (rug) {
+              panel.rug(
+                x = stats::quantile(train[, names(x)[1L]], probs = 0:10/10, na.rm = TRUE),
+                y = stats::quantile(train[, names(x)[2L]], probs = 0:10/10, na.rm = TRUE),
+                col = "black"
+              )
+            }
+            # Plot the convex hull of the predictor space of interest
+            if (chull) {
+              if (is.null(train)) {
+                stop("The training data must be supplied for convex hull display.")
+              }
+              hpts <- grDevices::chull(stats::na.omit(train[names(x)[1L:2L]]))
+              hpts <- c(hpts, hpts[1])
+              panel.lines(train[hpts, names(x)[1L:2L]], col = "black")
+            }
+        })
 
       } else {
 
-        if (is.null(col.regions)) {
-          col.regions <- viridis::viridis(100)
-        }
-
         # Draw a wireframe plot
-        wireframe(form, data = x, col.regions = col.regions, ...)
+        wireframe(form, data = x, col.regions = col.regions, drape = TRUE, ...)
 
       }
 
@@ -352,8 +367,10 @@ plotTwoPredictorPDP <- function(x, smooth, levelplot, rug, chull, train,
 
 
 #' @keywords internal
-plotThreePredictorPDP <- function(x, nx, smooth, levelplot, rug, chull, train,
-                                  contour, col.regions, number, overlap, ...) {
+plotThreePredictorPDP <- function(
+  x, nx, smooth, levelplot, rug, chull, train, contour, contour.color,
+  palette, alpha, number, overlap, ...
+) {
 
   # Convert third predictor to a factor using the equal count algorithm
   if (is.numeric(x[[3L]])) {
@@ -386,21 +403,24 @@ plotThreePredictorPDP <- function(x, nx, smooth, levelplot, rug, chull, train,
     }
 
     # Produce a paneled lineplot
-    xyplot(form, data = x, type = "p", ...,
-           panel = function(xx, yy, ...) {
-             panel.xyplot(xx, yy, col = "black", ...)
-             if (smooth) {
-               panel.loess(xx, yy, ...)
-             }
-             if (rug) {
-               if (is.null(train)) {
-                 stop("The training data must be supplied for rug display.")
-               } else {
-                 panel.rug(stats::quantile(train[, names(x)[1L]],
-                                           probs = 0:10/10, na.rm = TRUE))
-               }
-             }
-           })
+    xyplot(
+      form, data = x, type = "p", ...,
+      panel = function(xx, yy, ...) {
+        panel.xyplot(xx, yy, col = "black", ...)
+        if (smooth) {
+          panel.loess(xx, yy, ...)
+        }
+        if (rug) {
+          if (is.null(train)) {
+            stop("The training data must be supplied for rug display.")
+          } else {
+            panel.rug(
+              stats::quantile(train[, names(x)[1L]], probs = 0:10/10,
+                              na.rm = TRUE)
+            )
+          }
+        }
+    })
 
   } else {
 
@@ -410,25 +430,20 @@ plotThreePredictorPDP <- function(x, nx, smooth, levelplot, rug, chull, train,
             paste(names(x)[3L:nx], collapse = "*"))
     )
 
+    # Define color regions
+    col.regions <- viridis::viridis_pal(option = palette, alpha = alpha)(100)
+
     # Draw a three-dimensional surface
     if (levelplot) {
 
-      if (is.null(col.regions)) {
-        col.regions <- viridis::viridis
-      }
-
       # Draw a false color level plot
       levelplot(form, data = x, col.regions = col.regions, contour = contour,
-                ...)
+                col = contour.color, ...)
 
     } else {
 
-      if (is.null(col.regions)) {
-        col.regions <- viridis::viridis(100)
-      }
-
       # Draw a wireframe plot
-      wireframe(form, data = x, col.regions = col.regions, ...)
+      wireframe(form, data = x, col.regions = col.regions, drape = TRUE, ...)
 
     }
 

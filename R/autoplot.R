@@ -43,14 +43,14 @@
 #' on to the modelling function defined by \code{smooth.method}.
 #'
 #' @param contour Logical indicating whether or not to add contour lines to the
-#' level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.
+#' level plot.
 #'
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
-#' @param palette If a string, will use that named palette. If a number, will
-#' index into the list of palettes of appropriate type. Default is
-#' \code{"Spectral"}.
+#' @param palette Character string indicating the colormap option to use. Five
+#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
+#' and "cividis".
 #'
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
@@ -112,15 +112,15 @@
 #'   ncol = 2
 #' )
 #' }
-autoplot.partial <- function(object, center = FALSE, plot.pdp = TRUE,
-                             pdp.color = "red", pdp.size = 1, pdp.linetype = 1,
-                             rug = FALSE, smooth = FALSE,
-                             smooth.method = "auto", smooth.formula = y ~ x,
-                             smooth.span = 0.75, smooth.method.args = list(),
-                             contour = FALSE, contour.color = "white",
-                             palette = "Spectral", train = NULL,
-                             xlab = NULL, ylab = NULL, main = NULL,
-                             legend.title = NULL, ...) {
+autoplot.partial <- function(
+  object, center = FALSE, plot.pdp = TRUE, pdp.color = "red", pdp.size = 1,
+  pdp.linetype = 1, rug = FALSE, smooth = FALSE, smooth.method = "auto",
+  smooth.formula = y ~ x, smooth.span = 0.75, smooth.method.args = list(),
+  contour = FALSE, contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  train = NULL, xlab = NULL, ylab = NULL, main = NULL, legend.title = "yhat",
+  ...
+) {
 
   # Determine if object contains an ID column (i.e., multiple curves)
   multi <- "yhat.id" %in% names(object)
@@ -147,6 +147,7 @@ autoplot.partial <- function(object, center = FALSE, plot.pdp = TRUE,
                           train = train, xlab = xlab, ylab = ylab, main = main,
                           ...)
   } else if (nx == 2L) {  # two predictors
+    palette <- match.arg(palette)
     ggPlotTwoPredictorPDP(object, rug = rug, smooth = smooth,
                           smooth.method = smooth.method,
                           smooth.formula = smooth.formula,
@@ -411,15 +412,12 @@ ggPlotTwoPredictorPDP <- function(object, rug, smooth, smooth.method,
     }
 
     # Add legend title and theme
-    if (is.null(legend.title)) {
-      p <- p + scale_fill_distiller(name = "yhat", palette = palette)
-    } else {
-      p <- p + scale_fill_distiller(name = legend.title, palette = palette)
-    }
-    p <- p + theme_bw()
+    # palette <- match.arg(palette)
+    p <- p +
+      viridis::scale_fill_viridis(name = legend.title, option = palette) +
+      theme_bw()
 
   }
-
 
   # Add axis labels and title
   if (is.null(xlab)) {

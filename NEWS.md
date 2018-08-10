@@ -14,11 +14,18 @@
 
 * Way cooler logo.
 
-* `partial()` gained several new plotting options: `plot.engine`, which controls the plotting engine used whenever `plot = TRUE` (current options include `"lattice"` (the default) or `"ggplot2"`; TBD. 
+* `partial()` gained several new plotting options: `plot.engine`, which controls the plotting engine used whenever `plot = TRUE` (current options include `"lattice"` (the default) or `"ggplot2"` [(#71)](https://github.com/bgreenwell/pdp/issues/71). 
 
 * The arguments to `autoplot()` and `plotPartial()` are now more consistent with each other.
 
-* The names of helper functions have changed from lowerCamelCase to snake_case.
+* The names of (most) helper functions have changed from lowerCamelCase to snake_case.
+
+* `partial()` now works (better) with tibbles [(#59)](https://github.com/bgreenwell/pdp/issues/59).
+
+* `partial()` now treats `"xgb.Booster"` objects with `objective = "reg:logistc"`
+as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68). 
+
+* Removed use of `ggplot2::aes_string()` in `autoplot()` (which is soft deprecated as of `ggplot2` version 3.0.0) [(#73)](https://github.com/bgreenwell/pdp/issues/73).
 
 
 ### Changes for version 0.6.0

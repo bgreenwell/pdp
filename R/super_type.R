@@ -285,7 +285,7 @@ super_type.train <- function(object) {
 #' @keywords internal
 super_type.xgb.Booster <- function(object) {
   if (object$params$objective %in%
-      c("reg:linear", "count:poisson", "reg:gamma")) {
+      c("reg:linear", "reg:logistic", "count:poisson", "reg:gamma")) {
     "regression"
   } else if (object$params$objective %in%
              c("binary:logistic", "multi:softprob")) {
@@ -293,7 +293,7 @@ super_type.xgb.Booster <- function(object) {
     # not return the predicted probabilities (e.g., "binary:logitraw").
     "classification"
   } else if (object$params$objective %in%
-             c("reg:logistic", "binary:logitraw", "multi:softmax")) {
+             c("binary:logitraw", "multi:softmax")) {
     stop(paste("For classification, switch to an objective function",
                "that returns the predicted probabilities."))
   } else {

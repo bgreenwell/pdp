@@ -263,16 +263,17 @@ ggplot_ice_curves <- function(
 
   # Should the curves be centered to start at yhat = 0?
   if (center) {
-    object <- centerIceCurves(object)
+    object <- center_ice_curves(object)
   }
 
   # Use the first column to determine which type of plot to construct
   if (is.factor(object[[1L]])) {
 
     # Draw scatterplots
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat, group = 1)) +
-      geom_line(aes(group = yhat.id), ...) +
-      geom_point(aes(group = yhat.id), alpha = 1)
+    p <- ggplot(object,
+                aes(x = object[[1L]], y = object[["yhat"]], group = 1)) +
+      geom_line(aes(group = object[["yhat.id"]]), ...) +
+      geom_point(aes(group = object[["yhat.id"]]), alpha = 1)
 
     # Should the PDP be displayed too?
     if (plot.pdp) {
@@ -285,8 +286,8 @@ ggplot_ice_curves <- function(
   } else {
 
     # Draw lineplots
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat)) +
-      geom_line(aes(group = yhat.id), ...)
+    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+      geom_line(aes(group = object[["yhat.id"]]), ...)
 
     # Should the PDP be displayed too?
     if (plot.pdp) {
@@ -353,13 +354,13 @@ ggplot_one_predictor_pdp <- function(
   if (is.factor(object[[1L]])) {
 
     # Draw a scatterplot
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat)) +
+    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
       geom_point(...)
 
   } else {
 
     # Draw a lineplot
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat)) +
+    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
       geom_line(...)
 
     # Add rug plot to x-axis
@@ -431,14 +432,14 @@ ggplot_two_predictor_pdp <- function(
   if (is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Draw a faceted scatterplot
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat)) +
+    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
       geom_point(...) +
       facet_wrap(~ object[[2L]])
 
   } else if (is.factor(object[[1L]]) && !is.factor(object[[2L]])) {
 
     # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[2L]], y = yhat)) +
+    p <- ggplot(object, aes(x = object[[2L]], y = object[["yhat"]])) +
       geom_line(...) +
       facet_wrap(~ object[[1L]])
 
@@ -467,7 +468,7 @@ ggplot_two_predictor_pdp <- function(
   } else if (!is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[1L]], y = yhat)) +
+    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
       geom_line(...) +
       facet_wrap(~ object[[2L]])
 
@@ -497,7 +498,8 @@ ggplot_two_predictor_pdp <- function(
 
     # Draw a false color level plot
     p <- ggplot(
-      object, aes(x = object[[1L]], y = object[[2L]], z = yhat, fill = yhat)
+      object, aes(x = object[[1L]], y = object[[2L]],
+                  z = object[["yhat"]], fill = object[["yhat"]])
     ) +
       geom_tile()
 

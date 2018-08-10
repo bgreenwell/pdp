@@ -266,7 +266,7 @@ plot_ice_curves <- function(
 
   # Determine if ICE curves should be centered
   if (center) {
-    object <- centerIceCurves(object)  # converts ICE curves to c-ICE curves
+    object <- center_ice_curves(object)  # converts ICE curves to c-ICE curves
   }
 
   # Determine plot type

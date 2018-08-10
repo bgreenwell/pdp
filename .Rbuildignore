@@ -7,3 +7,5 @@
 ^tests/testthat/Rplots\.pdf$
 ^slowtests$
 ^appveyor\.yml$
+^_pkgdown\.yml$
+^docs$

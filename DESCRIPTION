@@ -31,7 +31,9 @@ Suggests:
     ranger,
     rpart,
     testthat,
-    xgboost (>= 0.6-0)
+    xgboost (>= 0.6-0),
+    knitr,
+    rmarkdown
 Imports:
     ggplot2 (>= 0.9.0),
     grDevices,
@@ -47,3 +49,4 @@ Imports:
 LazyData: TRUE
 RoxygenNote: 6.1.0
 Encoding: UTF-8
+VignetteBuilder: knitr

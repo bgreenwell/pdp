@@ -12,65 +12,69 @@ df.class$y <- df.class$diabetes
 df.reg$cmedv <- NULL
 df.class$diabetes <- NULL
 
-test_that("copyClasses works correctly", {
+test_that("copy_classes() works correctly", {
 
   # Data frame with incorrect classes
   set.seed(101)
-  d1 <- data.frame(x1 = 1:3 * 1.0,
-                   x2 = rnorm(3),
-                   x3 = letters[1:3],
-                   x4 = as.factor(1:3),
-                   x5 = as.factor(1:3),
-                   x6 = c(1, 0, 1),
-                   stringsAsFactors = TRUE)
+  d1 <- data.frame(
+    x1 = 1:3 * 1.0,
+    x2 = rnorm(3),
+    x3 = letters[1:3],
+    x4 = as.factor(1:3),
+    x5 = as.factor(1:3),
+    x6 = c(1, 0, 1),
+    stringsAsFactors = TRUE
+  )
 
   # Data frame with correct classes
   set.seed(101)
-  d2 <- data.frame(x1 = 1:3,
-                   x2 = rnorm(3),
-                   x3 = letters[1:3],
-                   x4 = as.factor(1:3),
-                   x5 = as.ordered(1:3),
-                   x6 = c(TRUE, FALSE, TRUE),
-                   stringsAsFactors = FALSE)
+  d2 <- data.frame(
+    x1 = 1:3,
+    x2 = rnorm(3),
+    x3 = letters[1:3],
+    x4 = as.factor(1:3),
+    x5 = as.ordered(1:3),
+    x6 = c(TRUE, FALSE, TRUE),
+    stringsAsFactors = FALSE
+  )
 
   # Copy classes from d2 to d1
-  d3 <- copyClasses(d1, d2)
-  d4 <- copyClasses(d1[1:2, ], d2)
+  d3 <- copy_classes(d1, d2)
+  d4 <- copy_classes(d1[1:2, ], d2)
 
   # Expectations
   expect_identical(d2, d3)
   expect_identical(sapply(d2, levels), sapply(d4, levels))
-  expect_error(copyClasses(data.frame(x0 = 1), d1))
+  expect_error(copy_classes(data.frame(x0 = 1), d1))
 
 })
 
-test_that("multiClassLogit works correctly", {
+test_that("multiclass_logit() works correctly", {
 
   # Probabilitymatrix/data frame
   pm <- matrix(c(0.1, 0.3, 0.6), nrow = 1, ncol = 3, byrow = TRUE)
   pm.df <- as.data.frame(pm)
 
   # Expectations
-  expect_identical(multiClassLogit(pm), as.numeric(multiClassLogit(pm.df)))
-  expect_identical(multiClassLogit(pm, which.class = 1L),
+  expect_identical(multiclass_logit(pm), as.numeric(multiclass_logit(pm.df)))
+  expect_identical(multiclass_logit(pm, which.class = 1L),
                    log(0.1) - (log(0.1) + log(0.3) + log(0.6)) / 3)
-  expect_identical(multiClassLogit(pm, which.class = 2L),
+  expect_identical(multiclass_logit(pm, which.class = 2L),
                    log(0.3) - (log(0.1) + log(0.3) + log(0.6)) / 3)
-  expect_identical(multiClassLogit(pm, which.class = 3L),
+  expect_identical(multiclass_logit(pm, which.class = 3L),
                    log(0.6) - (log(0.1) + log(0.3) + log(0.6)) / 3)
 
 })
 
-test_that("trainCHull works correctly", {
+test_that("train_chull() works correctly", {
 
   # Sample data frames
-  d1 <- trainCHull(pred.var = c("x1", "x2"),
-                   pred.grid = expand.grid(x1 = 1:10, x2 = 1:10),
-                   train = expand.grid(x1 = 1:5, x2 = 1:5))
-  d2 <- trainCHull(pred.var = c("x1", "x2"),
-                   pred.grid = expand.grid(x1 = factor(1:10), x2 = 1:10),
-                   train = expand.grid(x1 = factor(1:5), x2 = 1:5))
+  d1 <- train_chull(pred.var = c("x1", "x2"),
+                    pred.grid = expand.grid(x1 = 1:10, x2 = 1:10),
+                    train = expand.grid(x1 = 1:5, x2 = 1:5))
+  d2 <- train_chull(pred.var = c("x1", "x2"),
+                    pred.grid = expand.grid(x1 = factor(1:10), x2 = 1:10),
+                    train = expand.grid(x1 = factor(1:5), x2 = 1:5))
 
   # Expectations
   expect_is(d1, "data.frame")
@@ -79,12 +83,12 @@ test_that("trainCHull works correctly", {
 })
 
 
-test_that("trimOutliers works correctly", {
-  expect_equal(pdp:::trimOutliers(c(1:10, 1000)), 1:10)
+test_that("trim_outliers() works correctly", {
+  expect_equal(pdp:::trim_outliers(c(1:10, 1000)), 1:10)
 })
 
 
-test_that("predGrid works correctly", {
+test_that("pred_grid() works correctly", {
 
   # Create some toy data
   d1 <- data.frame(x1 = c(1, 5, 3), x2 = c(1, 1, 7))
@@ -94,29 +98,29 @@ test_that("predGrid works correctly", {
   d5 <- data.frame(x1 = c(1, 3, 5, 1, 3, 5), x2 = as.factor(c(1, 1, 1, 7, 7, 7)))
 
   # Create grids
-  d1.grid <- predGrid(d1, pred.var = c("x1", "x2"), gr = 3, cats = "x2")
-  d2.grid <- predGrid(d2, pred.var = c("x1", "x2"), gr = 3)
-  d3.grid <- predGrid(d3, pred.var = c("x1", "x2"), gr = 3, cats = "x2")
-  d1.grid2 <- predGrid(d1, pred.var = c("x1", "x2"), cats = "x2",
-                       q = TRUE, p = 0.5)
+  d1.grid <- pred_grid(d1, pred.var = c("x1", "x2"), gr = 3, cats = "x2")
+  d2.grid <- pred_grid(d2, pred.var = c("x1", "x2"), gr = 3)
+  d3.grid <- pred_grid(d3, pred.var = c("x1", "x2"), gr = 3, cats = "x2")
+  d1.grid2 <- pred_grid(d1, pred.var = c("x1", "x2"), cats = "x2",
+                        q = TRUE, p = 0.5)
   # Expectations
   expect_identical(d1.grid, d4)
   expect_identical(d3.grid, d4)
   expect_identical(d2.grid, d5)
   expect_identical(d1.grid, d3.grid)
-  expect_identical(predGrid(d1, pred.var = c("x1", "x2"), gr = 3),
-                   predGrid(d3, pred.var = c("x1", "x2"), gr = 3))
+  expect_identical(pred_grid(d1, pred.var = c("x1", "x2"), gr = 3),
+                   pred_grid(d3, pred.var = c("x1", "x2"), gr = 3))
   expect_identical(d1.grid2, data.frame(x1 = c(3, 3), x2 = c(1, 7)))
 
 })
 
 
-test_that("superType works correctly", {
+test_that("super_type() works correctly", {
 
   ##############################################################################
   # Warnings and errors
   ##############################################################################
-  expect_warning(superType(1))
+  expect_warning(super_type(1))
 
 
   ##############################################################################
@@ -127,7 +131,7 @@ test_that("superType works correctly", {
   df.reg.lm <- lm(y ~ ., data = df.reg)
 
   # Expectations
-  expect_identical(superType(df.reg.lm), "regression")
+  expect_identical(super_type(df.reg.lm), "regression")
 
 
   ##############################################################################
@@ -142,8 +146,8 @@ test_that("superType works correctly", {
     qda.class <- qda(y ~ ., data = df.class)
 
     # Expectations
-    expect_identical(superType(lda.class), "classification")
-    expect_identical(superType(qda.class), "classification")
+    expect_identical(super_type(lda.class), "classification")
+    expect_identical(super_type(qda.class), "classification")
 
   }
 
@@ -160,8 +164,8 @@ test_that("superType works correctly", {
     rpart.class <- rpart(y ~ ., data = df.class)
 
     # Expectations
-    expect_identical(superType(rpart.reg), "regression")
-    expect_identical(superType(rpart.class), "classification")
+    expect_identical(super_type(rpart.reg), "regression")
+    expect_identical(super_type(rpart.class), "classification")
 
   }
 
@@ -173,8 +177,8 @@ test_that("superType works correctly", {
     ctree.class <- ctree(y ~ ., data = df.class)
 
     # Expectations
-    expect_identical(superType(ctree.reg), "regression")
-    expect_identical(superType(ctree.class), "classification")
+    expect_identical(super_type(ctree.reg), "regression")
+    expect_identical(super_type(ctree.class), "classification")
 
   }
 
@@ -185,7 +189,7 @@ test_that("superType works correctly", {
     C5.0.class <- C5.0(y ~ ., data = df.class)
 
     # Expectations
-    expect_identical(superType(C5.0.class), "classification")
+    expect_identical(super_type(C5.0.class), "classification")
 
   }
 
@@ -202,8 +206,8 @@ test_that("superType works correctly", {
     df.class.boosting <- boosting(y ~ ., data = df.class, mfinal = 1)
 
     # Expectations
-    expect_identical(superType(df.class.bagging), "classification")
-    expect_identical(superType(df.class.boosting), "classification")
+    expect_identical(super_type(df.class.bagging), "classification")
+    expect_identical(super_type(df.class.boosting), "classification")
 
   }
 
@@ -217,8 +221,8 @@ test_that("superType works correctly", {
     df.class.ipred <- ipred::bagging(y ~ ., data = df.class, nbagg = 1)
 
     # Expectations
-    expect_identical(superType(df.reg.ipred), "regression")
-    expect_identical(superType(df.class.ipred), "classification")
+    expect_identical(super_type(df.reg.ipred), "regression")
+    expect_identical(super_type(df.class.ipred), "classification")
 
   }
 
@@ -240,8 +244,8 @@ test_that("superType works correctly", {
                         n.minobsinnode = 1)
 
     # Expectations
-    expect_identical(superType(df.reg.gbm), "regression")
-    expect_identical(superType(df.class.gbm), "classification")
+    expect_identical(super_type(df.reg.gbm), "regression")
+    expect_identical(super_type(df.class.gbm), "classification")
 
   }
 
@@ -261,8 +265,8 @@ test_that("superType works correctly", {
 
 
     # Expectations
-    expect_identical(superType(rf.reg), "regression")
-    expect_identical(superType(rf.class), "classification")
+    expect_identical(super_type(rf.reg), "regression")
+    expect_identical(super_type(rf.class), "classification")
 
   }
 
@@ -277,8 +281,8 @@ test_that("superType works correctly", {
 
 
     # Expectations
-    expect_identical(superType(ranger.reg), "regression")
-    expect_identical(superType(ranger.class), "classification")
+    expect_identical(super_type(ranger.reg), "regression")
+    expect_identical(super_type(ranger.class), "classification")
 
   }
 
@@ -294,8 +298,8 @@ test_that("superType works correctly", {
                          controls = cforest_unbiased(ntree = 1))
 
     # Expectations
-    expect_identical(superType(crf.reg), "regression")
-    expect_identical(superType(crf.class), "classification")
+    expect_identical(super_type(crf.reg), "regression")
+    expect_identical(super_type(crf.class), "classification")
 
   }
 
@@ -321,8 +325,8 @@ test_that("superType works correctly", {
                             glm = list(family = binomial))
 
     # Expectations
-    expect_identical(superType(df.reg.earth), "regression")
-    expect_identical(superType(df.class.earth), "classification")
+    expect_identical(super_type(df.reg.earth), "regression")
+    expect_identical(super_type(df.class.earth), "classification")
 
   }
 
@@ -371,9 +375,9 @@ test_that("superType works correctly", {
                               data = df.class)
 
     # Expectations
-    expect_identical(superType(rf.reg), "regression")
-    expect_identical(superType(rf.class), "classification")
-    expect_identical(superType(rf.other), "unsupervised")
+    expect_identical(super_type(rf.reg), "regression")
+    expect_identical(super_type(rf.class), "classification")
+    expect_identical(super_type(rf.other), "unsupervised")
 
   }
 
@@ -392,8 +396,8 @@ test_that("superType works correctly", {
   #  svm.class <- svm(y ~ ., data = df.class)
   #
   #  # Expectations
-  #  expect_identical(superType(svm.reg), "regression")
-  #  expect_identical(superType(svm.class), "classification")
+  #  expect_identical(super_type(svm.reg), "regression")
+  #  expect_identical(super_type(svm.class), "classification")
   #
   #}
 
@@ -407,8 +411,8 @@ test_that("superType works correctly", {
     ksvm.class <- ksvm(y ~ ., data = df.class)
 
     # Expectations
-    expect_identical(superType(ksvm.reg), "regression")
-    expect_identical(superType(ksvm.class), "classification")
+    expect_identical(super_type(ksvm.reg), "regression")
+    expect_identical(super_type(ksvm.class), "classification")
 
   }
 

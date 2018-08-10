@@ -89,9 +89,6 @@
 #' whenever \code{plot = TRUE}. Options include \code{"lattice"} (defasult) or
 #' \code{"ggplot2"}.
 #'
-#' @param alpha Numeric values between 0 and 1 indicating the alpha-transparency
-#' to use for ICE anc-ICE curves. Default is 0.5.
-#'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
 #' Default is \code{FALSE}.
 #'
@@ -100,6 +97,9 @@
 #' predictor distributions. This helps reduce the risk of interpreting the
 #' partial dependence plot outside the region of the data (i.e., extrapolating).
 #' Only used when \code{plot = TRUE}. Default is \code{FALSE}.
+#'
+#' @param levelplot Logical indicating whether or not to use a false color level
+#' plot (\code{TRUE}) or a 3-D surface (\code{FALSE}). Default is \code{TRUE}.
 #'
 #' @param contour Logical indicating whether or not to add contour lines to the
 #' level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.
@@ -297,7 +297,7 @@ partial.default <- function(
 
   # Try to extract training data (hard problem) if not provided
   if (missing(train)) {
-    train <- getTrainingData(object)
+    train <- get_training_data(object)
   }
 
   # Convert the training data to a matrix for XGBoost models
@@ -330,9 +330,10 @@ partial.default <- function(
 
   # Generate grid of predictor values
   pred.grid <- if (missing(pred.grid)) {
-    predGrid(train = train, pred.var = pred.var,
-             grid.resolution = grid.resolution, quantiles = quantiles,
-             probs = probs, trim.outliers = trim.outliers)
+    pred_grid(
+      train = train, pred.var = pred.var, grid.resolution = grid.resolution,
+      quantiles = quantiles, probs = probs, trim.outliers = trim.outliers
+    )
   } else {
     if (!is.data.frame(pred.grid)) {
       stop("`pred.grid` shoud be a data frame.")
@@ -347,14 +348,14 @@ partial.default <- function(
           warning(paste("Options `quantiles` and `trim.outliers`",
                         "ignored whenever `pred.grid` is specified."))
         }
-        orderGrid(pred.grid)
+        order_grid(pred.grid)
       }
     }
   }
 
   # Make sure each column has the correct class, levels, etc.
   if (inherits(train, "data.frame") && check.class) {
-    pred.grid <- copyClasses(pred.grid, train)
+    pred.grid <- copy_classes(pred.grid, train)
   }
 
   # Convert pred.grid to the same class as train if train is not a data frame
@@ -367,13 +368,13 @@ partial.default <- function(
 
   # Restrict grid to covext hull of first two columns
   if (chull) {
-    pred.grid <- trainCHull(pred.var, pred.grid = pred.grid, train = train)
+    pred.grid <- train_chull(pred.var, pred.grid = pred.grid, train = train)
   }
 
   # Determine the type of supervised learning used
   type <- match.arg(type)
   if (type == "auto" && is.null(pred.fun)) {
-    type <- superType(object)  # determine if regression or classification
+    type <- super_type(object)  # determine if regression or classification
   }
 
   # Display warning for GBM objects when recursive = TRUE and ice = TRUE
@@ -463,7 +464,7 @@ partial.default <- function(
 
       # c-ICE curves
       if (center) {
-        pd.df <- centerIceCurves(pd.df)
+        pd.df <- center_ice_curves(pd.df)
         if (type == "classification" && prob) {
           warning("Centering may result in probabilities outside of [0, 1].")
           pd.df$yhat <- pd.df$yhat + 0.5
@@ -479,37 +480,39 @@ partial.default <- function(
   }
 
   # Plot partial dependence function (if requested)
-  if (plot) {  # return a graph (i.e., a "trellis" object)
+  if (plot) {  # return a graph (i.e., a "trellis" or "ggplot" object)
     plot.engine <- match.arg(plot.engine)
     res <- if (ice) {
       if (plot.engine == "ggplot2") {
         autoplot(
-          object = pd.df, center = center, plot.pdp = TRUE, rug = rug,
-          train = train, alpha = alpha
+          object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
+          alpha = alpha
         )
       } else {
         plotPartial(
-          x = pd.df, center = center, plot.pdp = TRUE, rug = rug,
-          train = train, alpha = alpha,
+          object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
+          alpha = alpha,
         )
       }
     } else {
       # palette = match.arg(palette)
       if (plot.engine == "ggplot2") {
         autoplot(
-          pd.df, smooth = smooth, rug = rug, train = train, contour = contour,
-          contour.color = contour.color, palette = palette, alpha = alpha
+          object = pd.df, smooth = smooth, rug = rug, train = train,
+          contour = contour, contour.color = contour.color, palette = palette,
+          alpha = alpha
         )
       } else {
         plotPartial(
-          pd.df, smooth = smooth, rug = rug, train = train,
+          object = pd.df, smooth = smooth, rug = rug, train = train,
           levelplot = levelplot, contour = contour,
-          contour.color = contour.color, screen = list(z = -30, x = -60),  # sensible default?
+          contour.color = contour.color,
+          screen = list(z = -30, x = -60),  # sensible default?
           palette = palette, alpha = alpha
         )
       }
     }
-    attr(res, "partial.data") <- pd.df  # attach partial data as an attribute
+    attr(res, "partial.data") <- pd.df  # attach PDP data as an attribute
   } else {  # return a data frame (i.e., a "data.frame" and "partial" object)
     res <- pd.df
   }

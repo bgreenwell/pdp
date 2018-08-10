@@ -18,6 +18,7 @@
 
 * The arguments to `autoplot()` and `plotPartial()` are now more consistent with each other.
 
+* The names of helper functions have changed from lowerCamelCase to snake_case.
 
 
 ### Changes for version 0.6.0

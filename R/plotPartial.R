@@ -3,7 +3,7 @@
 #' Plots partial dependence functions (i.e., marginal effects) using
 #' \code{\link[lattice]{lattice}} graphics.
 #'
-#' @param x An object that inherits from the \code{"partial"} class.
+#' @param object An object that inherits from the \code{"partial"} class.
 #'
 #' @param center Logical indicating whether or not to produce centered ICE
 #' curves (c-ICE curves). Only useful when \code{object} represents a set of ICE
@@ -110,53 +110,95 @@
 #' p2 <- plotPartial(age.ice, center = TRUE, alpha = 0.5)
 #' grid.arrange(p1, p2, ncol = 2)
 #' }
-plotPartial <- function(x, ...) {
+plotPartial <- function(object, ...) {
   UseMethod("plotPartial")
 }
 
 
 #' @rdname plotPartial
+#'
 #' @export
 plotPartial.ice <- function(
-  x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
-  pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  rug = FALSE,
+  train = NULL,
+  alpha = 1,
+  ...
 ) {
-  plotIceCurves(x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
-                pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-                alpha = alpha, ...)
+
+  # Call workhorse function
+  plot_ice_curves(
+    object = object, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
+    alpha = alpha, ...
+  )
+
 }
 
 
 #' @rdname plotPartial
+#'
 #' @export
 plotPartial.cice <- function(
-  x, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, rug = FALSE,
-  train = NULL, alpha = 1, ...
+  object,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  rug = FALSE,
+  train = NULL,
+  alpha = 1,
+  ...
 ) {
-  plotIceCurves(x, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
-                pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-                alpha = alpha, ...)
+
+  # Call workhorse function
+  plot_ice_curves(
+    object = object, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
+    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
+    alpha = alpha, ...
+  )
+
 }
 
 
 #' @rdname plotPartial
+#'
 #' @export
 plotPartial.partial <- function(
-  x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
-  pdp.lty = 1, smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
-  contour = FALSE, contour.color = "white",
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  smooth = FALSE,
+  rug = FALSE,
+  chull = FALSE,
+  levelplot = TRUE,
+  contour = FALSE,
+  contour.color = "white",
+  col.regions = NULL,
   palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
-  alpha = 1, number = 4, overlap = 0.1, train = NULL, ...
+  alpha = 1,
+  number = 4,
+  overlap = 0.1,
+  train = NULL,
+  ...
 ) {
 
-  # Determine of x contains multiple curves
-  multi <- "yhat.id" %in% names(x)
+  # Determine if object contains multiple curves
+  multi <- "yhat.id" %in% names(object)
 
   # Determine number of predictors
   nx <- if (multi) {
-    ncol(x) - 2  # don't count yhat or yhat.id
+    ncol(object) - 2  # don't count yhat or yhat.id
   } else {
-    ncol(x) - 1  # don't count yhat
+    ncol(object) - 1  # don't count yhat
   }
 
   # Throw error if too difficult to plot
@@ -167,34 +209,41 @@ plotPartial.partial <- function(
   # Determine which type of plot to draw based on the number of predictors
   if (multi) {
 
-    # Multiple curves from user-specified prediction function
-    plotIceCurves(x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
-                  pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug,
-                  train = train, alpha = alpha, ...)
+    # Call workhorse function
+    plot_ice_curves(  # curves from user-specified prediction function
+      object = object, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
+      alpha = alpha, ...
+    )
 
   } else if (nx == 1L) {
 
-    # Single predictor
-    plotOnePredictorPDP(x, smooth = smooth, rug = rug, train = train, ...)
+    # Call workhorse function
+    plot_one_predictor_pdp(  # single predictor
+      object = object, smooth = smooth, rug = rug, train = train, ...
+    )
 
   } else if (nx == 2) {
 
-    # Two predictors
-    palette <- match.arg(palette)
-    plotTwoPredictorPDP(x, smooth = smooth, levelplot = levelplot, rug = rug,
-                        chull = chull, train = train, contour = contour,
-                        contour.color = contour.color, palette = palette,
-                        alpha = alpha, ...)
+    # Call workhorse function
+    palette <- match.arg(palette)  # match color palette
+    plot_two_predictor_pdp(  # two predictors
+      object = object, smooth = smooth, levelplot = levelplot, rug = rug,
+      chull = chull, train = train, contour = contour,
+      contour.color = contour.color, col.regions = col.regions,
+      palette = palette, alpha = alpha, ...
+    )
 
   } else {
 
-    # Three predictors (paneled version of plotTwoPredictorPDP)
+    # Call workhorse function
     palette <- match.arg(palette)
-    plotThreePredictorPDP(x, nx = nx, smooth = smooth, levelplot = levelplot,
-                          rug = rug, chull = chull, train = train,
-                          contour = contour, contour.color = contour.color,
-                          palette = palette, alpha = alpha, number = number,
-                          overlap = overlap, ...)
+    plot_three_predictor_pdp(  # three predictors (paneled)
+      object = object, nx = nx, smooth = smooth, levelplot = levelplot,
+      rug = rug, chull = chull, train = train, contour = contour,
+      contour.color = contour.color, palette = palette, alpha = alpha,
+      number = number, overlap = overlap, ...
+    )
 
   }
 
@@ -202,209 +251,275 @@ plotPartial.partial <- function(
 
 
 #' @keywords internal
-plotIceCurves <- function(x, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty, rug,
-                          train, alpha = 1, ...) {
+plot_ice_curves <- function(
+  object,
+  plot.pdp,
+  center,
+  pdp.col,
+  pdp.lwd,
+  pdp.lty,
+  rug,
+  train,
+  alpha = 1,
+  ...
+) {
 
   # Determine if ICE curves should be centered
   if (center) {
-    x <- centerIceCurves(x)  # converts ICE curves to c-ICE curves
+    object <- centerIceCurves(object)  # converts ICE curves to c-ICE curves
   }
 
   # Determine plot type
-  plot.type <- if (is.factor(x[[1L]])) {
+  plot.type <- if (is.factor(object[[1L]])) {
     "b"  # draw lines and points
   } else {
     "l"  # draw lines
   }
 
-  # Draw ICE curves
-  xyplot(stats::as.formula(paste("yhat ~", names(x)[1L])), data = x,
-         groups = x$yhat.id, type = plot.type, alpha = alpha, ...,
-         panel = function(xx, yy, ...) {
-           panel.xyplot(xx, yy, col = "black", ...)
-           if (plot.pdp) {
-             pd <- averageIceCurves(x)
-             panel.xyplot(pd[[1L]], pd$yhat, type = "l", col = pdp.col,
-                          lwd = pdp.lwd, lty = pdp.lty)
-           }
-           if (rug && is.numeric(x[[1L]])) {
-             if (is.null(train)) {
-               stop("The training data must be supplied for rug display.")
-             } else {
-               panel.rug(stats::quantile(train[, names(x)[1L]],
-                                         probs = 0:10/10, na.rm = TRUE))
-             }
-           }
-         })
+  # Plot ICE curves
+  xyplot(
+    stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
+    groups = object$yhat.id, type = plot.type, alpha = alpha, ...,
+    panel = function(xx, yy, ...) {
+      panel.xyplot(xx, yy, col = "black", ...)
+      if (plot.pdp) {
+        pd <- average_ice_curves(object)
+        panel.xyplot(
+          pd[[1L]], pd$yhat, type = "l", col = pdp.col, lwd = pdp.lwd,
+          lty = pdp.lty
+        )
+      }
+      if (rug && is.numeric(object[[1L]])) {
+        if (is.null(train)) {
+          stop("The training data must be supplied for rug display.")
+        } else {
+          panel.rug(
+            stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
+                            na.rm = TRUE)
+          )
+        }
+      }
+})
 
 }
 
 
 #' @keywords internal
-plotOnePredictorPDP <- function(x, smooth, rug, train = NULL, ...) {
+plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
 
   # Use the first column to determine which type of plot to construct
-  if (is.numeric(x[[1L]])) {
+  if (is.numeric(object[[1L]])) {
 
     # Draw a line plot
-    xyplot(stats::as.formula(paste("yhat ~", names(x)[1L])), data = x,
-           type = "l", ..., panel = function(xx, yy, ...) {
-             panel.xyplot(xx, yy, col = "black", ...)
-             if (smooth) {
-               panel.loess(xx, yy, ...)
-             }
-             if (rug) {
-               if (is.null(train)) {
-                 stop("The training data must be supplied for rug display.")
-               } else {
-                 panel.rug(stats::quantile(train[, names(x)[1L]],
-                                           probs = 0:10/10, na.rm = TRUE))
-               }
-             }
-           })
+    xyplot(
+      stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
+      type = "l", ..., panel = function(xx, yy, ...) {
+        panel.xyplot(xx, yy, col = "black", ...)
+        if (smooth) {
+          panel.loess(xx, yy, ...)
+        }
+        if (rug) {
+          if (is.null(train)) {
+            stop("The training data must be supplied for rug display.")
+          } else {
+            panel.rug(
+              stats::quantile(train[, names(object)[1L]],
+                              probs = 0:10/10, na.rm = TRUE)
+            )
+          }
+        }
+    })
 
   } else {
 
     # Draw a Cleveland dot plot
-    dotplot(stats::as.formula(paste("yhat ~", names(x)[1L])), data = x, ...)
+    dotplot(
+      stats::as.formula(paste("yhat ~", names(object)[1L])), data = object, ...
+    )
 
   }
 }
 
 
 #' @keywords internal
-plotTwoPredictorPDP <- function(
-  x, smooth, levelplot, rug, chull, train, contour, contour.color, palette,
-  alpha, ...
+plot_two_predictor_pdp <- function(
+  object,
+  smooth,
+  levelplot,
+  rug,
+  chull,
+  train,
+  contour,
+  contour.color,
+  col.regions,
+  palette,
+  alpha,
+  ...
 ) {
 
   # Use the first two columns to determine which type of plot to construct
-  if (is.factor(x[[1L]]) && is.factor(x[[2L]])) {
+  if (is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Draw a Cleveland dot plot
     dotplot(stats::as.formula(
-      paste("yhat ~", paste(names(x)[1L:2L], collapse = "|"))
-    ), data = x, ...)
+      paste("yhat ~", paste(names(object)[1L:2L], collapse = "|"))
+    ), data = object, ...)
 
-  } else if (is.factor(x[[1L]]) || is.factor(x[[2L]])) {
+  } else if (is.factor(object[[1L]]) || is.factor(object[[2L]])) {
 
     # Lattice plot formula
-    form <- if (is.factor(x[[1L]])) {
-      stats::as.formula(paste("yhat ~", paste(names(x)[2L:1L], collapse = "|")))
+    form <- if (is.factor(object[[1L]])) {
+      stats::as.formula(
+        paste("yhat ~", paste(names(object)[2L:1L], collapse = "|"))
+      )
     } else {
-      stats::as.formula(paste("yhat ~", paste(names(x)[1L:2L], collapse = "|")))
+      stats::as.formula(
+        paste("yhat ~", paste(names(object)[1L:2L], collapse = "|"))
+      )
     }
 
     # Draw a paneled line plot
-    xyplot(form, data = x, type = "l", ...,
-           panel = function(xx, yy, ...) {
-             panel.xyplot(xx, yy, col = "black", ...)
-             if (smooth) {
-               panel.loess(xx, yy, ...)
-             }
-             if (rug) {
-               if (is.null(train)) {
-                 stop("The training data must be supplied for rug display.")
-               } else {
-                 panel.rug(stats::quantile(train[, names(x)[1L]],
-                                           probs = 0:10/10, na.rm = TRUE))
-               }
-             }
-           })
+    xyplot(
+      form, data = object, type = "l", ..., panel = function(xx, yy, ...) {
+        panel.xyplot(xx, yy, col = "black", ...)
+        if (smooth) {
+          panel.loess(xx, yy, ...)
+        }
+        if (rug) {
+          if (is.null(train)) {
+            stop("The training data must be supplied for rug display.")
+           } else {
+             panel.rug(
+               stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
+                               na.rm = TRUE)
+             )
+           }
+        }
+    })
 
     } else {
 
       # Lattice plot formula
       form <- stats::as.formula(
-        paste("yhat ~", paste(names(x)[1L:2L], collapse = "*"))
+        paste("yhat ~", paste(names(object)[1L:2L], collapse = "*"))
       )
 
       # Define color regions
-      col.regions <- viridis::viridis_pal(option = palette, alpha = alpha)(100)
+      if (is.null(col.regions)) {
+        col.regions <- viridis::viridis_pal(option = palette,
+                                            alpha = alpha)(100)
+      }
 
       # Draw a three-dimensional surface
       if (levelplot) {
 
         # Draw a false color level plot
         levelplot(
-          form, data = x, col.regions = col.regions, contour = contour,
+          form, data = object, col.regions = col.regions, contour = contour,
           col = contour.color, ...,
-          panel = function(x1, y1, ...) {
-            panel.levelplot(x1, y1, ...)
+          panel = function(xx, yy, ...) {
+            panel.levelplot(xx, yy, ...)
             if (rug || chull) {
               if (is.null(train)) {
-                stop("The training data must be supplied for convex hull display.")
+                stop(
+                  "The training data must be supplied for convex hull display."
+                )
               }
             }
             # Add a rug display
             if (rug) {
               panel.rug(
-                x = stats::quantile(train[, names(x)[1L]], probs = 0:10/10, na.rm = TRUE),
-                y = stats::quantile(train[, names(x)[2L]], probs = 0:10/10, na.rm = TRUE),
+                x = stats::quantile(
+                  train[, names(object)[1L]], probs = 0:10/10, na.rm = TRUE
+                ),
+                y = stats::quantile(
+                  train[, names(object)[2L]], probs = 0:10/10, na.rm = TRUE
+                ),
                 col = "black"
               )
             }
             # Plot the convex hull of the predictor space of interest
             if (chull) {
               if (is.null(train)) {
-                stop("The training data must be supplied for convex hull display.")
+                stop(
+                  "The training data must be supplied for convex hull display."
+                )
               }
-              hpts <- grDevices::chull(stats::na.omit(train[names(x)[1L:2L]]))
+              hpts <- grDevices::chull(
+                stats::na.omit(train[names(object)[1L:2L]])
+              )
               hpts <- c(hpts, hpts[1])
-              panel.lines(train[hpts, names(x)[1L:2L]], col = "black")
+              panel.lines(train[hpts, names(object)[1L:2L]], col = "black")
             }
         })
 
       } else {
 
         # Draw a wireframe plot
-        wireframe(form, data = x, col.regions = col.regions, drape = TRUE, ...)
+        wireframe(
+          form, data = object, col.regions = col.regions, drape = TRUE, ...
+        )
 
       }
 
   }
+
 }
 
-
 #' @keywords internal
-plotThreePredictorPDP <- function(
-  x, nx, smooth, levelplot, rug, chull, train, contour, contour.color,
-  palette, alpha, number, overlap, ...
+plot_three_predictor_pdp <- function(
+  object,
+  nx,
+  smooth,
+  levelplot,
+  rug,
+  chull,
+  train,
+  contour,
+  contour.color,
+  palette,
+  alpha,
+  number,
+  overlap,
+  ...
 ) {
 
   # Convert third predictor to a factor using the equal count algorithm
-  if (is.numeric(x[[3L]])) {
-    x[[3L]] <- equal.count(x[[3L]], number = number, overlap = overlap)
+  if (is.numeric(object[[3L]])) {
+    object[[3L]] <- equal.count(
+      object[[3L]], number = number, overlap = overlap
+    )
   }
 
-  if (is.factor(x[[1L]]) && is.factor(x[[2L]])) {
+  if (is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Lattice plot formula
     form <- stats::as.formula(
-      paste("yhat ~", names(x)[1L], "|", paste(names(x)[2L:nx], collapse = "*"))
+      paste("yhat ~", names(object)[1L], "|",
+            paste(names(object)[2L:nx], collapse = "*"))
     )
 
     # Produce a paneled dotplot
-    dotplot(form, data = x, ...)
+    dotplot(form, data = object, ...)
 
-  } else if (is.factor(x[[1L]]) || is.factor(x[[2L]])) {
+  } else if (is.factor(object[[1L]]) || is.factor(object[[2L]])) {
 
     # Lattice plot formula
-    form <- if (is.factor(x[[1L]])) {
+    form <- if (is.factor(object[[1L]])) {
       stats::as.formula(
-        paste("yhat ~", names(x)[2L], "|",
-              paste(names(x)[c(1L, 3L:nx)], collapse = "*"))
+        paste("yhat ~", names(object)[2L], "|",
+              paste(names(object)[c(1L, 3L:nx)], collapse = "*"))
       )
     } else {
       stats::as.formula(
-        paste("yhat ~", names(x)[1L], "|",
-              paste(names(x)[2L:nx], collapse = "*"))
+        paste("yhat ~", names(object)[1L], "|",
+              paste(names(object)[2L:nx], collapse = "*"))
       )
     }
 
     # Produce a paneled lineplot
     xyplot(
-      form, data = x, type = "p", ...,
+      form, data = object, type = "p", ...,
       panel = function(xx, yy, ...) {
         panel.xyplot(xx, yy, col = "black", ...)
         if (smooth) {
@@ -415,7 +530,7 @@ plotThreePredictorPDP <- function(
             stop("The training data must be supplied for rug display.")
           } else {
             panel.rug(
-              stats::quantile(train[, names(x)[1L]], probs = 0:10/10,
+              stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
                               na.rm = TRUE)
             )
           }
@@ -426,24 +541,31 @@ plotThreePredictorPDP <- function(
 
     # Lattice plot formula
     form <- stats::as.formula(
-      paste("yhat ~", paste(names(x)[1L:2L], collapse = "*"), "|",
-            paste(names(x)[3L:nx], collapse = "*"))
+      paste("yhat ~", paste(names(object)[1L:2L], collapse = "*"), "|",
+            paste(names(object)[3L:nx], collapse = "*"))
     )
 
     # Define color regions
-    col.regions <- viridis::viridis_pal(option = palette, alpha = alpha)(100)
+    if (is.null(col.regions)) {
+      col.regions <- viridis::viridis_pal(option = palette,
+                                          alpha = alpha)(100)
+    }
 
     # Draw a three-dimensional surface
     if (levelplot) {
 
       # Draw a false color level plot
-      levelplot(form, data = x, col.regions = col.regions, contour = contour,
-                col = contour.color, ...)
+      levelplot(
+        form, data = object, col.regions = col.regions, contour = contour,
+        col = contour.color, ...
+      )
 
     } else {
 
       # Draw a wireframe plot
-      wireframe(form, data = x, col.regions = col.regions, drape = TRUE, ...)
+      wireframe(
+        form, data = object, col.regions = col.regions, drape = TRUE, ...
+      )
 
     }
 

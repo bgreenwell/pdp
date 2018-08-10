@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{trellis.last.object}
 \alias{trellis.last.object}
-\title{Retrieve the last Trellis Object}
+\title{Retrieve the last trellis object}
 \usage{
 trellis.last.object(..., prefix)
 }

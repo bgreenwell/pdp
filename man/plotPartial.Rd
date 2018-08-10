@@ -7,22 +7,25 @@
 \alias{plotPartial.partial}
 \title{Plotting Partial Dependence Functions}
 \usage{
-plotPartial(x, ...)
+plotPartial(object, ...)
 
-\method{plotPartial}{ice}(x, center = FALSE, plot.pdp = TRUE,
+\method{plotPartial}{ice}(object, center = FALSE, plot.pdp = TRUE,
   pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, rug = FALSE,
-  train = NULL, ...)
+  train = NULL, alpha = 1, ...)
 
-\method{plotPartial}{cice}(x, plot.pdp = TRUE, pdp.col = "red2",
-  pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL, ...)
+\method{plotPartial}{cice}(object, plot.pdp = TRUE, pdp.col = "red2",
+  pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1,
+  ...)
 
-\method{plotPartial}{partial}(x, center = FALSE, plot.pdp = TRUE,
+\method{plotPartial}{partial}(object, center = FALSE, plot.pdp = TRUE,
   pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, smooth = FALSE,
   rug = FALSE, chull = FALSE, levelplot = TRUE, contour = FALSE,
-  number = 4, overlap = 0.1, train = NULL, col.regions = NULL, ...)
+  contour.color = "white", col.regions = NULL, palette = c("viridis",
+  "magma", "inferno", "plasma", "cividis"), alpha = 1, number = 4,
+  overlap = 0.1, train = NULL, ...)
 }
 \arguments{
-\item{x}{An object that inherits from the \code{"partial"} class.}
+\item{object}{An object that inherits from the \code{"partial"} class.}
 
 \item{...}{Additional optional arguments to be passed onto \code{dotplot},
 \code{levelplot}, \code{xyplot}, or \code{wireframe}.}
@@ -51,6 +54,10 @@ predictor axes. Default is \code{FALSE}.}
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE} or \code{chull = TRUE}.}
 
+\item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha (
+most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
+transparency).}
+
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
 
@@ -64,6 +71,18 @@ plot (\code{TRUE}) or a 3-D surface (\code{FALSE}). Default is \code{TRUE}.}
 \item{contour}{Logical indicating whether or not to add contour lines to the
 level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
 
+\item{contour.color}{Character string specifying the color to use for the
+contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
+
+\item{col.regions}{Color vector to be used for trivariate displays. If
+\code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
+'viridis' color map provided by the \code{viridis} package. See
+\code{\link[viridis]{viridis}} for details.}
+
+\item{palette}{Character string indicating the colormap option to use. Five
+options are available: "viridis" (the default), "magma", "inferno", "plasma",
+and "cividis".}
+
 \item{number}{Integer specifying the number of conditional intervals to use
 for the continuous panel variables. See \code{\link[graphics]{co.intervals}}
 and \code{\link[lattice]{equal.count}} for further details.}
@@ -71,11 +90,6 @@ and \code{\link[lattice]{equal.count}} for further details.}
 \item{overlap}{The fraction of overlap of the conditioning variables. See
 \code{\link[graphics]{co.intervals}} and \code{\link[lattice]{equal.count}}
 for further details.}
-
-\item{col.regions}{Color vector to be used for trivariate displays. If
-\code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-'viridis' color map provided by the \code{viridis} package. See
-\code{\link[viridis]{viridis}} for details.}
 }
 \description{
 Plots partial dependence functions (i.e., marginal effects) using

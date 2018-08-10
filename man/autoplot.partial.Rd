@@ -10,8 +10,9 @@
   pdp.color = "red", pdp.size = 1, pdp.linetype = 1, rug = FALSE,
   smooth = FALSE, smooth.method = "auto", smooth.formula = y ~ x,
   smooth.span = 0.75, smooth.method.args = list(), contour = FALSE,
-  contour.color = "white", palette = "Spectral", train = NULL,
-  xlab = NULL, ylab = NULL, main = NULL, legend.title = NULL, ...)
+  contour.color = "white", palette = c("viridis", "magma", "inferno",
+  "plasma", "cividis"), train = NULL, xlab = NULL, ylab = NULL,
+  main = NULL, legend.title = "yhat", ...)
 
 \method{autoplot}{ice}(object, center = FALSE, plot.pdp = TRUE,
   pdp.color = "red", pdp.size = 1, pdp.linetype = 1, rug = FALSE,
@@ -62,14 +63,14 @@ smoother lines. Default is \code{0.75}.}
 on to the modelling function defined by \code{smooth.method}.}
 
 \item{contour}{Logical indicating whether or not to add contour lines to the
-level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
+level plot.}
 
 \item{contour.color}{Character string specifying the color to use for the
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
-\item{palette}{If a string, will use that named palette. If a number, will
-index into the list of palettes of appropriate type. Default is
-\code{"Spectral"}.}
+\item{palette}{Character string indicating the colormap option to use. Five
+options are available: "viridis" (the default), "magma", "inferno", "plasma",
+and "cividis".}
 
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE} or \code{chull = TRUE}.}

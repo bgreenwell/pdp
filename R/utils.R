@@ -24,7 +24,7 @@ NULL
 NULL
 
 
-#' Retrieve the last Trellis Object
+#' Retrieve the last trellis object
 #'
 #' See \code{\link[lattice]{trellis.last.object}} for more details.
 #'
@@ -32,67 +32,68 @@ NULL
 #' @rdname trellis.last.object
 #' @keywords internal
 #' @export
-#' @importFrom lattice  trellis.last.object
+#' @importFrom lattice trellis.last.object
 #' @usage trellis.last.object(..., prefix)
 NULL
 
 
 #' @keywords internal
-averageIceCurves <- function(object) {
-  UseMethod("averageIceCurves")
+average_ice_curves <- function(object) {
+  UseMethod("average_ice_curves")
 }
 
 
 #' @keywords internal
-averageIceCurves.ice <- function(object) {
-  yhat <- tapply(object[["yhat"]], INDEX = as.factor(object[[1L]]),
-                 FUN = mean, simplify = FALSE)
-  res <- data.frame("x" = object[seq_len(length(yhat)), 1L, drop = TRUE],
-                    "yhat" = unlist(yhat))
+average_ice_curves.ice <- function(object) {
+  yhat <- tapply(
+    object[["yhat"]], INDEX = as.factor(object[[1L]]), FUN = mean,
+    simplify = FALSE
+  )
+  res <- data.frame(
+    "x" = object[seq_len(length(yhat)), 1L, drop = TRUE],
+    "yhat" = unlist(yhat)
+  )
   names(res)[1L] <- names(object)[1L]
   res
 }
 
 
 #' @keywords internal
-averageIceCurves.cice <- function(object) {
-  averageIceCurves.ice(object)
+average_ice_curves.cice <- function(object) {
+  average_ice_curves.ice(object)
 }
 
 
 #' @keywords internal
-averageIceCurves.partial <- function(object) {
-  averageIceCurves.ice(object)
+average_ice_curves.partial <- function(object) {
+  average_ice_curves.ice(object)
 }
 
 
 #' @keywords internal
-centerIceCurves <- function(object) {
-  UseMethod("centerIceCurves")
+center_ice_curves <- function(object) {
+  UseMethod("center_ice_curves")
 }
 
 
 #' @keywords internal
-centerIceCurves.ice <- function(object) {
-  yhat <- tapply(object[["yhat"]], INDEX = as.factor(object[["yhat.id"]]),
-                 FUN = function(x) x - x[1L], simplify = FALSE)
-  res <- data.frame("x" = object[[1L]],
-                    "yhat" = unlist(yhat),
-                    "yhat.id" = object["yhat.id"])
+center_ice_curves.ice <- function(object) {
+  yhat <- tapply(
+    object[["yhat"]], INDEX = as.factor(object[["yhat.id"]]),
+    FUN = function(x) x - x[1L], simplify = FALSE
+  )
+  res <- data.frame(
+    "x" = object[[1L]],
+    "yhat" = unlist(yhat),
+    "yhat.id" = object["yhat.id"]
+  )
   names(res)[1L] <- names(object)[1L]
   class(res) <- c("data.frame", "cice")
   res
 }
 
-
 #' @keywords internal
-checkFactorLevels <- function(x, y) {
-
-}
-
-
-#' @keywords internal
-copyClasses <- function(x, y) {
+copy_classes <- function(x, y) {
   x.names <- names(x)
   y.names <- names(y)
   if (length(setdiff(x.names, y.names)) > 0) {
@@ -140,14 +141,16 @@ copyClasses <- function(x, y) {
     }
   }
   # Sanity check
-  stopifnot(all.equal(sapply(x[column.names], class),
-                      sapply(y[column.names], class)))
+  stopifnot(all.equal(
+    target = sapply(x[column.names], class),
+    current = sapply(y[column.names], class))
+  )
   x  # return x with copied classes
 }
 
 
 #' @keywords internal
-multiClassLogit <- function(x, which.class = 1L) {
+multiclass_logit <- function(x, which.class = 1L) {
   if (is.data.frame(x)) {
     x <- data.matrix(x)
   }
@@ -157,21 +160,8 @@ multiClassLogit <- function(x, which.class = 1L) {
     rowMeans(log(ifelse(x > 0, x, eps)))
 }
 
-
-#' #' @keywords internal
-#' avgLogit <- function(x, which.class = 1L) {
-#'   if (is.data.frame(x)) {
-#'     x <- data.matrix(x)
-#'   }
-#'   stopifnot(is.matrix(x))  # x should be a nclass by n probability matrix
-#'   eps <- .Machine$double.eps
-#'   mean(log(ifelse(x[, which.class] > 0, x[, which.class], eps)) -
-#'          rowMeans(log(ifelse(x > 0, x, eps))), na.rm = TRUE)
-#' }
-
-
 #' @keywords internal
-trainCHull <- function(pred.var, pred.grid, train) {
+train_chull <- function(pred.var, pred.grid, train) {
   if (length(pred.var) >= 2 && is.numeric(pred.grid[, 1L]) &&
       is.numeric(pred.grid[, 2L])) {  # if the first two columns are numeric
     if (is.data.frame(train)) {

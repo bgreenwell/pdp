@@ -53,7 +53,7 @@ getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
     if (prob) {  # use class probabilities
       pd.df$yhat <- y[, which.class]
     } else {  # use centered logit
-      pd.df$yhat <- multiClassLogit(y, which.class = which.class)
+      pd.df$yhat <- multiclass_logit(y, which.class = which.class)
     }
   } else if (object$distribution$name %in% c("bernoulli", "pairwise")) {
     pr <- stats::plogis(y)

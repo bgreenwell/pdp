@@ -102,7 +102,7 @@ p2 <- autoplot(pd, contour = TRUE, main = "ggplot2 version",
 grid.arrange(p1, p2, ncol = 2)
 ```
 
-<img src="tools/README-example-rf-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-example-rf-1.png" style="display: block; margin: auto;" />
 
 You can also plot the output directly from `partial()` (although, this
 is typically not recommended; see the [above-mentioned
@@ -115,7 +115,7 @@ partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE, plot = TRUE,
         contour = TRUE, contour.color = "white")
 ```
 
-<img src="tools/README-example-rf-2-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-example-rf-2-1.png" style="display: block; margin: auto;" />
 
 Next, we’ll fit a classification model to the Pima Indians Diabetes
 data.
@@ -149,4 +149,60 @@ grid.arrange(autoplot(pd.glucose, main = "Logit scale"),
              ncol = 2)
 ```
 
-<img src="tools/README-example-svm-1.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-example-svm-1.png" style="display: block; margin: auto;" />
+
+Individual conditional expectation (ICE) plots
+----------------------------------------------
+
+PDPs can be misleading in the presence of substantial interactions
+[(Goldstein et al.,
+2015)](https://www.tandfonline.com/doi/full/10.1080/10618600.2014.907095).
+To overcome this issue Goldstein, Kapelner, Bleich, and Pitkin developed
+the concept of individual conditional expectation (ICE) plots—available
+in the [`ICEbox`](https://cran.r-project.org/package=ICEbox) package.
+ICE plots display the estimated relationship between the response and a
+predictor of interest for each observation. Consequently, the PDP for a
+predictor of interest can be obtained by averaging the corresponding ICE
+curves across all observations. Starting with `pdp` version 0.6.0, ICE
+and centered ICE (c-ICE) curves can be easily obtained using the `ice`
+and `center` options; c-ICE plots help visualize heterogeneity in the
+modeled relationship between observations. Derivative ICE (d-ICE) plots
+(**coming soon**) help to explore interaction effects.
+
+``` r
+# Load required packages
+library(ggplot2)  # for additional themes
+
+# ICE and c-ICE curves of diabetes test result on glucose (default logit scale)
+ice.glucose <- partial(
+  pima.svm, pred.var = "glucose", train = pima, ice = TRUE
+)
+cice.glucose <- partial(
+  pima.svm, pred.var = "glucose", train = pima, ice = TRUE, center = TRUE
+)
+
+# Show both plots in one figure
+grid.arrange(ncol = 2,
+  autoplot(ice.glucose, alpha = 0.1, main = "ICE curves") + theme_light(), 
+  autoplot(cice.glucose, alpha = 0.1, main = "c-ICE curves") + theme_light()
+)
+```
+
+<img src="man/figures/README-example-svm-2-1.png" style="display: block; margin: auto;" />
+
+``` r
+partial(
+  boston.rf, pred.var = "age", ice = TRUE, center = TRUE, plot = TRUE,
+  plot.engine = "ggplot2", alpha = 0.1
+)
+```
+
+<img src="man/figures/README-example-rf-3-1.png" style="display: block; margin: auto;" />
+
+References
+----------
+
+Alex Goldstein, Adam Kapelner, Justin Bleich & Emil Pitkin (2014)
+Peeking Inside the Black Box: Visualizing Statistical Learning With
+Plots of Individual Conditional Expectation, Journal of Computational
+and Graphical Statistics, 24:1, 44-65, DOI: 10.1080/10618600.2014.907095

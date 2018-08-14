@@ -1,5 +1,5 @@
-pdp <img src="tools/pdp-logo.png" align="right" width="130" height="150" />
-===========================================================================
+pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" />
+=================================================================================
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
 [![Build

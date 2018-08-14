@@ -97,124 +97,27 @@
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
-<p>Complex nonparametric models—like neural networks, random forests, and support vector machines—are more common than ever in predictive analytics, especially when dealing with large observational databases that don’t adhere to the strict assumptions imposed by traditional statistical techniques (e.g., multiple linear regression which assumes linearity, homoscedasticity, and normality). Unfortunately, it can be challenging to understand the results of such models and explain them to management. Partial dependence plots offer a simple solution. Partial dependence plots are low-dimensional graphical renderings of the prediction function <span class="math inline">\(\widehat{f}\left(\boldsymbol{x}\right)\)</span> so that the relationship between the outcome and predictors of interest can be more easily understood. These plots are especially useful in explaining the output from black box models. The <code>pdp</code> package offers a general framework for constructing partial dependence plots for various types of fitted models in R.</p>
-<p>A detailed introduction to <code>pdp</code> has been published in The R Journal: “pdp: An R Package for Constructing Partial Dependence Plots”, <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>. You can track development at <a href="https://github.com/bgreenwell/pdp" class="uri">https://github.com/bgreenwell/pdp</a>. To report bugs or issues, contact the main author directly or submit them to <a href="https://github.com/bgreenwell/pdp/issues" class="uri">https://github.com/bgreenwell/pdp/issues</a>.</p>
+<p><a href="https://cran.r-project.org/package=pdp">pdp</a> is an R package for constructing <em><strong>p</strong>artial <strong>d</strong>ependence <strong>p</strong>lots</em> (PDPs) and <em><strong>i</strong>ndividual <strong>c</strong>onditional <strong>e</strong>xpectation</em> (ICE) curves. PDPs and ICE curves are part of a larger framework referred to as <em>interpretable machine learning</em> (IML), which also includes (but not limited to) <em><strong>v</strong>ariable <strong>i</strong>mportance <strong>p</strong>lots</em> (VIPs). While VIPs (available in the R package <a href="https://koalaverse.github.io/vip/index.html">vip</a>) help visualize feature impact (either locally or globally), PDPs and ICE curves help visualize feature effects. An in-progress, but comprehensive, overview of IML can be found at the following URL: <a href="https://github.com/christophM/interpretable-ml-book" class="uri">https://github.com/christophM/interpretable-ml-book</a>.</p>
+<p>A detailed introduction to <a href="https://cran.r-project.org/package=pdp">pdp</a> has been published in The R Journal: “pdp: An R Package for Constructing Partial Dependence Plots”, <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>. You can track development at <a href="https://github.com/bgreenwell/pdp" class="uri">https://github.com/bgreenwell/pdp</a>. To report bugs or issues, contact the main author directly or submit them to <a href="https://github.com/bgreenwell/pdp/issues" class="uri">https://github.com/bgreenwell/pdp/issues</a>.</p>
 <p>As of right now, <code>pdp</code> exports four functions:</p>
 <ul>
-<li>
-<code>partial</code> - compute partial dependence functions (i.e., objects of class <code>"partial"</code>) from various fitted model objects;</li>
-<li>
-<code>plotPartial"</code> - plot partial dependence functions (i.e., objects of class <code>"partial"</code>) using <code>lattice</code> graphics;</li>
-<li>
-<code>autoplot</code> - plot partial dependence functions (i.e., objects of class <code>"partial"</code>) using <code>ggplot2</code> graphics;</li>
-<li>
-<code>topPredictors</code> extract most “important” predictors from various types of fitted models.</li>
+<li><p><code><a href="reference/partial.html">partial()</a></code> - compute partial dependence functions and individual conditional expectations (i.e., objects of class <code>"partial"</code> and <code>"ice"</code>, respectively) from various fitted model objects;</p></li>
+<li><p><code>plotPartial()"</code> - construct <code>lattice</code>-based PDPs and ICE curves;</p></li>
+<li><p><code>autoplot()</code> - construct <code>ggplot2</code>-based PDPs and ICE curves;</p></li>
+<li><p><code><a href="reference/topPredictors.html">topPredictors()</a></code> extract most “important” predictors from various types of fitted models. (Will soon be replaced by functionality from <a href="https://koalaverse.github.io/vip/index.html">vip</a>.)</p></li>
 </ul>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>The <code>pdp</code> package is <a href="https://CRAN.R-project.org/package=pdp">currently listed on CRAN</a> and can easily be installed:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">  <span class="co"># Install from CRAN (recommended)</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  <span class="kw">install.packages</span>(<span class="st">"pdp"</span>)</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  </a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  <span class="co"># Alternatively, install the development version from GitHub</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"bgreenwell/pdp"</span>)</a></code></pre></div>
-</div>
-<div id="random-forest-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#random-forest-example" class="anchor"></a>Random forest example</h2>
-<p>As a first example, we’ll fit a random forest to the famous Boston housing data included with the package (see <code><a href="reference/boston.html">?boston</a></code> for details). In fact the original motivation for this package was to be able to compute two-predictor partial dependence plots from random forest models in R.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Fit a random forest to the Boston housing data</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(randomForest)  <span class="co"># install.packages("randomForest")</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">data</span> (boston)  <span class="co"># load the boston housing data</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">boston.rf &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/randomForest/topics/randomForest">randomForest</a></span>(cmedv <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> boston)</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># Partial dependence of cmedv on lstat and rm</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">library</span>(pdp)</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">pd &lt;-<span class="st"> </span><span class="kw"><a href="reference/partial.html">partial</a></span>(boston.rf, <span class="dt">pred.var =</span> <span class="kw">c</span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>), <span class="dt">chull =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="kw">head</span>(pd)  <span class="co"># print first 6 rows</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co">#&gt;     lstat      rm     yhat</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co">#&gt; 1  7.5284 3.66538 24.47697</span></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co">#&gt; 2  8.2532 3.66538 23.63350</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14"><span class="co">#&gt; 3  8.9780 3.66538 23.47622</span></a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; 4  9.7028 3.66538 22.38777</span></a>
-<a class="sourceLine" id="cb2-16" data-line-number="16"><span class="co">#&gt; 5 10.4276 3.66538 20.88819</span></a>
-<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="co">#&gt; 6 11.1524 3.66538 20.79452</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co"># Lattice version</span></a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">p1 &lt;-<span class="st"> </span><span class="kw"><a href="reference/plotPartial.html">plotPartial</a></span>(pd, <span class="dt">main =</span> <span class="st">"lattice version"</span>)</a>
-<a class="sourceLine" id="cb2-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="co"># ggplot2 version</span></a>
-<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">p2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(pd, <span class="dt">contour =</span> <span class="ot">TRUE</span>, <span class="dt">main =</span> <span class="st">"ggplot2 version"</span>, </a>
-<a class="sourceLine" id="cb2-25" data-line-number="25">               <span class="dt">legend.title =</span> <span class="st">"Partial</span><span class="ch">\n</span><span class="st">dependence"</span>)</a>
-<a class="sourceLine" id="cb2-26" data-line-number="26"></a>
-<a class="sourceLine" id="cb2-27" data-line-number="27"><span class="co"># Show both plots in one figure</span></a>
-<a class="sourceLine" id="cb2-28" data-line-number="28"><span class="kw"><a href="reference/grid.arrange.html">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
-<p><img src="reference/figures/README-example-rf-1.png" width="768" style="display: block; margin: auto;"></p>
-<p>You can also plot the output directly from <code><a href="reference/partial.html">partial()</a></code> (although, this is typically not recommended; see the <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html">above-mentioned paper</a> for details):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="reference/partial.html">partial</a></span>(boston.rf, <span class="dt">pred.var =</span> <span class="kw">c</span>(<span class="st">"lstat"</span>, <span class="st">"rm"</span>), <span class="dt">chull =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">        <span class="dt">plot.engine =</span> <span class="st">"ggplot2"</span>, <span class="dt">palette =</span> <span class="st">"magma"</span>, <span class="dt">alpha =</span> <span class="fl">0.9</span>,</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">        <span class="dt">contour =</span> <span class="ot">TRUE</span>, <span class="dt">contour.color =</span> <span class="st">"white"</span>)</a></code></pre></div>
-<p><img src="reference/figures/README-example-rf-2-1.png" width="672" style="display: block; margin: auto;"></p>
-<p>Next, we’ll fit a classification model to the Pima Indians Diabetes data.</p>
-</div>
-<div id="support-vector-machine-svm-example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#support-vector-machine-svm-example" class="anchor"></a>Support vector machine (SVM) example</h2>
-<p>As a second example, we’ll fit an SVM to the Pima Indians diabetes data included with the package (see <code><a href="reference/pima.html">?pima</a></code> for details). Note that for some fitted model objects (e.g., <code>"ksvm"</code> objects) it is necessary to supply the original training data via the <code>train</code> argument in the call to <code><a href="reference/partial.html">partial()</a></code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Fit an SVM to the Pima Indians diabetes data</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(kernlab)  <span class="co"># install.packages("kernlab")</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">data</span> (pima)  <span class="co"># load the Pima Indians diabetes data</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">pima.svm &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/kernlab/topics/ksvm">ksvm</a></span>(diabetes <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> pima, <span class="dt">type =</span> <span class="st">"C-svc"</span>, <span class="dt">kernel =</span> <span class="st">"rbfdot"</span>,</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">                 <span class="dt">C =</span> <span class="fl">0.5</span>, <span class="dt">prob.model =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"> </a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co"># Partial dependence of diabetes test result on glucose (default is logit scale)</span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">pd.glucose &lt;-<span class="st"> </span><span class="kw"><a href="reference/partial.html">partial</a></span>(pima.svm, <span class="dt">pred.var =</span> <span class="st">"glucose"</span>, <span class="dt">train =</span> pima)</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co"># Partial dependence of diabetes test result on glucose (probability scale)</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">pd.glucose.prob &lt;-<span class="st"> </span><span class="kw"><a href="reference/partial.html">partial</a></span>(pima.svm, <span class="dt">pred.var =</span> <span class="st">"glucose"</span>, <span class="dt">prob =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">                           <span class="dt">train =</span> pima)</a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co"># Show both plots in one figure</span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="kw"><a href="reference/grid.arrange.html">grid.arrange</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(pd.glucose, <span class="dt">main =</span> <span class="st">"Logit scale"</span>), </a>
-<a class="sourceLine" id="cb4-16" data-line-number="16">             <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(pd.glucose.prob, <span class="dt">main =</span> <span class="st">"Probability scale"</span>), </a>
-<a class="sourceLine" id="cb4-17" data-line-number="17">             <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
-<p><img src="reference/figures/README-example-svm-1.png" width="768" style="display: block; margin: auto;"></p>
-</div>
-<div id="individual-conditional-expectation-ice-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#individual-conditional-expectation-ice-plots" class="anchor"></a>Individual conditional expectation (ICE) plots</h2>
-<p>PDPs can be misleading in the presence of substantial interactions <a href="https://www.tandfonline.com/doi/full/10.1080/10618600.2014.907095">(Goldstein et al., 2015)</a>. To overcome this issue Goldstein, Kapelner, Bleich, and Pitkin developed the concept of individual conditional expectation (ICE) plots—available in the <a href="https://cran.r-project.org/package=ICEbox"><code>ICEbox</code></a> package. ICE plots display the estimated relationship between the response and a predictor of interest for each observation. Consequently, the PDP for a predictor of interest can be obtained by averaging the corresponding ICE curves across all observations. Starting with <code>pdp</code> version 0.6.0, ICE and centered ICE (c-ICE) curves can be easily obtained using the <code>ice</code> and <code>center</code> options; c-ICE plots help visualize heterogeneity in the modeled relationship between observations. Derivative ICE (d-ICE) plots (<strong>coming soon</strong>) help to explore interaction effects.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Load required packages</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">library</span>(ggplot2)  <span class="co"># for additional themes</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># ICE and c-ICE curves of diabetes test result on glucose (default logit scale)</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">ice.glucose &lt;-<span class="st"> </span><span class="kw"><a href="reference/partial.html">partial</a></span>(</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6">  pima.svm, <span class="dt">pred.var =</span> <span class="st">"glucose"</span>, <span class="dt">train =</span> pima, <span class="dt">ice =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7">)</a>
-<a class="sourceLine" id="cb5-8" data-line-number="8">cice.glucose &lt;-<span class="st"> </span><span class="kw"><a href="reference/partial.html">partial</a></span>(</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9">  pima.svm, <span class="dt">pred.var =</span> <span class="st">"glucose"</span>, <span class="dt">train =</span> pima, <span class="dt">ice =</span> <span class="ot">TRUE</span>, <span class="dt">center =</span> <span class="ot">TRUE</span></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">)</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co"># Show both plots in one figure</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="kw"><a href="reference/grid.arrange.html">grid.arrange</a></span>(<span class="dt">ncol =</span> <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb5-14" data-line-number="14">  <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(ice.glucose, <span class="dt">alpha =</span> <span class="fl">0.1</span>, <span class="dt">main =</span> <span class="st">"ICE curves"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_light</a></span>(), </a>
-<a class="sourceLine" id="cb5-15" data-line-number="15">  <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(cice.glucose, <span class="dt">alpha =</span> <span class="fl">0.1</span>, <span class="dt">main =</span> <span class="st">"c-ICE curves"</span>) <span class="op">+</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_light</a></span>()</a>
-<a class="sourceLine" id="cb5-16" data-line-number="16">)</a></code></pre></div>
-<p><img src="reference/figures/README-example-svm-2-1.png" width="768" style="display: block; margin: auto;"></p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="reference/partial.html">partial</a></span>(</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">  boston.rf, <span class="dt">pred.var =</span> <span class="st">"age"</span>, <span class="dt">ice =</span> <span class="ot">TRUE</span>, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">  <span class="dt">plot.engine =</span> <span class="st">"ggplot2"</span>, <span class="dt">alpha =</span> <span class="fl">0.1</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">)</a></code></pre></div>
-<p><img src="reference/figures/README-example-rf-3-1.png" width="672" style="display: block; margin: auto;"></p>
-</div>
-<div id="references" class="section level2">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
-<p>Alex Goldstein, Adam Kapelner, Justin Bleich &amp; Emil Pitkin (2014) Peeking Inside the Black Box: Visualizing Statistical Learning With Plots of Individual Conditional Expectation, Journal of Computational and Graphical Statistics, 24:1, 44-65, DOI: 10.1080/10618600.2014.907095</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># The easiest way to get pdp is to install it from CRAN:</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">install.packages</span>(<span class="st">"pdp"</span>)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># Alternatively, you can install the development version from GitHub:</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="cf">if</span> (<span class="op">!</span><span class="kw">requireNamespace</span>(<span class="st">"devtools"</span>)) {</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6">  <span class="kw">install.packages</span>(<span class="st">"devtools"</span>)</a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">}</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"bgreenwell/pdp"</span>)</a></code></pre></div>
 </div>
 </div>
   </div>

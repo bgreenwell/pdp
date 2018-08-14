@@ -14,8 +14,7 @@ plotPartial(object, ...)
   train = NULL, alpha = 1, ...)
 
 \method{plotPartial}{cice}(object, plot.pdp = TRUE, pdp.col = "red2",
-  pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1,
-  ...)
+  pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...)
 
 \method{plotPartial}{partial}(object, center = FALSE, plot.pdp = TRUE,
   pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, smooth = FALSE,

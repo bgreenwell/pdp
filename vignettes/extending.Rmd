@@ -16,4 +16,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-Coming soon.
+Although the `partial()` function supports a wide range of fitted model object, it is difficult to provide direct support for them all. Nonetheless, it is possble to use [pdp](https://github.com/bgreenwell/pdp) with any fitted model object in R. This flexibility is due to the `partial()`'s `pred.fun` argument. 
+
+Blahm blahm blah...take from paper.

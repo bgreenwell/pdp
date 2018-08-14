@@ -15,9 +15,8 @@ partial(object, ...)
   plot.engine = c("lattice", "ggplot2"), smooth = FALSE, rug = FALSE,
   chull = FALSE, levelplot = TRUE, contour = FALSE,
   contour.color = "white", palette = c("viridis", "magma", "inferno",
-  "plasma", "cividis"), alpha = 1, train, cats = NULL,
-  check.class = TRUE, progress = "none", parallel = FALSE,
-  paropts = NULL, ...)
+  "plasma", "cividis"), alpha = 1, train, cats = NULL, check.class = TRUE,
+  progress = "none", parallel = FALSE, paropts = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object of appropriate class (e.g., \code{"gbm"},

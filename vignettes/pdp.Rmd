@@ -16,4 +16,3 @@ knitr::opts_chunk$set(
 )
 ```
 
-Coming soon...

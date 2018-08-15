@@ -42,6 +42,11 @@
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
+#' @param col.regions Color vector to be used for trivariate displays. If
+#' \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
+#' 'viridis' color map provided by the \code{viridis} package. See
+#' \code{\link[viridis]{viridis}} for details.
+#'
 #' @param palette Character string indicating the colormap option to use. Five
 #' options are available: "viridis" (the default), "magma", "inferno", "plasma",
 #' and "cividis".
@@ -60,11 +65,6 @@
 #'
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
-#'
-#' @param col.regions Color vector to be used for trivariate displays. If
-#' \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-#' 'viridis' color map provided by the \code{viridis} package. See
-#' \code{\link[viridis]{viridis}} for details.
 #'
 #' @param ... Additional optional arguments to be passed onto \code{dotplot},
 #' \code{levelplot}, \code{xyplot}, or \code{wireframe}.
@@ -241,8 +241,8 @@ plotPartial.partial <- function(
     plot_three_predictor_pdp(  # three predictors (paneled)
       object = object, nx = nx, smooth = smooth, levelplot = levelplot,
       rug = rug, chull = chull, train = train, contour = contour,
-      contour.color = contour.color, palette = palette, alpha = alpha,
-      number = number, overlap = overlap, ...
+      contour.color = contour.color, col.regions = col.regions,
+      palette = palette, alpha = alpha, number = number, overlap = overlap, ...
     )
 
   }
@@ -477,6 +477,7 @@ plot_three_predictor_pdp <- function(
   train,
   contour,
   contour.color,
+  col.regions,
   palette,
   alpha,
   number,

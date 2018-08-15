@@ -55,10 +55,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/extending.html">Extending pdp with the pred.fun argument</a>
+      <a href="../articles/computation.html">Reducing computation time</a>
     </li>
     <li>
-      <a href="../articles/parallel.html">Constructing PDPs in parallel</a>
+      <a href="../articles/extending.html">Extending pdp with the pred.fun argument</a>
     </li>
   </ul>
 </li>
@@ -97,10 +97,263 @@
 
     
     
-
+<div id="warning-this-vignette-is-still-under-construction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#warning-this-vignette-is-still-under-construction" class="anchor"></a>Warning: this vignette is still under construction!</h2>
+<p>Complex nonparametric models—like neural networks, random forests, and support vector machines—are more common than ever in predictive analytics, especially when dealing with large observational databases that don’t adhere to the strict assumptions imposed by traditional statistical techniques (e.g., multiple linear regression which assumes linearity, homoscedasticity, and normality). Unfortunately, it can be challenging to understand the results of such models and explain them to management. Partial dependence plots offer a simple solution. Partial dependence plots are low-dimensional graphical renderings of the prediction function <span class="math inline">\(\widehat{f}\left(\boldsymbol{x}\right)\)</span> so that the relationship between the outcome and predictors of interest can be more easily understood. These plots are especially useful in explaining the output from black box models. In this vignette, we introduce <strong>pdp</strong> <span class="citation">(Greenwell 2016)</span>, a general R package for constructing <em>partial dependence plots</em> (PDPs) <span class="citation">(Friedman 2001)</span>.</p>
+</div>
+<div id="introduction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#introduction" class="anchor"></a>Introduction</h2>
+<p><span class="citation">Harrison and Rubinfeld (1978)</span> were among the first to analyze the well-known Boston housing data. One of their goals was to find a housing value equation using data on median home values from <span class="math inline">\(n = 506\)</span> census tracts in the suburbs of Boston from the 1970 census; see <span class="citation">Harrison and Rubinfeld (1978)</span>, Table IV, for a description of each variable. The data violate many classical assumptions like linearity, normality, and constant variance. Nonetheless, <span class="citation">(1978)</span>—using a combination of transformations, significance testing, and grid searches—were able to find a reasonable fitting model (<span class="math inline">\(R^2 = 0.81\)</span>). Part of the payoff for there time and efforts was an interpretable prediction equation which is reproduced in below.</p>
+<p><span class="math display">\[
+\widehat{\log\left(MV\right)} = 9.76 + 0.0063 RM^2 + 8.98\times10^{-5} AGE - 0.19\log\left(DIS\right) + 0.096\log\left(RAD\right) \\
+  - 4.20\times10^{-4} TAX - 0.031 PTRATIO + 0.36\left(B - 0.63\right)^2 - 0.37\log\left(LSTAT\right) \\
+  - 0.012 CRIM + 8.03\times10^{-5} ZN + 2.41\times10^{-4} INDUS + 0.088 CHAS \\
+  - 0.0064 NOX^2
+\]</span></p>
+<p>Nowadays, many supervised learning algorithms can fit the data automatically in seconds—typically with higher accuracy. The downfall, however, is some loss of interpretation since these algorithms typically do not produce simple prediction formulas like the one above. These models can still provide insight into the data, but it is not in the form of simple equations. For example, quantifying predictor importance has become an essential task in the analysis of “big data”, and many supervised learning algorithms, like tree-based methods, can naturally assign variable importance scores to all of the predictors in the training data.</p>
+<p>While determining predictor importance is a crucial task in any supervised learning problem, ranking variables is only part of the story and once a subset of “important” features is identified it is often necessary to assess the relationship between them (or subset thereof) and the response. This can be done in many ways, but in machine learning it is often accomplished by constructing PDPs. PDPs help visualize the relationship between a subset of the features (typically 1-3) and the response while accounting for the average effect of the other predictors in the model. They are particularly effective with black box models like random forests and support vector machines.</p>
+<p>Let <span class="math inline">\(\boldsymbol{x} = \left\{x_1, x_2, \dots, x_p\right\}\)</span> represent the predictors in a model whose prediction function is <span class="math inline">\(\widehat{f}\left(\boldsymbol{x}\right)\)</span>. If we partition <span class="math inline">\(\boldsymbol{x}\)</span> into an interest set, <span class="math inline">\(\boldsymbol{z}_s\)</span>, and its compliment, <span class="math inline">\(\boldsymbol{z}_c = \boldsymbol{x} \setminus \boldsymbol{z}_s\)</span>, then the “partial dependence” of the response on <span class="math inline">\(\boldsymbol{z}_s\)</span> is defined as</p>
+<p><span class="math display">\[
+  f_s\left(\boldsymbol{z}_s\right) = E_{\boldsymbol{z}_c}\left[\widehat{f}\left(\boldsymbol{z}_s, \boldsymbol{z}_c\right)\right] = \int \widehat{f}\left(\boldsymbol{z}_s, \boldsymbol{z}_c\right)p_{c}\left(\boldsymbol{z}_c\right)d\boldsymbol{z}_c,
+\]</span></p>
+<p>where <span class="math inline">\(p_{c}\left(\boldsymbol{z}_c\right)\)</span> is the marginal probability density of <span class="math inline">\(\boldsymbol{z}_c\)</span>: <span class="math inline">\(p_{c}\left(\boldsymbol{z}_c\right) = \int p\left(\boldsymbol{x}\right)d\boldsymbol{z}_s\)</span>. The above equation can be estimated from a set of training data by</p>
+<p><span class="math display">\[
+\bar{f}_s\left(\boldsymbol{z}_s\right) = \frac{1}{n}\sum_{i = 1}^n\widehat{f}\left(\boldsymbol{z}_s,\boldsymbol{z}_{i, c}\right),
+\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{z}_{i, c}\)</span> <span class="math inline">\(\left(i = 1, 2, \dots, n\right)\)</span> are the values of <span class="math inline">\(\boldsymbol{z}_c\)</span> that occur in the training sample; that is, we average out the effects of all the other predictors in the model.</p>
+<p>Constructing a PDP in practice is rather straightforward. To simplify, let <span class="math inline">\(\boldsymbol{z}_s = x_1\)</span> be the predictor variable of interest with unique values <span class="math inline">\(\left\{x_{11}, x_{12}, \dots, x_{1k}\right\}\)</span>. The partial dependence of the response on <span class="math inline">\(x_1\)</span> can be constructed as follows:</p>
+<ul>
+<li>
+<p>For <span class="math inline">\(i \in \left\{1, 2, \dots, k\right\}\)</span>:</p>
+<ol style="list-style-type: decimal">
+<li><p>Copy the training data and replace the original values of <span class="math inline">\(x_1\)</span> with the constant <span class="math inline">\(x_{1i}\)</span>.</p></li>
+<li><p>Compute the vector of predicted values from the modified copy of the training data.</p></li>
+<li><p>Compute the average prediction to obtain <span class="math inline">\(\bar{f}_1\left(x_{1i}\right)\)</span>.</p></li>
+</ol>
+</li>
+<li><p>Plot the pairs <span class="math inline">\(\left\{x_{1i}, \bar{f}_1\left(x_{1i}\right)\right\}\)</span> for <span class="math inline">\(i = 1, 2, \dotsc, k\)</span>.</p></li>
+</ul>
+<p><strong>Algorithm 1</strong> A simple algorithm for constructing the partial dependence of the response on a single predictor <span class="math inline">\(x_1\)</span></p>
+<p><strong>Algorithm 1</strong> can be quite computationally intensive since it involves <span class="math inline">\(k\)</span> passes over the training records. Fortunately, the algorithm can be parallelized quite easily (see this vignette for details). It can also be easily extended to larger subsets of two or more features as well.</p>
+<p>Limited implementations of Friedman’s PDPs are available in packages <strong>randomForest</strong> <span class="citation">(Liaw and Wiener 2002)</span> and <strong>gbm</strong> <span class="citation">(Ridgeway 2015)</span>, among others; these are limited in the sense that they only apply to the models fit using the respective package. For example, the <code><a href="http://www.rdocumentation.org/packages/randomForest/topics/partialPlot">partialPlot()</a></code> function in <strong>randomForest</strong> only applies to objects of class <code>"randomForest"</code> and the <code>plot()</code> function in <strong>ghbm</strong> only applies to <code>"gbm"</code> objects. While the <strong>randomForest</strong> implementation will only allow for a single predictor, the <strong>gbm</strong> implementation can deal with any subset of the predictor space. Partial dependence functions are not restricted to tree-based models; they can be applied to any supervised learning algorithm (e.g., generalized additive models and neural networks). However, to our knowledge, there is no general package for constructing PDPs in R. For example, PDPs for a conditional random forest as implemented by the <code>cforest()</code> function in the <strong>party</strong> and <strong>partykit</strong> packages; see <span class="citation">Hothorn et al. (2015)</span> and <span class="citation">Hothorn and Zeileis (2016)</span>, respectively. The <strong>pdp</strong> <span class="citation">(Greenwell 2016)</span> package tries to close this gap by offering a general framework for constructing PDPs that can be applied to several classes of fitted models.</p>
+<p>The <strong>plotmo</strong> package <span class="citation">(Milborrow 2015)</span> is one alternative to <strong>pdp</strong>. According to <span class="citation">(2015)</span>, <strong>plotmo</strong> constructs “a poor man’s partial dependence plot.” In particular, it plots a model’s response when varying one or two predictors while holding the other predictors in the model constant (continuous features are fixed at their median value, while factors are held at their first level). These plots allow for up to two variables at a time. They are also less accurate than PDPs, but are faster to construct. For additive models (i.e., models with no interactions), these plots are identical in shape to PDPs. As of <strong>plotmo</strong> version 3.3.0, there is now support for constructing PDPs, but it is not the default. The main difference is that <strong>plotmo</strong>, rather than applying step 1. (a)-(c) in <strong>Algorithm 1</strong>, accumulates all the data at once thereby reducing the number of internal calls to <code>predict()</code>. The trade-off is a slight increase in speed at the expense of using more memory. So, why use the <strong>pdp</strong> package? As will be discussed in the upcoming sections, <strong>pdp</strong>:</p>
+<ul>
+<li><p>contains only a few functions with relatively few arguments;</p></li>
+<li><p>does <strong>NOT</strong> produce a plot by default;</p></li>
+<li><p>can be used more efficiently with <code>"gbm"</code> objects;</p></li>
+<li><p>produces graphics based on <code>lattice</code> <span class="citation">(Sarkar 2008)</span>, which are more flexible than base R graphics;</p></li>
+<li><p>defaults to using false color level plots for multivariate displays;</p></li>
+<li><p>contains options to mitigate the risks associated with extrapolation;</p></li>
+<li><p>has the option to display progress bars;</p></li>
+<li><p>has the option to construct PDPs in parallel;</p></li>
+<li><p>is extremely flexible in the types of PDPs that can be produced.</p></li>
+</ul>
+<p>PDPs can be misleading in the presence of substantial interactions <span class="citation">(Goldstein et al. 2015)</span>. To overcome this issue <span class="citation">(2015)</span> developed the concept of <em>individual conditional expectation</em> (ICE) plots—available in the <strong>ICEbox</strong> package <span class="citation">(<span class="citeproc-not-found" data-reference-id="ICEbox-pkg"><strong>???</strong></span>)</span>. ICE plots display the estimated relationship between the response and a predictor of interest for each observation. Consequently, the PDP for a predictor of interest can be obtained by averaging the corresponding ICE curves across all observations. ICE curves can be obtained using the <strong>pdp</strong> package by setting <code>ice = TRUE</code> in the call to <code><a href="../reference/partial.html">partial()</a></code>. It is also possible to display the PDP for a single predictor with <strong>ICEbox</strong>; see <code><a href="http://www.rdocumentation.org/packages/ICEbox/topics/plot.ice">?ICEbox::plot.ice</a></code> for an example. <strong>ICEbox</strong> only allows for one variable at a time (i.e., no multivariate displays), though color can be used effectively to display information about an additional predictor. The ability to construct centered ICE (c-ICE) plots and derivative ICE (d-ICE) plots is also available in <strong>ICEbox</strong> (same goes for <strong>pdp</strong>); c-ICE plots help visualize heterogeneity in the modeled relationship between observations, and d-ICE plots help to explore interaction effects.</p>
+<p>Many other techniques exist for visualizing relationships between the predictors and the response based on a fitted model. For example, the <strong>car</strong> package <span class="citation">(Fox and Weisberg 2011)</span> contains many functions for constructing <em>partial-residual</em> and <em>marginal-model</em> plots. <em>Effect displays</em>, available in the <strong>effects</strong> package <span class="citation">(Fox 2003)</span>, provide tabular and graphical displays for the terms in parametric models while holding all other predictors at some constant value—similar in spirit to <strong>plotmo</strong>’s marginal model plots. However, these methods were designed for simpler parametric models (e.g., linear and generalized linear models), whereas <strong>plotmo</strong>, <strong>ICEbox</strong>, and <strong>pdp</strong> are more useful for black box models (although, they can be used for simple parametric models as well).</p>
+</div>
+<div id="constructing-pdps-in-r" class="section level2">
+<h2 class="hasAnchor">
+<a href="#constructing-pdps-in-r" class="anchor"></a>Constructing PDPs in R</h2>
+<p>The <strong>pdp</strong> package is useful for constructing PDPs for many classes of fitted models in R. PDPs are especially useful for visualizing the relationships discovered by complex machine learning algorithms such as a random forest. The two most important functions exported by <strong>pdp</strong> are:</p>
+<ul>
+<li><p><code><a href="../reference/partial.html">partial()</a></code></p></li>
+<li><p><code><a href="../reference/plotPartial.html">plotPartial()</a></code> (or <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> if <code>ggplot2</code> is loaded)</p></li>
+</ul>
+<p>The <code><a href="../reference/partial.html">partial()</a></code> function evaluates the partial dependence from a fitted model over a grid of predictor values; the fitted model and predictors are specified using the <code>object</code> and <code>pred.var</code> arguments, respectively—these are the only required arguments. If <code>plot = FALSE</code> (the default), <code><a href="../reference/partial.html">partial()</a></code> returns an object of class <code>"partial"</code> which inherits from the class <code>"data.frame"</code>; put another way, by default, <code><a href="../reference/partial.html">partial()</a></code> returns a data frame with an additional class that is recognized by the <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions. The columns of the data frame are labeled in the same order as the features supplied to <code>pred.var</code>, and the last column is labeled <code>yhat</code><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> and contains the values of the partial dependence function <span class="math inline">\(\bar{f}_s\left(\boldsymbol{z}_s\right)\)</span>. If <code>plot = TRUE</code>, then by default <code><a href="../reference/partial.html">partial()</a></code> makes an internal call to <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and returns the PDP in the form of a <strong>lattice</strong> plot (i.e., a <code>"trellis"</code> object). To use <strong>ggplot2</strong> instead of <strong>lattice</strong>, set <code>plot.engine = "ggplot2"</code> in the call to <code><a href="../reference/partial.html">partial()</a></code>. <strong>Note:</strong> it is recommended to call <code><a href="../reference/partial.html">partial()</a></code> with <code>plot = FALSE</code> and store the results; this allows for more flexible plotting, and the user will not have to waste time calling <code><a href="../reference/partial.html">partial()</a></code> again if the default plot is not sufficient.</p>
+<p>The <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions can be used for displaying more advanced PDPs; they operate on objects of class <code>"partial"</code> and have many useful plotting options. Note, however, that using <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> required that <strong>ggplot2</strong> be loaded first. For example, <code><a href="../reference/plotPartial.html">plotPartial()</a></code> makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). Of course, since the default output produced by <code><a href="../reference/partial.html">partial()</a></code> is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.</p>
+<p><strong>Note:</strong> as mentioned above, <strong>pdp</strong> relies on <strong>lattice</strong> for its graphics. <strong>lattice</strong> itself is built on top of <strong>grid</strong> <span class="citation">(R Core Team 2016)</span>. <strong>grid</strong> graphics behave a little differently than traditional R graphics, and two points are worth making (see <code>?lattice</code> for more details):</p>
+<ul>
+<li><p><strong>lattice</strong> and <strong>ggplot2</strong> functions return <code>"trellis"</code> and <code>"ggplot"</code> objects, respectively, but do not display them; the <code>print()</code> method produces the actual displays. However, due to R’s automatic printing rule, the result is automatically printed when using these functions in the command line. If <code><a href="../reference/plotPartial.html">plotPartial()</a></code> or <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> are called inside of <code>source</code> or inside a loop (e.g., <code>for</code> or <code>while</code>), an explicit <code>print</code> statement is required to display the resulting graph; hence, the same is true when using <code><a href="../reference/partial.html">partial()</a></code> with <code>plot = TRUE</code>.</p></li>
+<li><p>Setting graphical parameters via the <code>par()</code> function typically has no effect on <strong>lattice</strong> and <strong>ggplot2</strong> graphics. For example, <strong>lattice</strong> provides its own <code>trellis.par.set()</code> function for modifying graphical parameters.</p></li>
+</ul>
+<p>A consequence of the second point is that the <code>par()</code> function cannot be used to control the layout of multiple <strong>lattice</strong> (and hence <strong>pdp</strong>) plots. Simple solutions are available in packages <strong>latticeExtra</strong> <span class="citation">(Sarkar and Andrews 2016)</span> and <strong>gridExtra</strong> <span class="citation">(Auguie 2016)</span>. For convenience, <strong>pdp</strong> imports the <code><a href="../reference/grid.arrange.html">grid.arrange()</a></code> function from <strong>gridExtra</strong> which makes it easy to display multiple <strong>grid</strong>-based graphical objects on a single plot (these include graphics produced using <strong>lattice</strong> and and <strong>ggplot2</strong>—hence, <strong>pdp</strong>). This is demonstrated in multiple examples throughout the vignettes in this package.</p>
+<p>Currently supported models are described in <strong>Table 1</strong> below. In these cases, the user does not need to supply a prediction function or a value for the <code>type</code> argument (i.e., <code>"regression"</code> or <code>"classification"</code>). In other situations, the user may need to specify one or both of these arguments. This allows <code><a href="../reference/partial.html">partial()</a></code> to be flexible enough to handle many of the model types not listed in <strong>Table 1</strong>; for example, neural networks from the <strong>nnet</strong> package <span class="citation">(Venables and Ripley 2002)</span> and projection pursuit regression <span class="citation">(Friedman and Stuetzle 1981)</span> using the <code>ppr()</code> function in the <strong>stats</strong> package.</p>
+<p><strong>Table 1</strong> Models specifically supported by the <strong>pdp</strong> package. <strong>Note:</strong> for some of these cases, the user may still need to supply additional arguments in the call to <code><a href="../reference/partial.html">partial()</a></code>. | Type of model | R package | Object class | |:——————————|:———-|:————-| | Decision tree | <strong>C50</strong> <span class="citation">(Kuhn et al. 2015)</span> | <code>"C5.0"</code> | | | <strong>party</strong> | <code>"BinaryTree"</code> | | | <strong>partykit</strong> | <code>"party"</code> | | | <strong>rpart</strong> <span class="citation">(Therneau, Atkinson, and Ripley 2015)</span> | <code>"rpart"</code> | | Bagged decision trees | <strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span> | <code>"bagging"</code> | | | <strong>ipred</strong> <span class="citation">(Peters and Hothorn 2015)</span> | <code>"classbagg"</code>, <code>"regbagg"</code> | | Boosted decision trees | <strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span> | <code>"boosting"</code> | | | <strong>gbm</strong> | <code>"gbm"</code> | | | <strong>xgboost</strong> | <code>"xgb.Booster"</code> | | Cubist | <strong>Cubist</strong> <span class="citation">(Kuhn et al. 2014)</span> | <code>"cubist"</code> | | Discriminant analysis | <strong>MASS</strong> <span class="citation">(Venables and Ripley 2002)</span> | <code>"lda"</code>, <code>"qda"</code> | | Generalized linear model | <strong>stats</strong> | <code>"glm"</code>, <code>"lm"</code> | | Linear model | <strong>stats</strong> | <code>"lm"</code> | | Nonlinear least squares | <strong>stats</strong> | <code>"nls"</code> | | Multivariate adaptive regression splines (MARS) | <strong>earth</strong> <span class="citation">(Milborrow 2016)</span> | <code>"earth"</code> | | Projection pursuit regression | <strong>stats</strong> | <code>"ppr"</code> | | Random forest | <strong>randomForest</strong> | <code>"randomForest"</code> | | | <strong>ranger</strong> <span class="citation">(Wright 2016)</span> | <code>"ranger"</code> | | | <strong>party</strong> | <code>"RandomForest"</code> | | | <strong>partykit</strong> | <code>"cforest"</code> | | Support vector machine | <strong>e1071</strong> <span class="citation">(Meyer et al. 2015)</span> | <code>"svm"</code> | | | <strong>kernlab</strong> <span class="citation">(Karatzoglou et al. 2004)</span> | <code>"ksvm"</code> |</p>
+<p>The <code><a href="../reference/partial.html">partial()</a></code> function also supports objects of class <code>"train"</code> produced using the <code>train()</code> function from the well-known <strong>caret</strong> package <span class="citation">(Kuhn 2016)</span>. This means that <code><a href="../reference/partial.html">partial()</a></code> can be used with any classification or regression model that has been fit using <strong>caret</strong>’s <code>train()</code> function; see <a href="http://topepo.github.io/caret/available-models.html" class="uri">http://topepo.github.io/caret/available-models.html</a> for a current list of models supported by <strong>caret</strong>.</p>
+<p>Another important argument to <code><a href="../reference/partial.html">partial()</a></code> is <code>train</code>. If <code>train = NULL</code> (the default), <code><a href="../reference/partial.html">partial()</a></code> tries to extract the original training data from the fitted model object. For objects that typically store a copy of the training data (e.g., objects of class <code>"BinaryTree"</code>, <code>"RandomForest"</code>, and <code>"train"</code>), this is straightforward. Otherwise, <code><a href="../reference/partial.html">partial()</a></code> will attempt to extract the call stored in <code>object</code> (if available) and use that to evaluate the training data in the same environment from which <code><a href="../reference/partial.html">partial()</a></code> was called. This can cause problems when, for example, the training data have been changed after fitting the model, but before calling <code><a href="../reference/partial.html">partial()</a></code>. Hence, it is good practice to always supply the training data via the <code>train</code> argument in the call to <code><a href="../reference/partial.html">partial()</a></code><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. If <code>train = NULL</code> and the training data can not be extracted from the fitted model, the user will be prompted with an informative error message (this will occur, for example, when using <code><a href="../reference/partial.html">partial()</a></code> with <code>"ksvm"</code> and <code>"xgb.Booster"</code> objects):</p>
+<pre><code>Error: The training data could not be extracted from object. Please supply
+the raw training data using the `train` argument in the call to `partial`.</code></pre>
+<p>For illustration, we will use a corrected version of the Boston housing data analyzed in <span class="citation">Harrison and Rubinfeld (1978)</span>; the data are available in the <strong>pdp</strong> package (see <code><a href="../reference/boston.html">?pdp::boston</a></code> for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Load required packages</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(ggplot2)       <span class="co"># for ggplot2-based graphics</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(randomForest)  <span class="co"># for fitting random forests</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(pdp)           <span class="co"># for partial dependence plots</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">library</span>(vip)           <span class="co"># for variable importance plots</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># Fit a random forest to the Boston housing data</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">boston.rf &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/randomForest/topics/randomForest">randomForest</a></span>(cmedv <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> boston, <span class="dt">importance =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># Variable importance plot (compare to randomForest::varImpPlot(boston.rf))</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw"><a href="http://www.rdocumentation.org/packages/vip/topics/vip">vip</a></span>(boston.rf, <span class="dt">bar =</span> <span class="ot">FALSE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">size =</span> <span class="fl">1.5</span>)</a></code></pre></div>
+<div class="figure">
+<img src="pdp_files/figure-html/unnamed-chunk-1-1.png" alt="**Figure 1** Variable importance plot for the Boston housing data based on a random forest with 500 trees." width="70%"><p class="caption">
+<strong>Figure 1</strong> Variable importance plot for the Boston housing data based on a random forest with 500 trees.
+</p>
+</div>
+<p>The model fit is reasonable, with an <em>out-of-bag</em> (pseudo) <span class="math inline">\(R^2\)</span> of 0.89. The variable importance scores are displayed in <strong>Figure 1</strong>. Both plots indicate that the percentage of lower status of the population (<code>lstat</code>) and the average number of rooms per dwelling (<code>rm</code>) are highly associated with the median value of owner-occupied homes (<code>cmedv</code>). The question then arises, “What is the nature of these associations?” To help answer this, we can look at the partial dependence of <code>cmedv</code> on <code>lstat</code> and <code>rm</code>, both individually and together.</p>
+<div id="single-predictor-pdps" class="section level3">
+<h3 class="hasAnchor">
+<a href="#single-predictor-pdps" class="anchor"></a>Single predictor PDPs</h3>
+<p>As previously mentioned, the <strong>randomForest</strong> package has its own <code><a href="http://www.rdocumentation.org/packages/randomForest/topics/partialPlot">partialPlot()</a></code> function for visualizing the partial dependence of the response on a single predictor—the keywords here are “single predictor”. For example, the following snippet of code plots the partial dependence of <code>cmedv</code> on <code>lstat</code> (the result is displayed in <strong>Figure 2</strong>):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="http://www.rdocumentation.org/packages/randomForest/topics/partialPlot">partialPlot</a></span>(boston.rf, <span class="dt">pred.data =</span> boston, <span class="dt">x.var =</span> <span class="st">"lstat"</span>)</a></code></pre></div>
+<div class="figure">
+<img src="pdp_files/figure-html/unnamed-chunk-2-1.png" alt="**Figure 2** Default PDP using the `randomForest::partialPlot()`." width="70%"><p class="caption">
+<strong>Figure 2</strong> Default PDP using the <code><a href="http://www.rdocumentation.org/packages/randomForest/topics/partialPlot">randomForest::partialPlot()</a></code>.
+</p>
+</div>
+<p>The same plot can be achieved using the <code><a href="../reference/partial.html">partial()</a></code> function and setting <code>plot = TRUE</code> (see <strong>Figure 3</strong>). The only difference is that <strong>pdp</strong> uses the <strong>lattice</strong> and <strong>ggplot2</strong> graphics packages to produce all of its displays.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># Load required packages</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">library</span>(pdp)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co"># Default lattice-based PDP</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">p1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(boston.rf, <span class="dt">pred.var =</span> <span class="st">"lstat"</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">rug =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># Switch to ggplot2</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">p2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(boston.rf, <span class="dt">pred.var =</span> <span class="st">"lstat"</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">              <span class="dt">plot.engine =</span> <span class="st">"ggplot2"</span>)</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># Display plots side by side</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)  </a></code></pre></div>
+<div class="figure">
+<img src="pdp_files/figure-html/unnamed-chunk-3-1.png" alt="**Figure 3** Default PDPs using `pdp::partial()`. *Left*: Default **lattice**-based PDP. *Right*: **ggplot2**-based PDP." width="100%"><p class="caption">
+<strong>Figure 3</strong> Default PDPs using <code><a href="../reference/partial.html">pdp::partial()</a></code>. <em>Left</em>: Default <strong>lattice</strong>-based PDP. <em>Right</em>: <strong>ggplot2</strong>-based PDP.
+</p>
+</div>
+<p>For a more customizable plot, we can set <code>plot = FALSE</code> in the call to <code><a href="../reference/partial.html">partial()</a></code> and then use the <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions on the resulting data frame. This is illustrated in the example below which increases the line width, adds a LOESS smooth, and customizes the <span class="math inline">\(y\)</span>-axis label. The result is displayed in <strong>Figure 4</strong>. <strong>Note:</strong> to encourage writing more readable code, the <em>forward pipe</em> operator <code>\%&gt;\%</code> provided by the <strong>magrittr</strong> package <span class="citation">(Bache and Wickham 2014)</span> is exported whenever <strong>pdp</strong> is loaded.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># lattice-based PDP</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">p1 &lt;-<span class="st"> </span>boston.rf <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># the %&gt;% operator is read as "and then"</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(<span class="dt">pred.var =</span> <span class="st">"lstat"</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="../reference/plotPartial.html">plotPartial</a></span>(<span class="dt">smooth =</span> <span class="ot">TRUE</span>, <span class="dt">lwd =</span> <span class="dv">2</span>, <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">f</span>(lstat)))</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co"># ggplot2-based PDP</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">p2 &lt;-<span class="st"> </span>boston.rf <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># the %&gt;% operator is read as "and then"</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(<span class="dt">pred.var =</span> <span class="st">"lstat"</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(<span class="dt">smooth =</span> <span class="ot">TRUE</span>, <span class="dt">ylab =</span> <span class="kw">expression</span>(<span class="kw">f</span>(lstat))) <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_light</a></span>()</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co"># Display plots side by side</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)  </a></code></pre></div>
+<div class="figure">
+<img src="pdp_files/figure-html/unnamed-chunk-4-1.png" alt="**Figure 4** Customized PDP obtained using the `plotPartial()` function." width="100%"><p class="caption">
+<strong>Figure 4</strong> Customized PDP obtained using the <code><a href="../reference/plotPartial.html">plotPartial()</a></code> function.
+</p>
+</div>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h2>
+<div id="refs" class="references">
+<div id="ref-adabag-pkg">
+<p>Alfaro, Esteban, Matías Gámez, and Noelia García. 2013. “adabag: An R Package for Classification with Boosting and Bagging.” <em>Journal of Statistical Software</em> 54 (2): 1–35. <a href="https://doi.org/10.18637/jss.v054.i02" class="uri">https://doi.org/10.18637/jss.v054.i02</a>.</p>
+</div>
+<div id="ref-gridExtra-pkg">
+<p>Auguie, Baptiste. 2016. <em>GridExtra: Miscellaneous Functions for "Grid" Graphics</em>. <a href="https://CRAN.R-project.org/package=gridExtra" class="uri">https://CRAN.R-project.org/package=gridExtra</a>.</p>
+</div>
+<div id="ref-magrittr-pkg">
+<p>Bache, Stefan Milton, and Hadley Wickham. 2014. <em>Magrittr: A Forward-Pipe Operator for R</em>. <a href="https://CRAN.R-project.org/package=magrittr" class="uri">https://CRAN.R-project.org/package=magrittr</a>.</p>
+</div>
+<div id="ref-fox-effects-2003">
+<p>Fox, John. 2003. “Effect Displays in R for Generalised Linear Models.” <em>Journal of Statistical Software</em> 8 (15): 1–27. <a href="https://doi.org/10.18637/jss.v008.i15" class="uri">https://doi.org/10.18637/jss.v008.i15</a>.</p>
+</div>
+<div id="ref-fox-car-2011">
+<p>Fox, John, and Sanford Weisberg. 2011. <em>An R Companion to Applied Regression</em>. 2nd ed. Thousand Oaks CA: Sage. <a href="http://socserv.socsci.mcmaster.ca/jfox/Books/Companion" class="uri">http://socserv.socsci.mcmaster.ca/jfox/Books/Companion</a>.</p>
+</div>
+<div id="ref-friedman-2001-greedy">
+<p>Friedman, Jerome H. 2001. “Greedy Function Approximation: A Gradient Boosting Machine.” <em>The Annals of Statistics</em> 29: 1189–1232. <a href="https://doi.org/10.1214/aos/1013203451" class="uri">https://doi.org/10.1214/aos/1013203451</a>.</p>
+</div>
+<div id="ref-friedman-ppr-1981">
+<p>Friedman, Jerome H., and Werner Stuetzle. 1981. “Projection Pursuit Regression.” <em>Journal of the American Statistical Association</em> 76 (376): 817–23. <a href="https://doi.org/10.1080/01621459.1981.10477729" class="uri">https://doi.org/10.1080/01621459.1981.10477729</a>.</p>
+</div>
+<div id="ref-goldstein-peeking-2015">
+<p>Goldstein, Alex, Adam Kapelner, Justin Bleich, and Emil Pitkin. 2015. “Peeking Inside the Black Box: Visualizing Statistical Learning with Plots of Individual Conditional Expectation.” <em>Journal of Computational and Graphical Statistics</em> 24 (1): 44–65. <a href="https://doi.org/10.1080/10618600.2014.907095" class="uri">https://doi.org/10.1080/10618600.2014.907095</a>.</p>
+</div>
+<div id="ref-pdp-pkg">
+<p>Greenwell, Brandon. 2016. <em>Pdp: An R Package for Constructing Partial Dependence Functions</em>. <a href="https://CRAN.R-project.org/package=partial" class="uri">https://CRAN.R-project.org/package=partial</a>.</p>
+</div>
+<div id="ref-harrison-1978-hedonic">
+<p>Harrison, David, and Daniel L. Rubinfeld. 1978. “Hedonic Housing Prices and the Demand for Clean Air.” <em>Journal of Environmental Economics and Management</em> 5 (1): 81–102. <a href="https://doi.org/10.1016/0095-0696(78)90006-2" class="uri">https://doi.org/10.1016/0095-0696(78)90006-2</a>.</p>
+</div>
+<div id="ref-party-pkg">
+<p>Hothorn, Torsten, Kurt Hornik, Carolin Strobl, and Achim Zeileis. 2015. <em>Party: A Laboratory for Recursive Partytioning</em>. <a href="https://CRAN.R-project.org/package=party" class="uri">https://CRAN.R-project.org/package=party</a>.</p>
+</div>
+<div id="ref-partykit-pkg">
+<p>Hothorn, Torsten, and Achim Zeileis. 2016. <em>Partykit: A Laboratory for Recursive Partytioning</em>. <a href="https://CRAN.R-project.org/package=partykit" class="uri">https://CRAN.R-project.org/package=partykit</a>.</p>
+</div>
+<div id="ref-kernlab-pkg">
+<p>Karatzoglou, Alexandros, Alex Smola, Kurt Hornik, and Achim Zeileis. 2004. “Kernlab – an S4 Package for Kernel Methods in R.” <em>Journal of Statistical Software</em> 11 (9): 1–20. <a href="https://doi.org/10.18637/jss.v011.i09" class="uri">https://doi.org/10.18637/jss.v011.i09</a>.</p>
+</div>
+<div id="ref-caret-pkg">
+<p>Kuhn, Max. 2016. <em>Caret: Classification and Regression Training</em>. <a href="https://CRAN.R-project.org/package=caret" class="uri">https://CRAN.R-project.org/package=caret</a>.</p>
+</div>
+<div id="ref-C50-pkg">
+<p>Kuhn, Max, Steve Weston, Nathan Coulter, and Mark Culp. C code for C5. 0 by R. Quinlan. 2015. <em>C50: C5.0 Decision Trees and Rule-Based Models</em>. <a href="https://CRAN.R-project.org/package=C50" class="uri">https://CRAN.R-project.org/package=C50</a>.</p>
+</div>
+<div id="ref-Cubist-pkg">
+<p>Kuhn, Max, Steve Weston, Chris Keefer, and Nathan Coulter. C code for Cubist by Ross Quinlan. 2014. <em>Cubist: Rule- and Instance-Based Regression Modeling</em>. <a href="https://CRAN.R-project.org/package=Cubist" class="uri">https://CRAN.R-project.org/package=Cubist</a>.</p>
+</div>
+<div id="ref-randomForest-pkg">
+<p>Liaw, Andy, and Matthew Wiener. 2002. “Classification and Regression by randomForest.” <em>R News</em> 2 (3): 18–22. <a href="http://CRAN.R-project.org/doc/Rnews/" class="uri">http://CRAN.R-project.org/doc/Rnews/</a>.</p>
+</div>
+<div id="ref-e1071-pkg">
+<p>Meyer, David, Evgenia Dimitriadou, Kurt Hornik, Andreas Weingessel, and Friedrich Leisch. 2015. <em>E1071: Misc Functions of the Department of Statistics, Probability Theory Group (Formerly: E1071), Tu Wien</em>. <a href="https://CRAN.R-project.org/package=e1071" class="uri">https://CRAN.R-project.org/package=e1071</a>.</p>
+</div>
+<div id="ref-plotmo-pkg">
+<p>Milborrow, Stephen. 2015. <em>Plotmo: Plot a Model’s Response and Residuals</em>. <a href="https://CRAN.R-project.org/package=plotmo" class="uri">https://CRAN.R-project.org/package=plotmo</a>.</p>
+</div>
+<div id="ref-earth-pkg">
+<p>———. 2016. <em>Earth: Multivariate Adaptive Regression Splines</em>. <a href="https://CRAN.R-project.org/package=earth" class="uri">https://CRAN.R-project.org/package=earth</a>.</p>
+</div>
+<div id="ref-ipred-pkg">
+<p>Peters, Andrea, and Torsten Hothorn. 2015. <em>Ipred: Improved Predictors</em>. <a href="https://CRAN.R-project.org/package=ipred" class="uri">https://CRAN.R-project.org/package=ipred</a>.</p>
+</div>
+<div id="ref-grid-pkg">
+<p>R Core Team. 2016. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-gbm-pkg">
+<p>Ridgeway, Greg. 2015. <em>Gbm: Generalized Boosted Regression Models</em>. <a href="https://CRAN.R-project.org/package=gbm" class="uri">https://CRAN.R-project.org/package=gbm</a>.</p>
+</div>
+<div id="ref-lattice-pkg">
+<p>Sarkar, Deepayan. 2008. <em>Lattice: Multivariate Data Visualization with R</em>. New York: Springer-Verlag. <a href="http://lmdvr.r-forge.r-project.org" class="uri">http://lmdvr.r-forge.r-project.org</a>.</p>
+</div>
+<div id="ref-latticeExtra-pkg">
+<p>Sarkar, Deepayan, and Felix Andrews. 2016. <em>LatticeExtra: Extra Graphical Utilities Based on Lattice</em>. <a href="https://CRAN.R-project.org/package=latticeExtra" class="uri">https://CRAN.R-project.org/package=latticeExtra</a>.</p>
+</div>
+<div id="ref-rpart-pkg">
+<p>Therneau, Terry, Beth Atkinson, and Brian Ripley. 2015. <em>Rpart: Recursive Partitioning and Regression Trees</em>. <a href="https://CRAN.R-project.org/package=rpart" class="uri">https://CRAN.R-project.org/package=rpart</a>.</p>
+</div>
+<div id="ref-venables-modern-2002">
+<p>Venables, W. N., and B. D. Ripley. 2002. <em>Modern Applied Statistics with S</em>. 4th ed. New York: Springer-Verlag. <a href="http://www.stats.ox.ac.uk/pub/MASS4" class="uri">http://www.stats.ox.ac.uk/pub/MASS4</a>.</p>
+</div>
+<div id="ref-ranger-pkg">
+<p>Wright, Marvin N. 2016. <em>Ranger: A Fast Implementation of Random Forests</em>. <a href="https://CRAN.R-project.org/package=ranger" class="uri">https://CRAN.R-project.org/package=ranger</a>.</p>
+</div>
+</div>
+</div>
+<div class="footnotes">
+<hr>
+<ol>
+<li id="fn1"><p>There is one exception to this. When a function supplied via the <code>pred.fun</code> argument returns multiple predictions, the second to last and last columns will be labeled <code>yhat</code> and <code>yhat.id</code>, respectively.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>For brevity, we ignore this option in most of the examples in this paper.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#warning-this-vignette-is-still-under-construction">Warning: this vignette is still under construction!</a></li>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#constructing-pdps-in-r">Constructing PDPs in R</a></li>
+      <li><a href="#references">References</a></li>
+      </ul>
+</div>
       </div>
 
 </div>

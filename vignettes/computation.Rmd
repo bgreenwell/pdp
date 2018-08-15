@@ -1,0 +1,96 @@
+---
+title: "Reducing computation time"
+author: "Brandon M. Greenwell"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: pdp.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  cache = FALSE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "left"
+)
+```
+
+For illustration, we'll use a corrected version of the Boston housing data analyzed in @harrison-1978-hedonic; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees. The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of 0.89. A variable importance plot is displayed in **Figure 1** (using the permutation-based random forest definition of variable importance defined in @random-breiman-2001). It appears that `rm` (and `lstat`) is important in predicting `cmedv`. Next, we'd like to visualize the functional relationship between these two variables using a partial dependence plot (PDP).
+```{r boston-rf-01, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 1** Variable importance plot."}
+data(boston, package = "pdp")  # load the (corrected) Boston housing data
+library(randomForest)  # for fitting random forests
+library(vip)  # for variable importance plots
+set.seed(101)  # for reproducibility
+boston.rf <- randomForest(cmedv ~ ., data = boston, importance = TRUE)
+vip(boston.rf, bar = FALSE, horizontal = FALSE, size = 1.5)  # Figure 1
+```
+
+Constructing PDPs can be quite computationally expensive^[The exception is regression trees based on single-variable splits which can make use of the efficient weighted tree traversal method described in `friedman-2001-greedy`, however, only the `gbm` package seems to make use of this approach; consequently, `pdp` can also exploit this strategy when used with `gbm` models (see `?partial` for details).] Several strategies are available to ease the computational burden in larger problems. For example, there is no need to compute partial dependence of `cmedv` using each unique value of `rm` in the training data (which would require $k = 446$ passes over the data!). We could get very reasonable results using a reduced number of points. Current options are to use a grid of equally spaced values in the range of the variable of interest; the number of points can be controlled using the `grid.resolution` option in the call to `partial`. Alternatively, a user-specified grid of values (e.g., containing specific quantiles of interest) can be supplied through the `pred.grid` argument. To demonstrate, the following snippet of code computes the partial dependence of `cmedv` on `rm` using each option; `grid.arrange()` is used to display all three PDPs on the same graph, side by side. The results are displayed in **Figure 2**.
+```{r boston-rf-02, fig.width=7, fig.height=3, out.width="100%", fig.cap="**Figure 2** Partial dependence of `cmedv` on `rm`. *Left*: Default plot. *Middle*: Using a reduced grid size. *Right*: Using a user-specified grid."}
+library(pdp)  # for partial dependence plots
+grid.arrange(  # Figure 2
+  partial(boston.rf, "rm", plot = TRUE),
+  partial(boston.rf, "rm", grid.resolution = 30, plot = TRUE),
+  partial(boston.rf, "rm", pred.grid = data.frame(rm = 3:9), plot = TRUE),
+  ncol = 3
+)
+```
+
+For convenience, the `partial()` function includes the `quantiles` argument for specifying whether or not to compute the PDP at specific quantiles (controlled by the `probs` argument which defaults to `1:9/10`---the deciles of the predictor's distribution). Below, we plot centered individual conditional expectation (c-ICE) curves for `rm` using a reduced set of grid points occurring at specific quantiles of `rm`; the results are displayed in **Figure 3**. The heterogeneity in the curves indicates the potential presence of interaction effects between `rm` and other features.
+```{r boston-rf-03, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 3** Individual conditional expectation of `cmedv` on `rm` using specific quantiles."}
+partial(boston.rf, pred.var = "rm", quantiles = TRUE, probs = 0:20/20,
+        ice = TRUE, center = TRUE, plot = TRUE, plot.engine = "ggplot2",
+        alpha = 0.1)  # Figure 3
+```
+
+The `partial()` function relies on the **plyr** package [@plyr-pkg], rather than R's built-in `for` loops. This makes it easy to request progress bars (e.g., `progress = "text"`) or run `partial()` in parallel. In fact, `partial()` can use any of the parallel backends supported by the `foreach` package. To use this functionality, we must first load and register a supported parallel backend (e.g., **doMC** [@doMC-pkg] or **doParallel** [@doParallel-pkg]).
+
+To illustrate, we will use the Los Angeles ozone pollution data described in @breiman-1985-estimating. The data contain daily measurements of ozone concentration (`ozone`) along with eight meteorological quantities for 330 days in the Los Angeles basin in 1976.^[The data are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.data. Details, including variable information, are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.info.] The following code chunk loads the data into R:
+```{r ozone-mars-01}
+url <- "https://web.stanford.edu/~hastie/ElemStatLearn/datasets/LAozone.data"
+ozone <- read.csv(url)
+head(ozone)  # print first few observations
+```
+
+Next, we use the multivariate adaptive regression splines (MARS) algorithm introduced in @friedman-1991-mars to model ozone concentration as a nonlinear function of the eight meteorological variables plus day of the year; we allow for up to three-way interactions.
+```{r ozone-mars-02}
+library(earth)  # for earth() function (i.e., MARS algorithm)
+ozone.mars <- earth(ozone ~ ., data = ozone, degree = 3)
+summary(ozone.mars)
+```
+The MARS model produced a generalized $R^2$ of `r ozone.mars$r.squared`, similar to what was reported in @breiman-1985-estimating. A single three-way interaction was found involving the predictors
+  * `wind`: wind speed (mph) at Los Angeles International Airport (LAX)
+  * `temp`: temperature ($^oF$) at Sandburg Air Force Base
+  * `dpg`: the pressure gradient (mm Hg) from LAX to Dagget, CA
+To understand this interaction, we can use a PDP. However, since the partial dependence between three continuous variables can be computationally expensive, we will run `partial()` in parallel.
+
+Setting up a parallel backend is rather straightforward. To demonstrate, the following snippet of code sets up the `partial()` function to run in parallel on both Windows and Unix-like systems using the **doParallel** package.
+```{r ozone-mars-03}
+library(doParallel)  # load the parallel backend
+cl <- makeCluster(8)  # use 8 workers
+registerDoParallel(cl)  # register the parallel backend
+```
+Now, to run `partial()` in parallel, all we have to do is invoke the `parallel = TRUE` and `paropts` options and the rest is taken care of by the internal call to **plyr** and the parallel backend we loaded^[Notice we have to pass the names of external packages that the tasks depend on via the `paropts` argument; in this case, `"earth"`. See `?plyr::adply` for details.]. This is illustrated in the code chunk below which obtains the partial dependence of `ozone` on `wind`, `temp`, and `dpg` in parallel. The last three lines of code add a label to the colorkey. The result is displayed in **Figure 4**. **Note:** it is considered good practice to shut down the workers by calling `stopCluster()` when finished. Notice how we also used the `chull` option to restrict the PDP to the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of `wind` and `temp` which helps in reducing the computation time in multivariate PDPs.
+```{r ozone-mars-04}
+pd <- partial(ozone.mars, pred.var = c("wind", "temp", "dpg"), chull = TRUE, 
+              parallel = TRUE, paropts = list(.packages = "earth"))  
+stopCluster(cl)  # good practice
+```
+
+```{r ozone-mars-05, fig.width=7, fig.height=5, out.width="100%", fig.cap="**Figure 4** Partial dependence of `ozone` on `wind`, `temp`, and `dpg`. Since `dpg` is continuous, it is first converted to a shingle (see `?lattice::shingle` for details); in this case, four groups with 10% overlap."}
+plotPartial(pd, palette = "magma")  # Figure 4
+lattice::trellis.focus(  # add a label to the colorkey
+  "legend", side = "right", clipp.off = TRUE, highlight = FALSE
+)
+grid::grid.text("ozone", x = 0.2, y = 1.05, hjust = 0.5, vjust = 1)
+lattice::trellis.unfocus()
+```
+
+It is important to note that when using more than two predictor variables, `plotPartial()` produces a trellis display. The first two variables given to `pred.var` are used for the horizontal and vertical axes, and additional variables define the panels. If the panel variables are continuous, then shingles^[A shingle is a special Trellis data structure that consists of a numeric vector along with intervals that define the "levels" of the shingle. The intervals may be allowed to overlap.] are produced first using the equal count algorithm (see, for example, `?lattice::equal.count`). Hence, it will be more effective to use categorical variables to define the panels in higher dimensional displays when possible.
+
+
+## References

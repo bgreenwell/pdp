@@ -55,10 +55,13 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/computation.html">Reducing computation time</a>
+      <a href="../articles/pdp-computation.html">Reducing computation time</a>
     </li>
     <li>
-      <a href="../articles/extending.html">Extending pdp with the pred.fun argument</a>
+      <a href="../articles/pdp-extending.html">Extending pdp with the pred.fun argument</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-se.Rmd.html">Single-variable PDPs with standard deviations</a>
     </li>
   </ul>
 </li>
@@ -88,7 +91,7 @@
       <h1>pdp: An R Package for Constructing Partial Dependence Plots</h1>
                         <h4 class="author">Brandon M. Greenwell</h4>
             
-            <h4 class="date">2018-08-14</h4>
+            <h4 class="date">2018-08-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bgreenwell/pdp/blob/master/vignettes/pdp.Rmd"><code>vignettes/pdp.Rmd</code></a></small>
       <div class="hidden name"><code>pdp.Rmd</code></div>
@@ -156,13 +159,14 @@
 <div id="constructing-pdps-in-r" class="section level2">
 <h2 class="hasAnchor">
 <a href="#constructing-pdps-in-r" class="anchor"></a>Constructing PDPs in R</h2>
-<p>The <strong>pdp</strong> package is useful for constructing PDPs for many classes of fitted models in R. PDPs are especially useful for visualizing the relationships discovered by complex machine learning algorithms such as a random forest. The two most important functions exported by <strong>pdp</strong> are:</p>
+<p>The <strong>pdp</strong> package is useful for constructing PDPs for many classes of fitted models in R. PDPs are especially useful for visualizing the relationships discovered by complex machine learning algorithms such as a random forest. The three most important functions exported by <strong>pdp</strong> are:</p>
 <ul>
-<li><p><code><a href="../reference/partial.html">partial()</a></code></p></li>
-<li><p><code><a href="../reference/plotPartial.html">plotPartial()</a></code> (or <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> if <code>ggplot2</code> is loaded)</p></li>
+<li><p><code><a href="../reference/partial.html">partial()</a></code>;</p></li>
+<li><p><code><a href="../reference/plotPartial.html">plotPartial()</a></code>;</p></li>
+<li><p><code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code>.</p></li>
 </ul>
 <p>The <code><a href="../reference/partial.html">partial()</a></code> function evaluates the partial dependence from a fitted model over a grid of predictor values; the fitted model and predictors are specified using the <code>object</code> and <code>pred.var</code> arguments, respectively—these are the only required arguments. If <code>plot = FALSE</code> (the default), <code><a href="../reference/partial.html">partial()</a></code> returns an object of class <code>"partial"</code> which inherits from the class <code>"data.frame"</code>; put another way, by default, <code><a href="../reference/partial.html">partial()</a></code> returns a data frame with an additional class that is recognized by the <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions. The columns of the data frame are labeled in the same order as the features supplied to <code>pred.var</code>, and the last column is labeled <code>yhat</code><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> and contains the values of the partial dependence function <span class="math inline">\(\bar{f}_s\left(\boldsymbol{z}_s\right)\)</span>. If <code>plot = TRUE</code>, then by default <code><a href="../reference/partial.html">partial()</a></code> makes an internal call to <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and returns the PDP in the form of a <strong>lattice</strong> plot (i.e., a <code>"trellis"</code> object). To use <strong>ggplot2</strong> instead of <strong>lattice</strong>, set <code>plot.engine = "ggplot2"</code> in the call to <code><a href="../reference/partial.html">partial()</a></code>. <strong>Note:</strong> it is recommended to call <code><a href="../reference/partial.html">partial()</a></code> with <code>plot = FALSE</code> and store the results; this allows for more flexible plotting, and the user will not have to waste time calling <code><a href="../reference/partial.html">partial()</a></code> again if the default plot is not sufficient.</p>
-<p>The <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions can be used for displaying more advanced PDPs; they operate on objects of class <code>"partial"</code> and have many useful plotting options. Note, however, that using <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> required that <strong>ggplot2</strong> be loaded first. For example, <code><a href="../reference/plotPartial.html">plotPartial()</a></code> makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). Of course, since the default output produced by <code><a href="../reference/partial.html">partial()</a></code> is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.</p>
+<p>The <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> functions can be used for displaying more advanced PDPs; they operate on objects of class <code>"partial"</code> and have many useful plotting options. For example, <code><a href="../reference/plotPartial.html">plotPartial()</a></code> makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). (<strong>Note:</strong> the <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> function does not support the construction of 3-D surfaces.) Of course, since the default output produced by <code><a href="../reference/partial.html">partial()</a></code> is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.</p>
 <p><strong>Note:</strong> as mentioned above, <strong>pdp</strong> relies on <strong>lattice</strong> for its graphics. <strong>lattice</strong> itself is built on top of <strong>grid</strong> <span class="citation">(R Core Team 2016)</span>. <strong>grid</strong> graphics behave a little differently than traditional R graphics, and two points are worth making (see <code>?lattice</code> for more details):</p>
 <ul>
 <li><p><strong>lattice</strong> and <strong>ggplot2</strong> functions return <code>"trellis"</code> and <code>"ggplot"</code> objects, respectively, but do not display them; the <code>print()</code> method produces the actual displays. However, due to R’s automatic printing rule, the result is automatically printed when using these functions in the command line. If <code><a href="../reference/plotPartial.html">plotPartial()</a></code> or <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> are called inside of <code>source</code> or inside a loop (e.g., <code>for</code> or <code>while</code>), an explicit <code>print</code> statement is required to display the resulting graph; hence, the same is true when using <code><a href="../reference/partial.html">partial()</a></code> with <code>plot = TRUE</code>.</p></li>
@@ -324,17 +328,16 @@
 the raw training data using the `train` argument in the call to `partial`.</code></pre>
 <p>For illustration, we will use a corrected version of the Boston housing data analyzed in <span class="citation">Harrison and Rubinfeld (1978)</span>; the data are available in the <strong>pdp</strong> package (see <code><a href="../reference/boston.html">?pdp::boston</a></code> for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Load required packages</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(ggplot2)       <span class="co"># for ggplot2-based graphics</span></a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(randomForest)  <span class="co"># for fitting random forests</span></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(pdp)           <span class="co"># for partial dependence plots</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw">library</span>(vip)           <span class="co"># for variable importance plots</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co"># Fit a random forest to the Boston housing data</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">boston.rf &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/randomForest/topics/randomForest">randomForest</a></span>(cmedv <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> boston, <span class="dt">importance =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co"># Variable importance plot (compare to randomForest::varImpPlot(boston.rf))</span></a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="kw"><a href="http://www.rdocumentation.org/packages/vip/topics/vip">vip</a></span>(boston.rf, <span class="dt">bar =</span> <span class="ot">FALSE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">size =</span> <span class="fl">1.5</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(randomForest)  <span class="co"># for fitting random forests</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(pdp)           <span class="co"># for partial dependence plots</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(vip)           <span class="co"># for variable importance plots</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># Fit a random forest to the Boston housing data</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">boston.rf &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/randomForest/topics/randomForest">randomForest</a></span>(cmedv <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> boston, <span class="dt">importance =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># Variable importance plot (compare to randomForest::varImpPlot(boston.rf))</span></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="kw"><a href="http://www.rdocumentation.org/packages/vip/topics/vip">vip</a></span>(boston.rf, <span class="dt">bar =</span> <span class="ot">FALSE</span>, <span class="dt">horizontal =</span> <span class="ot">FALSE</span>, <span class="dt">size =</span> <span class="fl">1.5</span>)</a></code></pre></div>
 <div class="figure">
 <img src="pdp_files/figure-html/unnamed-chunk-1-1.png" alt="**Figure 1** Variable importance plot for the Boston housing data based on a random forest with 500 trees." width="70%"><p class="caption">
 <strong>Figure 1</strong> Variable importance plot for the Boston housing data based on a random forest with 500 trees.

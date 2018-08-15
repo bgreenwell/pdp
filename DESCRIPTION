@@ -16,10 +16,13 @@ Suggests:
     C50,
     caret,
     Cubist,
+    doParallel,
+    dplyr,
     e1071,
     earth,
     gbm,
     ipred,
+    keras,
     kernlab,
     MASS,
     mda,
@@ -33,7 +36,8 @@ Suggests:
     testthat,
     xgboost (>= 0.6-0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    vip
 Imports:
     ggplot2 (>= 0.9.0),
     grDevices,

@@ -71,7 +71,7 @@ To understand this interaction, we can use a PDP. However, since the partial dep
 Setting up a parallel backend is rather straightforward. To demonstrate, the following snippet of code sets up the `partial()` function to run in parallel on both Windows and Unix-like systems using the **doParallel** package.
 ```{r ozone-mars-03}
 library(doParallel)  # load the parallel backend
-cl <- makeCluster(8)  # use 8 workers
+cl <- makeCluster(2)  # use 2 workers
 registerDoParallel(cl)  # register the parallel backend
 ```
 Now, to run `partial()` in parallel, all we have to do is invoke the `parallel = TRUE` and `paropts` options and the rest is taken care of by the internal call to **plyr** and the parallel backend we loaded^[Notice we have to pass the names of external packages that the tasks depend on via the `paropts` argument; in this case, `"earth"`. See `?plyr::adply` for details.]. This is illustrated in the code chunk below which obtains the partial dependence of `ozone` on `wind`, `temp`, and `dpg` in parallel. The last three lines of code add a label to the colorkey. The result is displayed in **Figure 4**. **Note:** it is considered good practice to shut down the workers by calling `stopCluster()` when finished. Notice how we also used the `chull` option to restrict the PDP to the [convex hull](https://en.wikipedia.org/wiki/Convex_hull) of `wind` and `temp` which helps in reducing the computation time in multivariate PDPs.

@@ -98,15 +98,17 @@ Many other techniques exist for visualizing relationships between the predictors
 
 ## Constructing PDPs in R
 
-The **pdp** package is useful for constructing PDPs for many classes of fitted models in R. PDPs are especially useful for visualizing the relationships discovered by complex machine learning algorithms such as a random forest. The two most important functions exported by **pdp** are:
+The **pdp** package is useful for constructing PDPs for many classes of fitted models in R. PDPs are especially useful for visualizing the relationships discovered by complex machine learning algorithms such as a random forest. The three most important functions exported by **pdp** are:
 
-  * `partial()`
+  * `partial()`;
   
-  * `plotPartial()` (or `autoplot()` if `ggplot2` is loaded)
+  * `plotPartial()`;
+  
+  * `autoplot()`.
 
 The `partial()` function evaluates the partial dependence from a fitted model over a grid of predictor values; the fitted model and predictors are specified using the `object` and `pred.var` arguments, respectively---these are the only required arguments. If `plot = FALSE` (the default), `partial()` returns an object of class `"partial"` which inherits from the class `"data.frame"`; put another way, by default, `partial()` returns a data frame with an additional class that is recognized by the `plotPartial()` and `autoplot()` functions. The columns of the data frame are labeled in the same order as the features supplied to `pred.var`, and the last column is labeled `yhat`^[There is one exception to this. When a function supplied via the `pred.fun` argument returns multiple predictions, the second to last and last columns will be labeled `yhat` and `yhat.id`, respectively.] and contains the values of the partial dependence function $\bar{f}_s\left(\boldsymbol{z}_s\right)$. If `plot = TRUE`, then by default `partial()` makes an internal call to `plotPartial()` and returns the PDP in the form of a **lattice** plot (i.e., a `"trellis"` object). To use **ggplot2** instead of **lattice**, set `plot.engine = "ggplot2"` in the call to `partial()`. **Note:**  it is recommended to call `partial()` with `plot = FALSE` and store the results; this allows for more flexible plotting, and the user will not have to waste time calling `partial()` again if the default plot is not sufficient.
 
-The `plotPartial()` and `autoplot()` functions can be used for displaying more advanced PDPs; they operate on objects of class `"partial"` and have many useful plotting options. Note, however, that using `autoplot()` required that **ggplot2** be loaded first. For example, `plotPartial()` makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). Of course, since the default output produced by `partial()` is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.
+The `plotPartial()` and `autoplot()` functions can be used for displaying more advanced PDPs; they operate on objects of class `"partial"` and have many useful plotting options. For example, `plotPartial()` makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). (**Note:** the `autoplot()` function does not support the construction of 3-D surfaces.) Of course, since the default output produced by `partial()` is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.
 
 **Note:** as mentioned above, **pdp** relies on **lattice** for its graphics. **lattice** itself is built on top of **grid** [@grid-pkg]. **grid** graphics behave a little differently than traditional R graphics, and two points are worth making (see `?lattice` for more details):
 
@@ -158,7 +160,6 @@ For illustration, we will use a corrected version of the Boston housing data ana
 
 ```{r, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 1** Variable importance plot for the Boston housing data based on a random forest with 500 trees."}
 # Load required packages
-library(ggplot2)       # for ggplot2-based graphics
 library(randomForest)  # for fitting random forests
 library(pdp)           # for partial dependence plots
 library(vip)           # for variable importance plots

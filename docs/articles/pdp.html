@@ -170,7 +170,154 @@
 </ul>
 <p>A consequence of the second point is that the <code>par()</code> function cannot be used to control the layout of multiple <strong>lattice</strong> (and hence <strong>pdp</strong>) plots. Simple solutions are available in packages <strong>latticeExtra</strong> <span class="citation">(Sarkar and Andrews 2016)</span> and <strong>gridExtra</strong> <span class="citation">(Auguie 2016)</span>. For convenience, <strong>pdp</strong> imports the <code><a href="../reference/grid.arrange.html">grid.arrange()</a></code> function from <strong>gridExtra</strong> which makes it easy to display multiple <strong>grid</strong>-based graphical objects on a single plot (these include graphics produced using <strong>lattice</strong> and and <strong>ggplot2</strong>—hence, <strong>pdp</strong>). This is demonstrated in multiple examples throughout the vignettes in this package.</p>
 <p>Currently supported models are described in <strong>Table 1</strong> below. In these cases, the user does not need to supply a prediction function or a value for the <code>type</code> argument (i.e., <code>"regression"</code> or <code>"classification"</code>). In other situations, the user may need to specify one or both of these arguments. This allows <code><a href="../reference/partial.html">partial()</a></code> to be flexible enough to handle many of the model types not listed in <strong>Table 1</strong>; for example, neural networks from the <strong>nnet</strong> package <span class="citation">(Venables and Ripley 2002)</span> and projection pursuit regression <span class="citation">(Friedman and Stuetzle 1981)</span> using the <code>ppr()</code> function in the <strong>stats</strong> package.</p>
-<p><strong>Table 1</strong> Models specifically supported by the <strong>pdp</strong> package. <strong>Note:</strong> for some of these cases, the user may still need to supply additional arguments in the call to <code><a href="../reference/partial.html">partial()</a></code>. | Type of model | R package | Object class | |:——————————|:———-|:————-| | Decision tree | <strong>C50</strong> <span class="citation">(Kuhn et al. 2015)</span> | <code>"C5.0"</code> | | | <strong>party</strong> | <code>"BinaryTree"</code> | | | <strong>partykit</strong> | <code>"party"</code> | | | <strong>rpart</strong> <span class="citation">(Therneau, Atkinson, and Ripley 2015)</span> | <code>"rpart"</code> | | Bagged decision trees | <strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span> | <code>"bagging"</code> | | | <strong>ipred</strong> <span class="citation">(Peters and Hothorn 2015)</span> | <code>"classbagg"</code>, <code>"regbagg"</code> | | Boosted decision trees | <strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span> | <code>"boosting"</code> | | | <strong>gbm</strong> | <code>"gbm"</code> | | | <strong>xgboost</strong> | <code>"xgb.Booster"</code> | | Cubist | <strong>Cubist</strong> <span class="citation">(Kuhn et al. 2014)</span> | <code>"cubist"</code> | | Discriminant analysis | <strong>MASS</strong> <span class="citation">(Venables and Ripley 2002)</span> | <code>"lda"</code>, <code>"qda"</code> | | Generalized linear model | <strong>stats</strong> | <code>"glm"</code>, <code>"lm"</code> | | Linear model | <strong>stats</strong> | <code>"lm"</code> | | Nonlinear least squares | <strong>stats</strong> | <code>"nls"</code> | | Multivariate adaptive regression splines (MARS) | <strong>earth</strong> <span class="citation">(Milborrow 2016)</span> | <code>"earth"</code> | | Projection pursuit regression | <strong>stats</strong> | <code>"ppr"</code> | | Random forest | <strong>randomForest</strong> | <code>"randomForest"</code> | | | <strong>ranger</strong> <span class="citation">(Wright 2016)</span> | <code>"ranger"</code> | | | <strong>party</strong> | <code>"RandomForest"</code> | | | <strong>partykit</strong> | <code>"cforest"</code> | | Support vector machine | <strong>e1071</strong> <span class="citation">(Meyer et al. 2015)</span> | <code>"svm"</code> | | | <strong>kernlab</strong> <span class="citation">(Karatzoglou et al. 2004)</span> | <code>"ksvm"</code> |</p>
+<p><strong>Table 1</strong> Models specifically supported by the <strong>pdp</strong> package. <strong>Note:</strong> for some of these cases, the user may still need to supply additional arguments in the call to <code><a href="../reference/partial.html">partial()</a></code>.</p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Type of model</th>
+<th align="left">R package</th>
+<th align="left">Object class</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Decision tree</td>
+<td align="left">
+<strong>C50</strong> <span class="citation">(Kuhn et al. 2015)</span>
+</td>
+<td align="left"><code>"C5.0"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><strong>party</strong></td>
+<td align="left"><code>"BinaryTree"</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><strong>partykit</strong></td>
+<td align="left"><code>"party"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">
+<strong>rpart</strong> <span class="citation">(Therneau, Atkinson, and Ripley 2015)</span>
+</td>
+<td align="left"><code>"rpart"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Bagged decision trees</td>
+<td align="left">
+<strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span>
+</td>
+<td align="left"><code>"bagging"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">
+<strong>ipred</strong> <span class="citation">(Peters and Hothorn 2015)</span>
+</td>
+<td align="left">
+<code>"classbagg"</code>, <code>"regbagg"</code>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">Boosted decision trees</td>
+<td align="left">
+<strong>adabag</strong> <span class="citation">(Alfaro, Gámez, and García 2013)</span>
+</td>
+<td align="left"><code>"boosting"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><strong>gbm</strong></td>
+<td align="left"><code>"gbm"</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><strong>xgboost</strong></td>
+<td align="left"><code>"xgb.Booster"</code></td>
+</tr>
+<tr class="even">
+<td align="left">Cubist</td>
+<td align="left">
+<strong>Cubist</strong> <span class="citation">(Kuhn et al. 2014)</span>
+</td>
+<td align="left"><code>"cubist"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Discriminant analysis</td>
+<td align="left">
+<strong>MASS</strong> <span class="citation">(Venables and Ripley 2002)</span>
+</td>
+<td align="left">
+<code>"lda"</code>, <code>"qda"</code>
+</td>
+</tr>
+<tr class="even">
+<td align="left">Generalized linear model</td>
+<td align="left"><strong>stats</strong></td>
+<td align="left">
+<code>"glm"</code>, <code>"lm"</code>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">Linear model</td>
+<td align="left"><strong>stats</strong></td>
+<td align="left"><code>"lm"</code></td>
+</tr>
+<tr class="even">
+<td align="left">Nonlinear least squares</td>
+<td align="left"><strong>stats</strong></td>
+<td align="left"><code>"nls"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Multivariate adaptive regression splines (MARS)</td>
+<td align="left">
+<strong>earth</strong> <span class="citation">(Milborrow 2016)</span>
+</td>
+<td align="left"><code>"earth"</code></td>
+</tr>
+<tr class="even">
+<td align="left">Projection pursuit regression</td>
+<td align="left"><strong>stats</strong></td>
+<td align="left"><code>"ppr"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Random forest</td>
+<td align="left"><strong>randomForest</strong></td>
+<td align="left"><code>"randomForest"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">
+<strong>ranger</strong> <span class="citation">(Wright 2016)</span>
+</td>
+<td align="left"><code>"ranger"</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><strong>party</strong></td>
+<td align="left"><code>"RandomForest"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><strong>partykit</strong></td>
+<td align="left"><code>"cforest"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">Support vector machine</td>
+<td align="left">
+<strong>e1071</strong> <span class="citation">(Meyer et al. 2015)</span>
+</td>
+<td align="left"><code>"svm"</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">
+<strong>kernlab</strong> <span class="citation">(Karatzoglou et al. 2004)</span>
+</td>
+<td align="left"><code>"ksvm"</code></td>
+</tr>
+</tbody>
+</table>
 <p>The <code><a href="../reference/partial.html">partial()</a></code> function also supports objects of class <code>"train"</code> produced using the <code>train()</code> function from the well-known <strong>caret</strong> package <span class="citation">(Kuhn 2016)</span>. This means that <code><a href="../reference/partial.html">partial()</a></code> can be used with any classification or regression model that has been fit using <strong>caret</strong>’s <code>train()</code> function; see <a href="http://topepo.github.io/caret/available-models.html" class="uri">http://topepo.github.io/caret/available-models.html</a> for a current list of models supported by <strong>caret</strong>.</p>
 <p>Another important argument to <code><a href="../reference/partial.html">partial()</a></code> is <code>train</code>. If <code>train = NULL</code> (the default), <code><a href="../reference/partial.html">partial()</a></code> tries to extract the original training data from the fitted model object. For objects that typically store a copy of the training data (e.g., objects of class <code>"BinaryTree"</code>, <code>"RandomForest"</code>, and <code>"train"</code>), this is straightforward. Otherwise, <code><a href="../reference/partial.html">partial()</a></code> will attempt to extract the call stored in <code>object</code> (if available) and use that to evaluate the training data in the same environment from which <code><a href="../reference/partial.html">partial()</a></code> was called. This can cause problems when, for example, the training data have been changed after fitting the model, but before calling <code><a href="../reference/partial.html">partial()</a></code>. Hence, it is good practice to always supply the training data via the <code>train</code> argument in the call to <code><a href="../reference/partial.html">partial()</a></code><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. If <code>train = NULL</code> and the training data can not be extracted from the fitted model, the user will be prompted with an informative error message (this will occur, for example, when using <code><a href="../reference/partial.html">partial()</a></code> with <code>"ksvm"</code> and <code>"xgb.Booster"</code> objects):</p>
 <pre><code>Error: The training data could not be extracted from object. Please supply

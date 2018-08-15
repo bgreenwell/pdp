@@ -119,6 +119,7 @@ A consequence of the second point is that the `par()` function cannot be used to
 Currently supported models are described in **Table 1** below. In these cases, the user does not need to supply a prediction function or a value for the `type` argument (i.e., `"regression"` or `"classification"`). In other situations, the user may need to specify one or both of these arguments. This allows `partial()` to be flexible enough to handle many of the model types not listed in **Table 1**; for example, neural networks from the **nnet** package [@venables-modern-2002] and projection pursuit regression [@friedman-ppr-1981] using the `ppr()` function in the **stats** package.
 
 **Table 1** Models specifically supported by the **pdp** package. **Note:** for some of these cases, the user may still need to supply additional arguments in the call to `partial()`.
+
 | Type of model                 | R package | Object class |
 |:------------------------------|:----------|:-------------|
 | Decision tree                 | **C50** [@C50-pkg] | `"C5.0"` |

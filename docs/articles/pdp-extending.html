@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Extending pdp with the pred.fun argument • pdp</title>
+<title>User-defined prediction functions • pdp</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Extending pdp with the pred.fun argument">
+<script src="../pkgdown.js"></script><meta property="og:title" content="User-defined prediction functions">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -55,10 +55,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/pdp-classification.html">Interpretting classification models</a>
+    </li>
+    <li>
       <a href="../articles/pdp-computation.html">Reducing computation time</a>
     </li>
     <li>
-      <a href="../articles/pdp-extending.html">Extending pdp with the pred.fun argument</a>
+      <a href="../articles/pdp-example-tensorflow.html">A TensorFlow example using the Keras API</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-example-xgboost.html">Interpreting XGBoost models</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-extending.html">User-defined prediction functions</a>
     </li>
     <li>
       <a href="../articles/pdp-se.Rmd.html">Single-variable PDPs with standard deviations</a>
@@ -88,11 +97,11 @@
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1>Extending pdp with the pred.fun argument</h1>
-            <h3 class="subtitle">A TensorFlow example using the Keras API</h3>
-                        <h4 class="author">Brandon M. Greenwell and Bradley C. Boehmke</h4>
+      <h1>User-defined prediction functions</h1>
+            <h3 class="subtitle">Extending pdp with the pred.fun argument</h3>
+                        <h4 class="author">Brandon M. Greenwell</h4>
             
-            <h4 class="date">2018-08-15</h4>
+            <h4 class="date">2018-08-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bgreenwell/pdp/blob/master/vignettes/pdp-extending.Rmd"><code>vignettes/pdp-extending.Rmd</code></a></small>
       <div class="hidden name"><code>pdp-extending.Rmd</code></div>
@@ -101,178 +110,150 @@
 
     
     
-<p>It is possible to use the <a href="https://koalaverse.github.io/vip/index.html">vip</a> package <span class="citation">(Greenwell and Boehmke 2018)</span> with any fitted model for which new predictions can be generated. This is possible via <code>method = "ice"</code>, <code>method = "pdp"</code>, and <code>method = "permute"</code> since these methods construct variable importance (VI) scores based solely off of a model’s predictions—albeit, in different ways. In this vignette, we will demonstrate the construction of permutation-based VI scores (i.e., <code>method = "permute"</code>) using a TensorFlow model trained to the Boston housing data with the <a href="https://keras.rstudio.com/">keras</a> package <span class="citation">(Allaire and Chollet 2018)</span>. This particular example is adapted from <span class="citation">(<span class="citeproc-not-found" data-reference-id="chollet-deep-2018"><strong>???</strong></span>)</span>. We’ll supplement the the variable importance plot (VIP) with feature effect plots using the <a href="https://github.com/bgreenwell/pdp">pdp</a> package <span class="citation">(<span class="citeproc-not-found" data-reference-id="greenwell-pdp-2017"><strong>???</strong></span>)</span>—a general R package for constructing <em>partial dependence plots</em> (PDPs) <span class="citation">(<span class="citeproc-not-found" data-reference-id="friedman-greedy-2001"><strong>???</strong></span>)</span> and <em>individual conditional expectation</em> (ICE) curves <span class="citation">(Goldstein et al. 2015)</span>.</p>
-<div id="prerequisites" class="section level3">
-<h3 class="hasAnchor">
-<a href="#prerequisites" class="anchor"></a>Prerequisites</h3>
+<div id="prerequisites" class="section level2">
+<h2 class="hasAnchor">
+<a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Load required packages</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data wrangling</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data wrangling </span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; Warning: package 'dplyr' was built under R version 3.5.1</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(ggplot2)  <span class="co"># for general visualization</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(keras)    <span class="co"># for fitting DNNs</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pdp)      <span class="co"># for partial depe</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(vip)      <span class="co"># for visualizing feature importance</span></a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># For reproducibility</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/reexports">use_session_with_seed</a></span>(<span class="dv">101</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(kernlab)  <span class="co"># for fitting SVMs</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pdp)      <span class="co"># for partial dependence plots</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(ranger)   <span class="co"># for fitting random forests</span></a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"><span class="kw">library</span>(vip)      <span class="co"># for variable importance plots</span></a></code></pre></div>
 </div>
-<div id="predicting-median-home-value-using-tensorflow" class="section level2">
+<div id="user-defined-prediction-functions" class="section level2">
 <h2 class="hasAnchor">
-<a href="#predicting-median-home-value-using-tensorflow" class="anchor"></a>Predicting median home value using TensorFlow</h2>
-<p>To illustrate, we’ll fit a TensorFlow model to the Boston housing data <span class="citation">(Harrison and Rubinfeld 1978)</span>. A corrected version of these data are available in the <a href="https://github.com/bgreenwell/pdp">pdp</a> package. In the code chunk below, we load a corrected version of the original Boston housing data (see <code><a href="../reference/boston.html">?pdp::boston</a></code> for details) and separate the training features (<code>train_x</code>) from the training response values (<code>train_y</code>).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Loading (corrected) Boston housing data</span></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">data</span>(boston, <span class="dt">package =</span> <span class="st">"pdp"</span>)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Construct matrix of training data (features only)</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">train_x &lt;-<span class="st"> </span>boston <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(<span class="op">-</span>cmedv) <span class="op">%&gt;%</span><span class="st">                   </span><span class="co"># remove response</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">chas =</span> <span class="kw">as.numeric</span>(chas)) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># convert factor to numeric</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="st">  </span><span class="kw">as.matrix</span>()                          <span class="co"># convert to numeric matrix</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># Construct vector of training response values</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">train_y &lt;-<span class="st"> </span>boston<span class="op">$</span>cmedv</a></code></pre></div>
-<p>Since the features are measured on very different scales (e.g., longitude and per capita crime rate by town), we center and scale the columns of <code>train_x</code> using the <code>scale()</code> function.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">train_x &lt;-<span class="st"> </span><span class="kw">scale</span>(train_x, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">scale =</span> <span class="ot">TRUE</span>)  <span class="co"># normalize data</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">apply</span>(train_x, <span class="dt">MARGIN =</span> <span class="dv">2</span>, <span class="dt">FUN =</span> <span class="cf">function</span>(x) <span class="kw">c</span>(<span class="kw">mean</span>(x), <span class="kw">sd</span>(x)))  <span class="co"># sanity check</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt;                lon           lat          crim           zn        indus</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; [1,] -5.363227e-14 -2.272681e-14 -7.202981e-18 2.282481e-17 1.595296e-17</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; [2,]  1.000000e+00  1.000000e+00  1.000000e+00 1.000000e+00 1.000000e+00</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;               chas           nox            rm           age          dis</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,] -1.586632e-16 -2.150022e-16 -1.056462e-16 -1.643357e-16 1.153079e-16</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,]  1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00 1.000000e+00</span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt;               rad          tax       ptratio             b         lstat</span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt; [1,] 4.799652e-17 2.024415e-17 -3.924246e-16 -1.151679e-16 -7.052778e-17</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt; [2,] 1.000000e+00 1.000000e+00  1.000000e+00  1.000000e+00  1.000000e+00</span></a></code></pre></div>
-<p>Next, we define a function for fitting a Keras model composed of a linear stack of layers. Since the Boston housing data is rather small (<span class="math inline">\(n =\)</span> 506), we’ll use a very small network with only two hidden layers, each with 64 units. Building small networks like this can help mitigate overfitting to smaller data sets.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">build_model &lt;-<span class="st"> </span><span class="cf">function</span>() {                                </a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">  model &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/keras_model_sequential">keras_model_sequential</a></span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">64</span>, <span class="dt">activation =</span> <span class="st">"relu"</span>,</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">                <span class="dt">input_shape =</span> <span class="kw">dim</span>(train_x)[[<span class="dv">2</span>]]) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">64</span>, <span class="dt">activation =</span> <span class="st">"relu"</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/layer_dense">layer_dense</a></span>(<span class="dt">units =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">  model <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/compile">compile</a></span>(</a>
-<a class="sourceLine" id="cb4-8" data-line-number="8">    <span class="dt">optimizer =</span> <span class="st">"rmsprop"</span>,</a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">    <span class="dt">loss =</span> <span class="st">"mse"</span>,</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">    <span class="dt">metrics =</span> <span class="kw">c</span>(<span class="st">"mae"</span>)</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11">  )</a>
-<a class="sourceLine" id="cb4-12" data-line-number="12">}</a></code></pre></div>
-<p>Since we don’t have a lot of observations, we used <span class="math inline">\(k\)</span>-fold cross-validation (CV) (with <span class="math inline">\(k = 4\)</span>) to evaluate the network and choose the optimal number of <em>epochs</em><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> (<span class="math inline">\(k\)</span>-fold CV is illustrated in the <strong>Figure 1</strong> below).</p>
+<a href="#user-defined-prediction-functions" class="anchor"></a>User-defined prediction functions</h2>
+<p>Partial dependence plots (PDPs) are essentially just averaged predictions; this is apparent from step 1. (c) in <strong>Algorithm 1</strong> in <span class="citation">Greenwell (2017)</span>. Consequently, as pointed out by <span class="citation">Goldstein et al. (2015)</span>, strong heterogeneity can conceal the complexity of the modeled relationship between the response and predictors of interest. This was part of the motivation behind <span class="citation">Goldstein et al. (2015)</span>’s ICE plot procedure.</p>
+<p>With <code><a href="../reference/partial.html">partial()</a></code> it is possible to replace the mean in step 1. (c) of <strong>Algorithm 1</strong> with any other function (e.g., the median or trimmed mean), or obtain PDPs for classification problems on the probability scale<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. It is even possible to obtain ICE curves<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. This flexibility is due to the new <code>pred.fun</code> argument in <code><a href="../reference/partial.html">partial()</a></code> (starting with <strong>pdp</strong> version 0.4.0). This argument accepts an optional prediction function that requires two arguments: <code>object</code> and <code>newdata</code>. The supplied prediction function must return either a single prediction or a vector of predictions. Returning the mean of all the predictions will result in the traditional PDP. Returning a vector of predictions (i.e., one for each observation) will result in a set of ICE curves. The examples below illustrate. The point to be made is that the <code>pred.fun</code> argument gives <code><a href="../reference/partial.html">partial()</a></code> the flexibility to handle all kinds of situations!</p>
+<p>Using the <code>pred.fun</code> argument, it is possible to obtain PDPs for classification problems on the probability scale. We just need to write a function that computes the predicted class probability of interest averaged across all observations.</p>
+<p>To illustrate, we consider Edgar Anderson’s iris data from the <strong>datasets</strong> package. The <code>iris</code> data frame contains the sepal length, sepal width, petal length, and petal width (in centimeters) for 50 flowers from each of three species of iris: setosa, versicolor, and virginica (i.e., <span class="math inline">\(K = 3\)</span>). In the code chunk below, we fit a support vector machine (SVM) with a Gaussian radial basis function kernel to the <code>iris</code> data using the <code>svm()</code> function in the <strong>kernlab</strong> package <span class="citation">(Karatzoglou, Smola, and Hornik 2018)</span> (the tuning parameters were determined using 5-fold cross-validation). <strong>Note that the <code><a href="../reference/partial.html">partial()</a></code> function has to be able to extract the predicted probabilities for each class</strong>, so it is necessary to set <code>probability = TRUE</code> in the call to <code>svm()</code>. See the vignette titled <strong>Interpretting classification models</strong> for how to obtain variable importance plots for arbitrary models (like the SVM below) using the <strong>vip</strong> package <span class="citation">(Greenwell and Boehmke, n.d.)</span>.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># Fit an SVM to the Edgar Anderson's iris data</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">iris_svm &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/kernlab/topics/ksvm">ksvm</a></span>(Species <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> iris, <span class="dt">kernel =</span> <span class="st">"rbfdot"</span>, </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">                 <span class="dt">kpar =</span> <span class="kw">list</span>(<span class="dt">sigma =</span> <span class="fl">0.709</span>), <span class="dt">C =</span> <span class="fl">0.5</span>, <span class="dt">prob.model =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<p>The function below can be used to extract the average predicted probability of belonging to the <code>Setosa</code> class.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Function to return predicted class probabilities from a "ksvm" object</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">pred_prob &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {  <span class="co"># see ?predict.ksvm</span></a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="kw">mean</span>(<span class="kw">predict</span>(object, newdata, <span class="dt">type =</span> <span class="st">"prob"</span>)[, <span class="st">"setosa"</span>, <span class="dt">drop =</span> <span class="ot">TRUE</span>])</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">}</a></code></pre></div>
+<p>Next, we simply pass this function via the <code>pred.fun</code> argument in the call to <code><a href="../reference/partial.html">partial()</a></code>. The following chunk of code uses <code>pred_prob</code> to obtain PDPs for <code>Petal.Width</code> and <code>Petal.Length</code> on the probability scale. The results are displayed in <strong>Figure 1</strong>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># PDPs for Petal.Width and Petal.Length on the probability scale</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">pdp1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(iris_svm, <span class="dt">pred.var =</span> <span class="st">"Petal.Width"</span>, <span class="dt">pred.fun =</span> pred_prob,</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">                  <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">train =</span> iris)</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">pdp2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(iris_svm, <span class="dt">pred.var =</span> <span class="st">"Petal.Length"</span>, <span class="dt">pred.fun =</span> pred_prob,</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">                  <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">train =</span> iris)</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">pdp3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(iris_svm, <span class="dt">pred.var =</span> <span class="kw">c</span>(<span class="st">"Petal.Width"</span>, <span class="st">"Petal.Length"</span>),</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">                     <span class="dt">pred.fun =</span> pred_prob, <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">train =</span> iris)</a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9"><span class="co"># Figure 1</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(pdp1, pdp2, pdp3, <span class="dt">ncol =</span> <span class="dv">3</span>)</a></code></pre></div>
 <div class="figure" style="text-align: left">
-<img src="cv.png" alt="**Figure 1** Illustration of $k$-fold CV. The training data are split into $k$ (roughly) equal blocks at random. For each of $k$ iterations, $k-1$ blocks are used for training and the performace is evalutaed on the $k$-th block. The overall measure of performance is obtained by averaging the $k$ performance metrics together." width="70%"><p class="caption">
-<strong>Figure 1</strong> Illustration of <span class="math inline">\(k\)</span>-fold CV. The training data are split into <span class="math inline">\(k\)</span> (roughly) equal blocks at random. For each of <span class="math inline">\(k\)</span> iterations, <span class="math inline">\(k-1\)</span> blocks are used for training and the performace is evalutaed on the <span class="math inline">\(k\)</span>-th block. The overall measure of performance is obtained by averaging the <span class="math inline">\(k\)</span> performance metrics together.
+<img src="pdp-extending_files/figure-html/iris-svm-pdp-1.png" alt="**Figure 1** Partial dependence of `setosa` on `Petal.Width` and `Petal.Length` plotted on the probability scale; in this case, the probability of belonging to the setosa species." width="100%"><p class="caption">
+<strong>Figure 1</strong> Partial dependence of <code>setosa</code> on <code>Petal.Width</code> and <code>Petal.Length</code> plotted on the probability scale; in this case, the probability of belonging to the setosa species.
 </p>
 </div>
-<p>The performance of the network was evaluated using <em>mean absolute error</em> (MAE), which is the absolute value of the difference between the predicted and observed outcomes. In this example, the cross-validated MAE stopped improving after about 125 epochs. Using this result, we train a final network using 80 epochs<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">model &lt;-<span class="st"> </span><span class="kw">build_model</span>()</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">model <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/keras/topics/fit">fit</a></span>(train_x, train_y, <span class="dt">epochs =</span> <span class="dv">80</span>, <span class="dt">batch_size =</span> <span class="dv">16</span>, <span class="dt">verbose =</span> <span class="dv">0</span>)</a></code></pre></div>
-<div id="model-interpreation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#model-interpreation" class="anchor"></a>Model interpreation</h3>
-<p>Here we’ll look at two methods for model interpretation: <em>variable importance</em> and <em>individual conditional expectation</em> (ICE) curves. The methods are available in the R packages <a href="https://koalaverse.github.io/vip/index.html">vip</a> and <a href="https://github.com/bgreenwell/pdp">pdp</a>, respectively.</p>
-<p>While both packages support a wide range of models, it is rather straightforward to use them for any model for which new predictions can be obtained. To start, we’ll have to define a prediction function wrapper which requires two arguments: <code>object</code> (the fitted model object) and <code>newdata</code>. The function needs to return a vector of predictions (one for each observation).</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">pred_wrapper &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="kw">predict</span>(object, <span class="dt">x =</span> <span class="kw">as.matrix</span>(newdata)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="st">    </span><span class="kw">as.vector</span>()</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">}</a></code></pre></div>
-<div id="variable-importance-plot" class="section level4">
-<h4 class="hasAnchor">
-<a href="#variable-importance-plot" class="anchor"></a>Variable importance plot</h4>
-<p>A simple measure of variable importance can be obtained using the permutation approach described in <span class="citation">Breiman (2001)</span> for random forests. In essence, we randomly permute the values of each feature and record the drop in training performance. This can be accomplished using the <code><a href="http://www.rdocumentation.org/packages/vip/topics/vip">vip()</a></code> function with <code>method = "permute"</code>. To use this method we need to supply the original training response values via the <code>obs</code> argument and specify which performance metric we are interested in (in this case, we’ll use <span class="math inline">\(R^2\)</span>). The results are, which are displayed in <strong>Figure 2</strong>, indicate that the average number of rooms per dwelling (<code>rm</code>) and the percentage of lower status of the population (<code>lstat</code>) are the most important features in predicting median home value.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">set.seed</span>(<span class="dv">102</span>)  <span class="co"># for reproducibility</span></a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">p1 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/vip/topics/vip">vip</a></span>(</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="dt">object =</span> model,                     <span class="co"># fitted model</span></a>
-<a class="sourceLine" id="cb7-4" data-line-number="4">  <span class="dt">method =</span> <span class="st">"permute"</span>,                 <span class="co"># permutation-based VI scores</span></a>
-<a class="sourceLine" id="cb7-5" data-line-number="5">  <span class="dt">num_features =</span> <span class="kw">ncol</span>(train_x),       <span class="co"># default only plots top 10 features</span></a>
-<a class="sourceLine" id="cb7-6" data-line-number="6">  <span class="dt">feature_names =</span> <span class="kw">colnames</span>(train_x),  <span class="co"># feature names in training data</span></a>
-<a class="sourceLine" id="cb7-7" data-line-number="7">  <span class="dt">pred_fun =</span> pred_wrapper,            <span class="co"># user-defined prediction function</span></a>
-<a class="sourceLine" id="cb7-8" data-line-number="8">  <span class="dt">obs =</span> train_y,                      <span class="co"># response values used for training</span></a>
-<a class="sourceLine" id="cb7-9" data-line-number="9">  <span class="dt">metric =</span> <span class="st">"rsquared"</span>,                <span class="co"># evaluation metric</span></a>
-<a class="sourceLine" id="cb7-10" data-line-number="10">  <span class="dt">train =</span> <span class="kw">as.data.frame</span>(train_x)      <span class="co"># training data</span></a>
-<a class="sourceLine" id="cb7-11" data-line-number="11">  <span class="co"># progress = "text"                 # request a text-based progress bar</span></a>
-<a class="sourceLine" id="cb7-12" data-line-number="12">)</a>
-<a class="sourceLine" id="cb7-13" data-line-number="13"><span class="co">#&gt; Warning: Setting `method = "permute"` is experimental, use at your own</span></a>
-<a class="sourceLine" id="cb7-14" data-line-number="14"><span class="co">#&gt; risk!</span></a>
-<a class="sourceLine" id="cb7-15" data-line-number="15"><span class="kw">print</span>(p1)  <span class="co"># display plot</span></a></code></pre></div>
+<p>We could also plot the PDP for a single feature and include pointwise standard deviation bands! To do this, we simply augment the user-defined prediction function to return the mean, as well as the mean +/- one standard deviation (see <strong>Figure 2</strong>):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Function to return average prediction and average +/- one standard deviation</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">pfun &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {  <span class="co"># see ?predict.ksvm</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">  prob &lt;-<span class="st"> </span><span class="kw">predict</span>(object, newdata, <span class="dt">type =</span> <span class="st">"prob"</span>)[, <span class="st">"setosa"</span>]</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">  <span class="kw">c</span>(<span class="st">"mean"</span> =<span class="st"> </span><span class="kw">mean</span>(prob), </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    <span class="st">"mean-sd"</span> =<span class="st"> </span><span class="kw">mean</span>(prob) <span class="op">-</span><span class="st"> </span><span class="kw">sd</span>(prob), </a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">    <span class="st">"mean+sd"</span> =<span class="st"> </span><span class="kw">mean</span>(prob) <span class="op">+</span><span class="st"> </span><span class="kw">sd</span>(prob))</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">}</a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="co"># PDP for Petal.Width +/- one standard deviation (Figure 2)</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="kw"><a href="../reference/partial.html">partial</a></span>(iris_svm, <span class="dt">pred.var =</span> <span class="st">"Petal.Width"</span>, <span class="dt">pred.fun =</span> pfun, <span class="dt">plot =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">        <span class="dt">train =</span> iris, <span class="dt">rug =</span> <span class="ot">TRUE</span>, <span class="dt">plot.engine =</span> <span class="st">"ggplot2"</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_light</a></span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">"Petal width (cm)"</span>, <span class="dt">y =</span> <span class="st">"Partial dependence"</span>)</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="co">#&gt; Warning: Ignoring unknown parameters: csides</span></a></code></pre></div>
 <div class="figure" style="text-align: left">
-<img src="pdp-extending_files/figure-html/vip-1.png" alt="**Figure 2** Permuation-based VIP for the fitted network." width="70%"><p class="caption">
-<strong>Figure 2</strong> Permuation-based VIP for the fitted network.
+<img src="pdp-extending_files/figure-html/iris-svm-pdp-sd-1.png" alt="**Figure 2** Partial dependence of `setosa` on `Petal.Width` +/- one (pointwise) standard deviation." width="70%"><p class="caption">
+<strong>Figure 2</strong> Partial dependence of <code>setosa</code> on <code>Petal.Width</code> +/- one (pointwise) standard deviation.
 </p>
 </div>
-</div>
-<div id="ice-curves" class="section level4">
-<h4 class="hasAnchor">
-<a href="#ice-curves" class="anchor"></a>ICE curves</h4>
-<p>Next, we’ll construct ICE curves for the top two features: <code>rm</code> and <code>lstat</code>. To do this we use <code>pdp</code>’s <code><a href="../reference/partial.html">partial()</a></code> function. By default, <code><a href="../reference/partial.html">partial()</a></code> constructs <em>partial dependence plots</em> (PDPs); The PDP for a feature of interest can be constructed by averaging together the ICE curves from each observation for that feature. To suppress this averaging and construct ICE curves, set <code>ice = TRUE</code> in the call to <code><a href="../reference/partial.html">partial()</a></code>. Since ICE curves require a prediction for each observations, we can use the same wrapper function we defined earlier. The ICE curves for both <code>rm</code> and <code>lstat</code> in <strong>Figure 3</strong> display a bit of heterogeneity indicating the possible presence of interaction effects. The solid red curve in each plot represents the average of all of the ICE curves (i.e., the PDP for that feature).</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">p2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(model, <span class="dt">pred.var =</span> <span class="st">"rm"</span>, <span class="dt">pred.fun =</span> pred_wrapper, </a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">              <span class="dt">train =</span> <span class="kw">as.data.frame</span>(train_x)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(<span class="dt">alpha =</span> <span class="fl">0.1</span>)</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">p3 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(model, <span class="dt">pred.var =</span> <span class="st">"lstat"</span>, <span class="dt">pred.fun =</span> pred_wrapper, </a>
-<a class="sourceLine" id="cb8-5" data-line-number="5">              <span class="dt">train =</span> <span class="kw">as.data.frame</span>(train_x)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(<span class="dt">alpha =</span> <span class="fl">0.1</span>)</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(p2, p3, <span class="dt">ncol =</span> <span class="dv">2</span>)  <span class="co"># display plots side by side</span></a></code></pre></div>
+<p>For regression problems, the default prediction function is essentially</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">pred_fun &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">  <span class="kw">mean</span>(<span class="kw">predict</span>(object, newdata), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">}</a></code></pre></div>
+<p>This corresponds to step step 1. (c) in <strong>Algorithm 1</strong>. Suppose we would like to manually construct ICE curves instead. To accomplish this we need to pass a prediction function that returns a vector of predictions, one for each observation in <code>newdata</code> (i.e., just remove the call to <code>mean</code> in <code>pred.fun</code>).</p>
+<p>For illustration, we’ll use a corrected version of the Boston housing data analyzed in <span class="citation">Harrison and Rubinfeld (1978)</span>; the data are available in the <strong>pdp</strong> package (see <code><a href="../reference/boston.html">?pdp::boston</a></code> for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees using the <strong>ranger</strong> package <span class="citation">(Wright, Wager, and Probst 2018)</span>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># Fit a random forest to the Boston housing data</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">boston_rfo &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ranger/topics/ranger">ranger</a></span>(cmedv <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> boston)</a></code></pre></div>
+<p>The model fit is reasonable, with an <em>out-of-bag</em> (pseudo) <span class="math inline">\(R^2\)</span> of 0.879.</p>
+<p>The code snippet below manually constructs ICE curves for the Boston housing example using the predictor <code>rm</code>. The result is displayed in <strong>Figure 3</strong>. Note that when the function supplied to <code>pred.fun</code> returns multiple predictions, the data frame returned by <code><a href="../reference/partial.html">partial()</a></code> includes an additional column, <code>yhat.id</code>, that indicates which curve a point belongs to; in the following code chunk, there will be one curve for each observation in <code>boston</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Use partial to obtain ICE curves</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">ranger_ice &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="kw">predict</span>(object, newdata)<span class="op">$</span>predictions</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">}</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">rm_ice &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(boston_rfo, <span class="dt">pred.var =</span> <span class="st">"rm"</span>, <span class="dt">pred.fun =</span> ranger_ice)</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co"># Figure 3</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(rm_ice, <span class="dt">rug =</span> <span class="ot">TRUE</span>, <span class="dt">train =</span> boston, <span class="dt">alpha =</span> <span class="fl">0.3</span>)</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#&gt; Warning: Ignoring unknown parameters: csides</span></a></code></pre></div>
 <div class="figure" style="text-align: left">
-<img src="pdp-extending_files/figure-html/ice-curves-1.png" alt="**Figure 3** ICE curves (black lines) and PDPs (red lines) for the predictors `rm` (left) and `lstat` (right)." width="70%"><p class="caption">
-<strong>Figure 3</strong> ICE curves (black lines) and PDPs (red lines) for the predictors <code>rm</code> (left) and <code>lstat</code> (right).
+<img src="pdp-extending_files/figure-html/boston-ranger-ice-curves-1.png" alt="**Figure 3** ICE curves depicting the relationship between `cmedv` and `rm` for the Boston housing example. Each curve corresponds to a different observation." width="70%"><p class="caption">
+<strong>Figure 3</strong> ICE curves depicting the relationship between <code>cmedv</code> and <code>rm</code> for the Boston housing example. Each curve corresponds to a different observation.
 </p>
 </div>
-<p>A couple of additional points are worth noting:</p>
-<ol style="list-style-type: decimal">
-<li><p>The default output from <code><a href="../reference/partial.html">partial()</a></code> is a data frame. You can set <code>plot = TRUE</code> to obtain a plot instead, but since these plots can be expensive to compute, it is better to store the results and plot them manually using, for example, <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> (for <code>ggplot2</code>-based plots) or <code><a href="../reference/plotPartial.html">plotPartial()</a></code> (for <code>lattice</code>-based plots).</p></li>
-<li><p>Before fitting the network we normalized the data by centering and scaling each feature. In order for these plots to be on the original scale, you would need to unscale the corresponding column(s) in the output by multiplying by the original sample standard deviation and adding back the sample mean of that feature.</p></li>
-<li><p>ICE curves and PDPs can be computationally expensive. Some strategies are discussed in <span class="citation">(<span class="citeproc-not-found" data-reference-id="greenwell-pdp-2017"><strong>???</strong></span>)</span>. The <code><a href="../reference/partial.html">partial()</a></code> function has many useful options to help, for example, <code>progress</code> and <code>parallel</code> (see <code><a href="../reference/partial.html">?pdp::partial</a></code> for details).</p></li>
-</ol>
-</div>
-<div id="pdp" class="section level4">
-<h4 class="hasAnchor">
-<a href="#pdp" class="anchor"></a>PDP</h4>
-<p>To obtain a PDP, we need to supply a prediction function that returns the average prediction across all observations. This can be easily accomplished by adding an extra line to the previously defined wrapper.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">pdp_wrapper &lt;-<span class="st"> </span><span class="cf">function</span>(object, newdata) {</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">  <span class="kw">predict</span>(object, <span class="dt">x =</span> <span class="kw">as.matrix</span>(newdata)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">    </span><span class="kw">as.vector</span>() <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">    </span><span class="kw">mean</span>()  <span class="co"># aggregate ICE curves</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">}</a></code></pre></div>
-<p>Next, we’ll construct the partial dependence of medium home value (<code>cmedv</code>) on the average number of rooms per dwelling (<code>rm</code>) and the percentage of lower status of the population (<code>lstat</code>). To restrict the predictions to the region of joint values of <code>rm</code> and <code>lstat</code> observed in the training data (i.e., to avoid extrapolating) we set <code>chull = TRUE</code> in the call to <code><a href="../reference/partial.html">partial()</a></code>; this also helps speed up computation time by restricting the grid over which predictions are obtained. The resulting plot displayed in <strong>Figure 4</strong> indicates what we would naturally expect: that census tracts with a higher average number of rooms per dwelling and a lower percentage of lower status of the population tend to have a higher median value.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">p4 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(model, <span class="dt">pred.var =</span> <span class="kw">c</span>(<span class="st">"rm"</span>, <span class="st">"lstat"</span>), <span class="dt">chull =</span> <span class="ot">TRUE</span>, </a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">              <span class="dt">pred.fun =</span> pdp_wrapper, <span class="dt">train =</span> <span class="kw">as.data.frame</span>(train_x)) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>()</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="kw">print</span>(p4)  <span class="co"># display plot</span></a></code></pre></div>
+<p>The curves in <strong>Figure 3</strong> indicate some heterogeneity in the fitted model (i.e., some of the curves depict the opposite relationship). Such heterogeneity can be easier to spot using c-ICE curves; see Equation (4) on page 49 of <span class="citation">Goldstein et al. (2015)</span>. Using <strong>dplyr</strong> [<span class="citation">Wickham et al. (2018)</span>}, it is rather straightforward to post-process the output from <code><a href="../reference/partial.html">partial()</a></code> to obtain c-ICE curves (similar to the construction of <em>raw change scores</em> <span class="citation">(Fitzmaurice, Laird, and Ware 2011, pg. 130)</span> for longitudinal data)<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. This is shown below.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># Post-process rm.ice to obtain c-ICE curves</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">rm_ice &lt;-<span class="st"> </span>rm_ice <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(yhat.id) <span class="op">%&gt;%</span><span class="st">  </span><span class="co"># perform next operation within each yhat.id</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">yhat.centered =</span> yhat <span class="op">-</span><span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/nth.html">first</a></span>(yhat))  <span class="co"># so each curve starts at yhat = 0</span></a></code></pre></div>
+<p>Since the PDP is just the average of the corresponding ICE curves, it is quite simple to display both on the same plot. This is easily accomplished using the <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/stat_summary">stat_summary()</a></code> function from the <strong>ggplot2</strong> package to average the ICE curves together. The code snippet below plots the ICE curves and c-ICE curves, along with their averages, for the predictor <code>rm</code> in the Boston housing example. The results are displayed in <strong>Figure 4</strong>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># ICE curves with their average</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">p1 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(rm_ice, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(rm, yhat)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">group =</span> yhat.id), <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/stat_summary">stat_summary</a></span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">"line"</span>, <span class="dt">col =</span> <span class="st">"red"</span>, <span class="dt">size =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co"># c-ICE curves with their average</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7">p2 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(rm_ice, <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(rm, yhat.centered)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_line</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">group =</span> yhat.id), <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/stat_summary">stat_summary</a></span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom =</span> <span class="st">"line"</span>, <span class="dt">col =</span> <span class="st">"red"</span>, <span class="dt">size =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="co"># Figure 4</span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(p1, p2, <span class="dt">ncol =</span> <span class="dv">2</span>)</a></code></pre></div>
 <div class="figure" style="text-align: left">
-<img src="pdp-extending_files/figure-html/pdp-1.png" alt="**Figure 4** Partial dependence of `cmedv` on `rm` and `lstat`." width="70%"><p class="caption">
-<strong>Figure 4</strong> Partial dependence of <code>cmedv</code> on <code>rm</code> and <code>lstat</code>.
+<img src="pdp-extending_files/figure-html/boston-ranger-cice-curves-1.png" alt="**Figure 4** ICE curves (black curves) and their average (red curve) depicting the relationship between `cmedv` and `rm` for the Boston housing example. *Left*: Uncentered (here the red curve is just the traditional PDP). *Right*: Centered." width="100%"><p class="caption">
+<strong>Figure 4</strong> ICE curves (black curves) and their average (red curve) depicting the relationship between <code>cmedv</code> and <code>rm</code> for the Boston housing example. <em>Left</em>: Uncentered (here the red curve is just the traditional PDP). <em>Right</em>: Centered.
 </p>
 </div>
-<p>Finally, we can display all the results in a single plot.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw"><a href="../reference/grid.arrange.html">grid.arrange</a></span>(p1, p2, p3, p4, <span class="dt">ncol =</span> <span class="dv">2</span>)  <span class="co"># display plots in a grid</span></a></code></pre></div>
-<p><img src="pdp-extending_files/figure-html/all-results-1.png" width="70%" style="display: block; margin: auto auto auto 0;"></p>
-</div>
-</div>
-</div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
-<div id="ref-pkg-keras">
-<p>Allaire, JJ, and François Chollet. 2018. <em>Keras: R Interface to ’Keras’</em>. <a href="https://CRAN.R-project.org/package=keras" class="uri">https://CRAN.R-project.org/package=keras</a>.</p>
-</div>
-<div id="ref-random-breiman-2001">
-<p>Breiman, Leo. 2001. “Random Forests.” <em>Machine Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="uri">https://doi.org/10.1023/A:1010933404324</a>.</p>
+<div id="ref-fitzmaurice-applied-2011">
+<p>Fitzmaurice, G. M., N. M. Laird, and J. H. Ware. 2011. <em>Applied Longitudinal Analysis</em>. Wiley Series in Probability and Statistics. John Wiley &amp; Sons.</p>
 </div>
 <div id="ref-goldstein-peeking-2015">
 <p>Goldstein, Alex, Adam Kapelner, Justin Bleich, and Emil Pitkin. 2015. “Peeking Inside the Black Box: Visualizing Statistical Learning with Plots of Individual Conditional Expectation.” <em>Journal of Computational and Graphical Statistics</em> 24 (1): 44–65. <a href="https://doi.org/10.1080/10618600.2014.907095" class="uri">https://doi.org/10.1080/10618600.2014.907095</a>.</p>
 </div>
-<div id="ref-pkg-vip">
-<p>Greenwell, Brandon, and Brad Boehmke. 2018. <em>Vip: Variable Importance Plots</em>. <a href="https://CRAN.R-project.org/package=vip" class="uri">https://CRAN.R-project.org/package=vip</a>.</p>
+<div id="ref-R-vip">
+<p>Greenwell, Brandon, and Brad Boehmke. n.d. <em>Vip: Variable Importance Plots</em>. <a href="https://koalaverse.github.io/vip/index.html" class="uri">https://koalaverse.github.io/vip/index.html</a>.</p>
 </div>
-<div id="ref-harrison-1978-hedonic">
+<div id="ref-R-pdp">
+<p>Greenwell, Brandon M. 2017. “Pdp: An R Package for Constructing Partial Dependence Plots.” <em>The R Journal</em> 9 (1): 421–36. <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>.</p>
+</div>
+<div id="ref-harrison-hedonic-1978">
 <p>Harrison, David, and Daniel L. Rubinfeld. 1978. “Hedonic Housing Prices and the Demand for Clean Air.” <em>Journal of Environmental Economics and Management</em> 5 (1): 81–102. <a href="https://doi.org/10.1016/0095-0696(78)90006-2" class="uri">https://doi.org/10.1016/0095-0696(78)90006-2</a>.</p>
+</div>
+<div id="ref-R-kernlab">
+<p>Karatzoglou, Alexandros, Alex Smola, and Kurt Hornik. 2018. <em>Kernlab: Kernel-Based Machine Learning Lab</em>. <a href="https://CRAN.R-project.org/package=kernlab" class="uri">https://CRAN.R-project.org/package=kernlab</a>.</p>
+</div>
+<div id="ref-R-dplyr">
+<p>Wickham, Hadley, Romain François, Lionel Henry, and Kirill Müller. 2018. <em>Dplyr: A Grammar of Data Manipulation</em>. <a href="https://CRAN.R-project.org/package=dplyr" class="uri">https://CRAN.R-project.org/package=dplyr</a>.</p>
+</div>
+<div id="ref-R-ranger">
+<p>Wright, Marvin N., Stefan Wager, and Philipp Probst. 2018. <em>Ranger: A Fast Implementation of Random Forests</em>. <a href="https://CRAN.R-project.org/package=ranger" class="uri">https://CRAN.R-project.org/package=ranger</a>.</p>
 </div>
 </div>
 </div>
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>An epoch refers to a single iteration (both forward and backward) over the entire training data set.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>In practice, you’ll want to tune various other hyperparameters of the network as well, like the size of the hidden layers.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>This is more conveniently available via the <code>prob</code> argument starting with <strong>pdp</strong> version 0.5.0<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>ICE curves are more conveniently available via the <code>ice</code> argument starting with <strong>pdp</strong> version 0.6.0<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>c-ICE curves are more conveniently available via the <code>ice</code> and <code>center</code> arguments starting with <strong>pdp</strong> version 0.6.0<a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
   </div>
@@ -282,8 +263,8 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#predicting-median-home-value-using-tensorflow">Predicting median home value using TensorFlow</a></li>
-      <li><a href="#references">References</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+      <li><a href="#user-defined-prediction-functions">User-defined prediction functions</a></li>
       </ul>
 </div>
       </div>

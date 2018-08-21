@@ -306,7 +306,7 @@ ggplot_ice_curves <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[1L]),csides = "b",
+        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]),csides = "b",
                           inherit.aes = FALSE)
       }
     }
@@ -372,7 +372,7 @@ ggplot_one_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[1L]), sides = "b",
+        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
                           inherit.aes = FALSE)
       }
     }
@@ -452,7 +452,7 @@ ggplot_two_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[1L]), sides = "b",
+        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
                           inherit.aes = FALSE)
       }
     }
@@ -481,7 +481,7 @@ ggplot_two_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[1L]), sides = "b",
+        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
                           inherit.aes = FALSE)
       }
     }

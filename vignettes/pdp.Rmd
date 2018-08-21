@@ -12,20 +12,20 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
+  cache = FALSE,
   collapse = TRUE,
   comment = "#>",
-  message = FALSE
+  message = FALSE,
+  fig.align = "left"
 )
 ```
 
-## Warning: this vignette is still under construction!
-
-Complex nonparametric models---like neural networks, random forests, and support vector machines---are more common than ever in predictive analytics, especially when dealing with large observational databases that don't adhere to the strict assumptions imposed by traditional statistical techniques (e.g., multiple linear regression which assumes linearity, homoscedasticity, and normality). Unfortunately, it can be challenging to understand the results of such models and explain them to management. Partial dependence plots offer a simple solution. Partial dependence plots are low-dimensional graphical renderings of the prediction function $\widehat{f}\left(\boldsymbol{x}\right)$ so that the relationship between the outcome and predictors of interest can be more easily understood. These plots are especially useful in explaining the output from black box models. In this vignette, we introduce **pdp** [@pdp-pkg], a general R package for constructing *partial dependence plots* (PDPs) [@friedman-2001-greedy].
+Complex nonparametric models---like neural networks, random forests, and support vector machines---are more common than ever in predictive analytics, especially when dealing with large observational databases that don't adhere to the strict assumptions imposed by traditional statistical techniques (e.g., multiple linear regression which assumes linearity, homoscedasticity, and normality). Unfortunately, it can be challenging to understand the results of such models and explain them to management. Partial dependence plots offer a simple solution. Partial dependence plots are low-dimensional graphical renderings of the prediction function $\widehat{f}\left(\boldsymbol{x}\right)$ so that the relationship between the outcome and predictors of interest can be more easily understood. These plots are especially useful in explaining the output from black box models. In this vignette, we introduce **pdp** [@R-pdp], a general R package for constructing *partial dependence plots* (PDPs) [@friedman-greedy-2001].
 
 
 ## Introduction
 
-@harrison-1978-hedonic were among the first to analyze the well-known Boston housing data. One of their goals was to find a housing value equation using data on median home values from $n = 506$ census tracts in the suburbs of Boston from the 1970 census; see @harrison-1978-hedonic, Table IV, for a description of each variable. The data violate many classical assumptions like linearity, normality, and constant variance. Nonetheless, -@harrison-1978-hedonic---using a combination of transformations, significance testing, and grid searches---were able to find a reasonable fitting model ($R^2 = 0.81$). Part of the payoff for there time and efforts was an interpretable prediction equation which is reproduced in below.
+@harrison-hedonic-1978 were among the first to analyze the well-known Boston housing data. One of their goals was to find a housing value equation using data on median home values from $n = 506$ census tracts in the suburbs of Boston from the 1970 census; see @harrison-hedonic-1978, Table IV, for a description of each variable. The data violate many classical assumptions like linearity, normality, and constant variance. Nonetheless, @harrison-hedonic-1978 (using a combination of transformations, significance testing, and grid searches) were able to find a reasonable fitting model ($R^2 = 0.81$). Part of the payoff for there time and efforts was an interpretable prediction equation which is reproduced in below.
 
 $$
 \widehat{\log\left(MV\right)} = 9.76 + 0.0063 RM^2 + 8.98\times10^{-5} AGE - 0.19\log\left(DIS\right) + 0.096\log\left(RAD\right) \\
@@ -69,9 +69,9 @@ Constructing a PDP in practice is rather straightforward. To simplify, let $\bol
 
 **Algorithm 1** can be quite computationally intensive since it involves $k$ passes over the training records. Fortunately, the algorithm can be parallelized quite easily (see this vignette for details). It can also be easily extended to larger subsets of two or more features as well.
 
-Limited implementations of Friedman's PDPs are available in packages **randomForest** [@randomForest-pkg] and **gbm** [@gbm-pkg], among others; these are limited in the sense that they only apply to the models fit using the respective package. For example, the `partialPlot()` function in **randomForest** only applies to objects of class `"randomForest"` and the `plot()` function in **ghbm** only applies to `"gbm"` objects. While the **randomForest** implementation will only allow for a single predictor, the **gbm** implementation can deal with any subset of the predictor space. Partial dependence functions are not restricted to tree-based models; they can be applied to any supervised learning algorithm (e.g., generalized additive models and neural networks). However, to our knowledge, there is no general package for constructing PDPs in R. For example, PDPs for a conditional random forest as implemented by the `cforest()` function in the **party** and **partykit** packages; see @party-pkg and @partykit-pkg, respectively. The **pdp** [@pdp-pkg] package tries to close this gap by offering a general framework for constructing PDPs that can be applied to several classes of fitted models.
+Limited implementations of Friedman's PDPs are available in packages **randomForest** [@R-randomForest] and **gbm** [@R-gbm], among others; these are limited in the sense that they only apply to the models fit using the respective package. For example, the `partialPlot()` function in **randomForest** only applies to objects of class `"randomForest"` and the `plot()` function in **ghbm** only applies to `"gbm"` objects. While the **randomForest** implementation will only allow for a single predictor, the **gbm** implementation can deal with any subset of the predictor space. Partial dependence functions are not restricted to tree-based models; they can be applied to any supervised learning algorithm (e.g., generalized additive models and neural networks). However, to our knowledge, there is no general package for constructing PDPs in R. For example, PDPs for a conditional random forest as implemented by the `cforest()` function in the **party** and **partykit** packages; see @R-party and @R-partykit, respectively. The **pdp** [@R-pdp] package tries to close this gap by offering a general framework for constructing PDPs that can be applied to several classes of fitted models.
 
-The **plotmo** package [@plotmo-pkg] is one alternative to **pdp**. According to -@plotmo-pkg, **plotmo** constructs "a poor man's partial dependence plot." In particular, it plots a model's response when varying one or two predictors while holding the other predictors in the model constant (continuous features are fixed at their median value, while factors are held at their first level). These plots allow for up to two variables at a time. They are also less accurate than PDPs, but are faster to construct. For additive models (i.e., models with no interactions), these plots are identical in shape to PDPs. As of **plotmo** version 3.3.0, there is now support for constructing PDPs, but it is not the default. The main difference is that **plotmo**, rather than applying step 1. (a)-(c) in **Algorithm 1**, accumulates all the data at once thereby reducing the number of internal calls to `predict()`. The trade-off is a slight increase in speed at the expense of using more memory. So, why use the **pdp** package? As will be discussed in the upcoming sections, **pdp**:
+The **plotmo** package [@R-plotmo] is one alternative to **pdp**. According to @R-plotmo, **plotmo** constructs "a poor man's partial dependence plot." In particular, it plots a model's response when varying one or two predictors while holding the other predictors in the model constant (continuous features are fixed at their median value, while factors are held at their first level). These plots allow for up to two variables at a time. They are also less accurate than PDPs, but are faster to construct. For additive models (i.e., models with no interactions), these plots are identical in shape to PDPs. As of **plotmo** version 3.3.0, there is now support for constructing PDPs, but it is not the default. The main difference is that **plotmo**, rather than applying step 1. (a)-(c) in **Algorithm 1**, accumulates all the data at once thereby reducing the number of internal calls to `predict()`. The trade-off is a slight increase in speed at the expense of using more memory. So, why use the **pdp** package? As will be discussed in the upcoming sections, **pdp**:
 
   * contains only a few functions with relatively few arguments;
   
@@ -79,7 +79,7 @@ The **plotmo** package [@plotmo-pkg] is one alternative to **pdp**. According to
   
   * can be used more efficiently with `"gbm"` objects;
   
-  * produces graphics based on `lattice` [@lattice-pkg], which are more flexible than base R graphics;
+  * produces graphics based on `lattice` [@R-lattice], which are more flexible than base R graphics;
   
   * defaults to using false color level plots for multivariate displays;
   
@@ -91,7 +91,7 @@ The **plotmo** package [@plotmo-pkg] is one alternative to **pdp**. According to
   
   * is extremely flexible in the types of PDPs that can be produced.
 
-PDPs can be misleading in the presence of substantial interactions [@goldstein-peeking-2015]. To overcome this issue -@goldstein-peeking-2015 developed the concept of *individual conditional expectation* (ICE) plots---available in the **ICEbox** package [@ICEbox-pkg]. ICE plots display the estimated relationship between the response and a predictor of interest for each observation. Consequently, the PDP for a predictor of interest can be obtained by averaging the corresponding ICE curves across all observations. ICE curves can be obtained using the **pdp** package by setting `ice = TRUE` in the call to `partial()`. It is also possible to display the PDP for a single predictor with **ICEbox**; see `?ICEbox::plot.ice` for an example. **ICEbox** only allows for one variable at a time (i.e., no multivariate displays), though color can be used effectively to display information about an additional predictor. The ability to construct centered ICE (c-ICE) plots and derivative ICE (d-ICE) plots is also available in **ICEbox** (same goes for **pdp**); c-ICE plots help visualize heterogeneity in the modeled relationship between observations, and d-ICE plots help to explore interaction effects.
+PDPs can be misleading in the presence of substantial interactions [@goldstein-peeking-2015]. To overcome this issue @goldstein-peeking-2015 developed the concept of *individual conditional expectation* (ICE) plots---available in the **ICEbox** package [@R-ICEbox]. ICE plots display the estimated relationship between the response and a predictor of interest for each observation. Consequently, the PDP for a predictor of interest can be obtained by averaging the corresponding ICE curves across all observations. ICE curves can be obtained using the **pdp** package by setting `ice = TRUE` in the call to `partial()`. It is also possible to display the PDP for a single predictor with **ICEbox**; see `?ICEbox::plot.ice` for an example. **ICEbox** only allows for one variable at a time (i.e., no multivariate displays), though color can be used effectively to display information about an additional predictor. The ability to construct centered ICE (c-ICE) plots and derivative ICE (d-ICE) plots is also available in **ICEbox** (same goes for **pdp**); c-ICE plots help visualize heterogeneity in the modeled relationship between observations, and d-ICE plots help to explore interaction effects.
 
 Many other techniques exist for visualizing relationships between the predictors and the response based on a fitted model. For example, the **car** package [@fox-car-2011] contains many functions for constructing *partial-residual* and *marginal-model* plots. *Effect displays*, available in the **effects** package [@fox-effects-2003], provide tabular and graphical displays for the terms in parametric models while holding all other predictors at some constant value---similar in spirit to **plotmo**'s marginal model plots. However, these methods were designed for simpler parametric models (e.g., linear and generalized linear models), whereas **plotmo**, **ICEbox**, and **pdp** are more useful for black box models (although, they can be used for simple parametric models as well).
 
@@ -110,13 +110,13 @@ The `partial()` function evaluates the partial dependence from a fitted model ov
 
 The `plotPartial()` and `autoplot()` functions can be used for displaying more advanced PDPs; they operate on objects of class `"partial"` and have many useful plotting options. For example, `plotPartial()` makes it straight forward to add a LOESS smooth, or produce a 3-D surface instead of a false color level plot (the default). (**Note:** the `autoplot()` function does not support the construction of 3-D surfaces.) Of course, since the default output produced by `partial()` is still a data frame, the user can easily use any plotting package he/she desires to visualize the results.
 
-**Note:** as mentioned above, **pdp** relies on **lattice** for its graphics. **lattice** itself is built on top of **grid** [@grid-pkg]. **grid** graphics behave a little differently than traditional R graphics, and two points are worth making (see `?lattice` for more details):
+**Note:** as mentioned above, **pdp** relies on **lattice** for its graphics. **lattice** itself is built on top of **grid** [@R-grid]. **grid** graphics behave a little differently than traditional R graphics, and two points are worth making (see `?lattice` for more details):
 
   * **lattice** and **ggplot2** functions return `"trellis"` and `"ggplot"` objects, respectively, but do not display them; the `print()` method produces the actual displays. However, due to R's automatic printing rule, the result is automatically printed when using these functions in the command line. If `plotPartial()` or `autoplot()` are called inside of `source` or inside a loop (e.g., `for` or `while`), an explicit `print` statement is required to display the resulting graph; hence, the same is true when using `partial()` with `plot = TRUE`.
 
   * Setting graphical parameters via the `par()` function typically has no effect on **lattice** and **ggplot2** graphics. For example, **lattice** provides its own `trellis.par.set()` function for modifying graphical parameters.
 
-A consequence of the second point is that the `par()` function cannot be used to control the layout of multiple **lattice** (and hence **pdp**) plots. Simple solutions are available in packages **latticeExtra** [@latticeExtra-pkg] and **gridExtra** [@gridExtra-pkg]. For convenience, **pdp** imports the `grid.arrange()` function from **gridExtra** which makes it easy to display multiple **grid**-based graphical objects on a single plot (these include graphics produced using **lattice** and and **ggplot2**---hence, **pdp**). This is demonstrated in multiple examples throughout the vignettes in this package.
+A consequence of the second point is that the `par()` function cannot be used to control the layout of multiple **lattice** (and hence **pdp**) plots. Simple solutions are available in packages **latticeExtra** [@R-latticeExtra] and **gridExtra** [@R-gridExtra]. For convenience, **pdp** imports the `grid.arrange()` function from **gridExtra** which makes it easy to display multiple **grid**-based graphical objects on a single plot (these include graphics produced using **lattice** and and **ggplot2**---hence, **pdp**). This is demonstrated in multiple examples throughout the vignettes in this package.
 
 Currently supported models are described in **Table 1** below. In these cases, the user does not need to supply a prediction function or a value for the `type` argument (i.e., `"regression"` or `"classification"`). In other situations, the user may need to specify one or both of these arguments. This allows `partial()` to be flexible enough to handle many of the model types not listed in **Table 1**; for example, neural networks from the **nnet** package [@venables-modern-2002] and projection pursuit regression [@friedman-ppr-1981] using the `ppr()` function in the **stats** package.
 
@@ -124,39 +124,39 @@ Currently supported models are described in **Table 1** below. In these cases, t
 
 | Type of model                 | R package | Object class |
 |:------------------------------|:----------|:-------------|
-| Decision tree                 | **C50** [@C50-pkg] | `"C5.0"` |
-|                               | **party**    | `"BinaryTree"` |
-|                               | **partykit** | `"party"` |
-|                               | **rpart** [@rpart-pkg] | `"rpart"` |
-| Bagged decision trees         | **adabag** [@adabag-pkg] | `"bagging"` |
-|                               | **ipred** [@ipred-pkg] | `"classbagg"`, `"regbagg"` |
-| Boosted decision trees        | **adabag** [@adabag-pkg] | `"boosting"` |
-|                               | **gbm**      | `"gbm"` |
-|                               | **xgboost** | `"xgb.Booster"` |
-| Cubist                        | **Cubist** [@Cubist-pkg] | `"cubist"` |
+| Decision tree                 | **C50** [@R-C50]                 | `"C5.0"` |
+|                               | **party**                        | `"BinaryTree"` |
+|                               | **partykit**                     | `"party"` |
+|                               | **rpart** [@R-rpart]             | `"rpart"` |
+| Bagged decision trees         | **adabag** [@R-adabag]           | `"bagging"` |
+|                               | **ipred** [@R-ipred]             | `"classbagg"`, `"regbagg"` |
+| Boosted decision trees        | **adabag** [@R-adabag]           | `"boosting"` |
+|                               | **gbm**                          | `"gbm"` |
+|                               | **xgboost**                      | `"xgb.Booster"` |
+| Cubist                        | **Cubist** [@R-Cubist]           | `"cubist"` |
 | Discriminant analysis         | **MASS** [@venables-modern-2002] | `"lda"`, `"qda"` |
-| Generalized linear model      | **stats**    | `"glm"`, `"lm"` |
-| Linear model                  | **stats**    | `"lm"` |
-| Nonlinear least squares       | **stats**    | `"nls"` |
-| Multivariate adaptive regression splines (MARS) | **earth** [@earth-pkg] | `"earth"` |
+| Generalized linear model      | **stats**                        | `"glm"`, `"lm"` |
+| Linear model                  | **stats**                        | `"lm"` |
+| Nonlinear least squares       | **stats**                        | `"nls"` |
+| Multivariate adaptive regression splines (MARS) | **earth** [@R-earth] | `"earth"` |
 | Projection pursuit regression | **stats** | `"ppr"` |
 | Random forest                 | **randomForest** | `"randomForest"` |
-|                               | **ranger** [@ranger-pkg] | `"ranger"` |
+|                               | **ranger** [@R-ranger] | `"ranger"` |
 |                               | **party**        | `"RandomForest"` |
 |                               | **partykit** | `"cforest"` |
-| Support vector machine        | **e1071** [@e1071-pkg] | `"svm"` |
-|                               | **kernlab** [@kernlab-pkg] | `"ksvm"` |
+| Support vector machine        | **e1071** [@R-e1071] | `"svm"` |
+|                               | **kernlab** [@R-kernlab] | `"ksvm"` |
 
-The `partial()` function also supports objects of class `"train"` produced using the `train()` function from the well-known **caret** package [@caret-pkg]. This means that `partial()` can be used with any classification or regression model that has been fit using **caret**'s `train()` function; see http://topepo.github.io/caret/available-models.html for a current list of models supported by **caret**. 
+The `partial()` function also supports objects of class `"train"` produced using the `train()` function from the well-known **caret** package [@R-caret]. This means that `partial()` can be used with any classification or regression model that has been fit using **caret**'s `train()` function; see http://topepo.github.io/caret/available-models.html for a current list of models supported by **caret**. 
 
-Another important argument to `partial()` is `train`. If `train = NULL` (the default), `partial()` tries to extract the original training data from the fitted model object. For objects that typically store a copy of the training data (e.g., objects of class `"BinaryTree"`, `"RandomForest"`, and `"train"`), this is straightforward. Otherwise, `partial()` will attempt to extract the call stored in `object` (if available) and use that to evaluate the training data in the same environment from which `partial()` was called. This can cause problems when, for example, the training data have been changed after fitting the model, but before calling `partial()`. Hence, it is good practice to always supply the training data via the `train` argument in the call to `partial()`^[For brevity, we ignore this option in most of the examples in this paper.]. If `train = NULL` and the training data can not be extracted from the fitted model, the user will be prompted with an informative error message (this will occur, for example, when using `partial()` with `"ksvm"` and `"xgb.Booster"` objects):
+Another important argument to `partial()` is `train`. If `train = NULL` (the default), `partial()` tries to extract the original training data from the fitted model object. For objects that typically store a copy of the training data (e.g., objects of class `"BinaryTree"`, `"RandomForest"`, and `"train"`), this is straightforward. Otherwise, `partial()` will attempt to extract the call stored in `object` (if available) and use that to evaluate the training data in the same environment from which `partial()` was called. This can cause problems when, for example, the training data have been changed after fitting the model, but before calling `partial()`. Hence, it is good practice to always supply the training data via the `train` argument in the call to `partial()`^[For brevity, we ignore this option in most of the examples in this vignette.]. If `train = NULL` and the training data can not be extracted from the fitted model, the user will be prompted with an informative error message (this will occur, for example, when using `partial()` with `"ksvm"` and `"xgb.Booster"` objects):
 
 ```
 Error: The training data could not be extracted from object. Please supply
 the raw training data using the `train` argument in the call to `partial`.
 ```
 
-For illustration, we will use a corrected version of the Boston housing data analyzed in @harrison-1978-hedonic; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees:
+For illustration, we'll use a corrected version of the Boston housing data analyzed in @harrison-hedonic-1978; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees:
 
 ```{r, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 1** Variable importance plot for the Boston housing data based on a random forest with 500 trees."}
 # Load required packages
@@ -166,10 +166,10 @@ library(vip)           # for variable importance plots
 
 # Fit a random forest to the Boston housing data
 set.seed(101)  # for reproducibility
-boston.rf <- randomForest(cmedv ~ ., data = boston, importance = TRUE)
+boston_rf <- randomForest(cmedv ~ ., data = boston, importance = TRUE)
 
-# Variable importance plot (compare to randomForest::varImpPlot(boston.rf))
-vip(boston.rf, bar = FALSE, horizontal = FALSE, size = 1.5)
+# Variable importance plot (compare to randomForest::varImpPlot(boston_rf))
+vip(boston_rf, bar = FALSE, horizontal = FALSE, size = 1.5)  # Figure 1
 ```
 
 The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of 0.89. The variable importance scores are displayed in **Figure 1**. Both plots indicate that the percentage of lower status of the population (`lstat`) and the average number of rooms per dwelling (`rm`) are highly associated with the median value of owner-occupied homes (`cmedv`). The question then arises, "What is the nature of these associations?" To help answer this, we can look at the partial dependence of `cmedv` on `lstat` and `rm`, both individually and together.
@@ -180,7 +180,7 @@ The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of 0.89. The va
 As previously mentioned, the **randomForest** package has its own `partialPlot()` function for visualizing the partial dependence of the response on a single predictor---the keywords here are "single predictor". For example, the following snippet of code plots the partial dependence of `cmedv` on `lstat` (the result is displayed in **Figure 2**):
 
 ```{r, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 2** Default PDP using the `randomForest::partialPlot()`."}
-partialPlot(boston.rf, pred.data = boston, x.var = "lstat")
+partialPlot(boston_rf, pred.data = boston, x.var = "lstat")  # Figure 2
 ```
 
 The same plot can be achieved using the `partial()` function and setting `plot = TRUE` (see **Figure 3**). The only difference is that **pdp** uses the **lattice** and **ggplot2** graphics packages to produce all of its displays.
@@ -191,33 +191,87 @@ library(ggplot2)
 library(pdp)
 
 # Default lattice-based PDP
-p1 <- partial(boston.rf, pred.var = "lstat", plot = TRUE, rug = TRUE)
+p1 <- partial(boston_rf, pred.var = "lstat", plot = TRUE, rug = TRUE)
 
 # Switch to ggplot2
-p2 <- partial(boston.rf, pred.var = "lstat", plot = TRUE,
+p2 <- partial(boston_rf, pred.var = "lstat", plot = TRUE,
               plot.engine = "ggplot2")
 
-# Display plots side by side
+# Figure 3
 grid.arrange(p1, p2, ncol = 2)  
 ```
 
-For a more customizable plot, we can set `plot = FALSE` in the call to `partial()` and then use the `plotPartial()` and `autoplot()` functions on the resulting data frame. This is illustrated in the example below which increases the line width, adds a LOESS smooth, and customizes the $y$-axis label. The result is displayed in **Figure 4**. **Note:** to encourage writing more readable code, the *forward pipe* operator `\%>\%` provided by the **magrittr** package [@magrittr-pkg] is exported whenever **pdp** is loaded.
+For a more customizable plot, we can set `plot = FALSE` in the call to `partial()` and then use the `plotPartial()` and `autoplot()` functions on the resulting data frame. This is illustrated in the example below which increases the line width, adds a LOESS smooth, and customizes the $y$-axis label. The result is displayed in **Figure 4**. **Note:** to encourage writing more readable code, the *forward pipe* operator `\%>\%` provided by the **magrittr** package [@R-magrittr] is exported whenever **pdp** is loaded.
 
 ```{r, fig.width=7, fig.height=3.5, out.width="100%", fig.cap="**Figure 4** Customized PDP obtained using the `plotPartial()` function."}
 # lattice-based PDP
-p1 <- boston.rf %>%  # the %>% operator is read as "and then"
+p1 <- boston_rf %>%  # the %>% operator is read as "and then"
   partial(pred.var = "lstat") %>%
-  plotPartial(smooth = TRUE, lwd = 2, ylab = expression(f(lstat)))
+  plotPartial(smooth = TRUE, lwd = 2, ylab = expression(f(lstat)),
+              main = "lattice-based PDP")
 
 # ggplot2-based PDP
-p2 <- boston.rf %>%  # the %>% operator is read as "and then"
+p2 <- boston_rf %>%  # the %>% operator is read as "and then"
   partial(pred.var = "lstat") %>%
   autoplot(smooth = TRUE, ylab = expression(f(lstat))) +
-  theme_light()
+  theme_light() +
+  ggtitle("ggplot2-based PDP")
 
-# Display plots side by side
+# Figure 4
 grid.arrange(p1, p2, ncol = 2)  
 ```
+
+
+## Multi-predictor PDPs
+
+The benefit of using `partial` is threefold: (1) it is a flexible, generic function that can be used to obtain different kinds of PDPs for various types of fitted models (not just random forests), (2) it will allow for any number of predictors to be used (e.g., multivariate displays), and (3) it can utilize any of the parallel backends supported by the **foreach** package [@R-foreach]; we discuss parallel execution in a later section. For example, the following code chunk uses the random forest model to assess the joint effect of `lstat` and `rm` on `cmedv`. The `grid.arrange()` function is used to display three PDPs, which make use of various `plotPartial` options^[See this vignette for an example of how to add a label to the colorkey in these types of graphs.], on the same graph. The results are displayed in **Figure 5**.
+```{r, fig.width=9, fig.height=3, out.width="100%", fic.cap="**Figure 5** Partial dependence of `cmedv` on `lstat` and `rm` based on a random forest. *Left*: Default **lattice** plot. *Middle*: **lattice** plot with contour lines and a different color palette. *Right*: Using a 3-D surface."}
+# Compute partial dependence data for lstat and rm
+pd <- partial(boston_rf, pred.var = c("lstat", "rm"))
+
+# Default PDP
+pdp1 <- plotPartial(pd)
+
+# Add contour lines and use a different color palette
+rwb <- colorRampPalette(c("red", "white", "blue"))
+pdp2 <- plotPartial(pd, contour = TRUE, col.regions = rwb)
+
+# 3-D surface
+pdp3 <- plotPartial(pd, levelplot = FALSE, zlab = "cmedv", colorkey = TRUE, 
+                    screen = list(z = -20, x = -60))
+
+# Figure 5
+grid.arrange(pdp1, pdp2, pdp3, ncol = 3)
+```
+
+Note that the default color map for level plots is the color blind-friendly matplotlib [@hunter-matplotlib-2007] 'viridis' color map provided by the **viridis** package [@R-viridis].
+
+
+## Avoiding extrapolation
+
+It is not wise to draw conclusions from PDPs in regions outside the area of the training data. Here we describe two ways to mitigate the risk of extrapolation in PDPs: rug displays and convex hulls. Rug displays are one-dimensional plots added to the axes. The `partial()`, `plotPartial()`, and `autoplot()` functions all have a `rug` option that, when set to `TRUE`, will display the deciles of the distribution (as well as the minimum and maximum values) for the predictors on the horizontal and vertical axes. Using the deciles is especially useful when constructing PDPs from large training data sets (where using a tick mark for each unique observation will just end up looking like a solid strip). The following snippet of code produces **Figure 6**.
+
+```{r fig.width=6, fig.asp=0.618, out.width="100%", fig.cap="**Figure 6** Partial dependence of `cmedv` on `lstat` with a rug display on the $x$-axis."}
+# Figure 6
+partial(boston_rf, pred.var = "lstat", plot = TRUE, rug = TRUE, 
+        plot.engine = "ggplot2")
+```
+
+In two or more dimensions, plotting the convex hull is more informative; it outlines the region of the predictor space that the model was trained on. When \code{chull = TRUE}, the convex hull of the first two dimensions of $\boldsymbol{z}_s$ (i.e., the first two variables supplied to `pred.var`) is computed; for example, if you set `chull = TRUE` in the call to `partial()` only the region within the convex hull of the first two variables is plotted. Over interpreting the PDP outside of this region is considered extrapolation and is ill-advised. The right display in **Figure 7** was produced using:
+
+```{r, fig.width=7, fig.height=3.5, out.width="100%", fig.cap="**Figure 7** Examples of PDPs restricted to the convext hull of the features of interest using different color palettes."}
+p1 <- partial(boston_rf, pred.var = c("lstat", "rm"), plot = TRUE, chull = TRUE)
+p2 <- partial(boston_rf, pred.var = c("lstat", "rm"), plot = TRUE, chull = TRUE,
+              palette = "magma")
+grid.arrange(p1, p2, nrow = 1)  # Figure 7
+```
+
+
+## Other vignettes
+
+The following vignettes offer additional details on using the **pdp** package:
+
+* Coming soon!
 
 
 ## References

@@ -482,7 +482,7 @@ partial.default <- function(
   # Plot partial dependence function (if requested)
   if (plot) {  # return a graph (i.e., a "trellis" or "ggplot" object)
     plot.engine <- match.arg(plot.engine)
-    res <- if (ice) {
+    res <- if (inherits(pd.df, what = "ice")) {
       if (plot.engine == "ggplot2") {
         autoplot(
           object = pd.df, plot.pdp = TRUE, rug = rug, train = train,

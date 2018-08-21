@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-For illustration, we'll use a corrected version of the Boston housing data analyzed in @harrison-1978-hedonic; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees. The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of 0.89. A variable importance plot is displayed in **Figure 1** (using the permutation-based random forest definition of variable importance defined in @random-breiman-2001). It appears that `rm` (and `lstat`) is important in predicting `cmedv`. Next, we'd like to visualize the functional relationship between these two variables using a partial dependence plot (PDP).
+For illustration, we'll use a corrected version of the Boston housing data analyzed in @harrison-hedonic-1978; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees. The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of 0.89. A variable importance plot is displayed in **Figure 1** (using the permutation-based random forest definition of variable importance defined in @random-breiman-2001). It appears that `rm` (and `lstat`) is important in predicting `cmedv`. Next, we'd like to visualize the functional relationship between these two variables using a partial dependence plot (PDP).
 ```{r boston-rf-01, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 1** Variable importance plot."}
 data(boston, package = "pdp")  # load the (corrected) Boston housing data
 library(randomForest)  # for fitting random forests
@@ -47,22 +47,22 @@ partial(boston.rf, pred.var = "rm", quantiles = TRUE, probs = 0:20/20,
         alpha = 0.1)  # Figure 3
 ```
 
-The `partial()` function relies on the **plyr** package [@plyr-pkg], rather than R's built-in `for` loops. This makes it easy to request progress bars (e.g., `progress = "text"`) or run `partial()` in parallel. In fact, `partial()` can use any of the parallel backends supported by the `foreach` package. To use this functionality, we must first load and register a supported parallel backend (e.g., **doMC** [@doMC-pkg] or **doParallel** [@doParallel-pkg]).
+The `partial()` function relies on the **plyr** package [@R-plyr], rather than R's built-in `for` loops. This makes it easy to request progress bars (e.g., `progress = "text"`) or run `partial()` in parallel. In fact, `partial()` can use any of the parallel backends supported by the `foreach` package. To use this functionality, we must first load and register a supported parallel backend (e.g., **doMC** [@R-doMC] or **doParallel** [@R-doParallel]).
 
-To illustrate, we will use the Los Angeles ozone pollution data described in @breiman-1985-estimating. The data contain daily measurements of ozone concentration (`ozone`) along with eight meteorological quantities for 330 days in the Los Angeles basin in 1976.^[The data are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.data. Details, including variable information, are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.info.] The following code chunk loads the data into R:
+To illustrate, we will use the Los Angeles ozone pollution data described in @breiman-estimating-1985. The data contain daily measurements of ozone concentration (`ozone`) along with eight meteorological quantities for 330 days in the Los Angeles basin in 1976.^[The data are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.data. Details, including variable information, are available from http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/ozone.info.] The following code chunk loads the data into R:
 ```{r ozone-mars-01}
 url <- "https://web.stanford.edu/~hastie/ElemStatLearn/datasets/LAozone.data"
 ozone <- read.csv(url)
 head(ozone)  # print first few observations
 ```
 
-Next, we use the multivariate adaptive regression splines (MARS) algorithm introduced in @friedman-1991-mars to model ozone concentration as a nonlinear function of the eight meteorological variables plus day of the year; we allow for up to three-way interactions.
+Next, we use the multivariate adaptive regression splines (MARS) algorithm introduced in @friedman-mars-1991 to model ozone concentration as a nonlinear function of the eight meteorological variables plus day of the year; we allow for up to three-way interactions.
 ```{r ozone-mars-02}
 library(earth)  # for earth() function (i.e., MARS algorithm)
 ozone.mars <- earth(ozone ~ ., data = ozone, degree = 3)
 summary(ozone.mars)
 ```
-The MARS model produced a generalized $R^2$ of `r ozone.mars$r.squared`, similar to what was reported in @breiman-1985-estimating. A single three-way interaction was found involving the predictors
+The MARS model produced a generalized $R^2$ of `r ozone.mars$r.squared`, similar to what was reported in @breiman-estimating-1985. A single three-way interaction was found involving the predictors
   * `wind`: wind speed (mph) at Los Angeles International Airport (LAX)
   * `temp`: temperature ($^oF$) at Sandburg Air Force Base
   * `dpg`: the pressure gradient (mm Hg) from LAX to Dagget, CA

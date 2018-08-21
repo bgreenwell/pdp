@@ -2,7 +2,10 @@ pandoc: 2.2.1
 pkgdown: 1.1.0.9000
 pkgdown_sha: 67f9e833d96e20d6dc0e0d172d972734a1b37b9a
 articles:
+  pdp-classification: pdp-classification.html
   pdp-computation: pdp-computation.html
+  pdp-example-tensorflow: pdp-example-tensorflow.html
+  pdp-example-xgboost: pdp-example-xgboost.html
   pdp-extending: pdp-extending.html
   pdp-se.Rmd: pdp-se.Rmd.html
   pdp: pdp.html

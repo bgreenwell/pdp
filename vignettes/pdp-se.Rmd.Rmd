@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 
 It is possible to construct PDPs with pointwise variability estimates (e.g., +/- one standard deviation). This can be done easily with the `pred.fun` argument of `partial()`. To illustrate, we'll fit a random forest to the famous iris data and construct a PDP for the most important variable that displays pointwise standard deviation bands. 
 
-In the code chunk below, we use the **ranger** package [@ranger-pkg] to fit a random forest to the built-in iris data. Note that in order to use the **vip** [@pkg-vip] and **pdp** [@pdp-pkg] packages for classification models, we need to be able to compute the predicted class probabilities. Therefore, we must specify `probability = TRUE` in the call to `ranger()`.
+In the code chunk below, we use the **ranger** package [@R-ranger] to fit a random forest to the built-in iris data. Note that in order to use the **vip** [@R-vip] and **pdp** [@R-pdp] packages for classification models, we need to be able to compute the predicted class probabilities. Therefore, we must specify `probability = TRUE` in the call to `ranger()`.
 
 ```{r iris-01}
 library(ranger)  # for fitting random forests
@@ -53,7 +53,7 @@ pd1 <- partial(rfo, pred.var = "Petal.Width", pred.fun = pred_wrapper)
 pd2 <- partial(rfo, pred.var = "Petal.Length", pred.fun = pred_wrapper)
 ```
 
-To plot the resulting PDPs, we could've just specified `plot = TRUE` in the previous calls to `partial()`. However, since PDPs can be computationally expensive to compute (though, not in this example), it is good practice to store the results first, and then manually construct the plot. We'll use the convenient `autoplot()` function provided by **pdp** to construct the plots (which requires that the **ggplot2** package [@ggplot2-pkg] be laoded first). The results are displayed in **Figure 2**.
+To plot the resulting PDPs, we could've just specified `plot = TRUE` in the previous calls to `partial()`. However, since PDPs can be computationally expensive to compute (though, not in this example), it is good practice to store the results first, and then manually construct the plot. We'll use the convenient `autoplot()` function provided by **pdp** to construct the plots (which requires that the **ggplot2** package [@R-ggplot2] be laoded first). The results are displayed in **Figure 2**.
 
 ```{r iris-05, fig.width=7, fig.height=3.5, out.width="100%", fig.cap="**Figure 2** Partial dependence of `Species` on `Petal.Width` (left) and `Petal.Length` (right). The red lines is the PDP while the black lines indicate pointwise +/- one standard deviation."}
 library(ggplot2)  # for autoplot() generic

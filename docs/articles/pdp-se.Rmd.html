@@ -55,10 +55,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/pdp-classification.html">Interpretting classification models</a>
+    </li>
+    <li>
       <a href="../articles/pdp-computation.html">Reducing computation time</a>
     </li>
     <li>
-      <a href="../articles/pdp-extending.html">Extending pdp with the pred.fun argument</a>
+      <a href="../articles/pdp-example-tensorflow.html">A TensorFlow example using the Keras API</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-example-xgboost.html">Interpreting XGBoost models</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-extending.html">User-defined prediction functions</a>
     </li>
     <li>
       <a href="../articles/pdp-se.Rmd.html">Single-variable PDPs with standard deviations</a>
@@ -91,7 +100,7 @@
       <h1>Single-variable PDPs with standard deviations</h1>
                         <h4 class="author">Brandon M. Greenwell</h4>
             
-            <h4 class="date">2018-08-15</h4>
+            <h4 class="date">2018-08-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bgreenwell/pdp/blob/master/vignettes/pdp-se.Rmd.Rmd"><code>vignettes/pdp-se.Rmd.Rmd</code></a></small>
       <div class="hidden name"><code>pdp-se.Rmd.Rmd</code></div>
@@ -101,7 +110,7 @@
     
     
 <p>It is possible to construct PDPs with pointwise variability estimates (e.g., +/- one standard deviation). This can be done easily with the <code>pred.fun</code> argument of <code><a href="../reference/partial.html">partial()</a></code>. To illustrate, we’ll fit a random forest to the famous iris data and construct a PDP for the most important variable that displays pointwise standard deviation bands.</p>
-<p>In the code chunk below, we use the <strong>ranger</strong> package <span class="citation">(Wright 2016)</span> to fit a random forest to the built-in iris data. Note that in order to use the <strong>vip</strong> <span class="citation">(Greenwell and Boehmke 2018)</span> and <strong>pdp</strong> <span class="citation">(Greenwell 2016)</span> packages for classification models, we need to be able to compute the predicted class probabilities. Therefore, we must specify <code>probability = TRUE</code> in the call to <code><a href="http://www.rdocumentation.org/packages/ranger/topics/ranger">ranger()</a></code>.</p>
+<p>In the code chunk below, we use the <strong>ranger</strong> package <span class="citation">(Wright, Wager, and Probst 2018)</span> to fit a random forest to the built-in iris data. Note that in order to use the <strong>vip</strong> <span class="citation">(Greenwell and Boehmke, n.d.)</span> and <strong>pdp</strong> <span class="citation">(Greenwell 2017)</span> packages for classification models, we need to be able to compute the predicted class probabilities. Therefore, we must specify <code>probability = TRUE</code> in the call to <code><a href="http://www.rdocumentation.org/packages/ranger/topics/ranger">ranger()</a></code>.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(ranger)  <span class="co"># for fitting random forests</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">101</span>)  <span class="co"># for reproducibility</span></a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">rfo &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ranger/topics/ranger">ranger</a></span>(Species <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> iris, <span class="dt">probability =</span> <span class="ot">TRUE</span>, </a>
@@ -128,7 +137,7 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">library</span>(pdp)  <span class="co"># for partial dependence plots</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">pd1 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(rfo, <span class="dt">pred.var =</span> <span class="st">"Petal.Width"</span>, <span class="dt">pred.fun =</span> pred_wrapper)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">pd2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/partial.html">partial</a></span>(rfo, <span class="dt">pred.var =</span> <span class="st">"Petal.Length"</span>, <span class="dt">pred.fun =</span> pred_wrapper)</a></code></pre></div>
-<p>To plot the resulting PDPs, we could’ve just specified <code>plot = TRUE</code> in the previous calls to <code><a href="../reference/partial.html">partial()</a></code>. However, since PDPs can be computationally expensive to compute (though, not in this example), it is good practice to store the results first, and then manually construct the plot. We’ll use the convenient <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> function provided by <strong>pdp</strong> to construct the plots (which requires that the <strong>ggplot2</strong> package <span class="citation">(Wickham 2009)</span> be laoded first). The results are displayed in <strong>Figure 2</strong>.</p>
+<p>To plot the resulting PDPs, we could’ve just specified <code>plot = TRUE</code> in the previous calls to <code><a href="../reference/partial.html">partial()</a></code>. However, since PDPs can be computationally expensive to compute (though, not in this example), it is good practice to store the results first, and then manually construct the plot. We’ll use the convenient <code><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot()</a></code> function provided by <strong>pdp</strong> to construct the plots (which requires that the <strong>ggplot2</strong> package <span class="citation">(Wickham et al. 2018)</span> be laoded first). The results are displayed in <strong>Figure 2</strong>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">library</span>(ggplot2)  <span class="co"># for autoplot() generic</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">pdp1 &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/autoplot">autoplot</a></span>(pd1) <span class="op">+</span><span class="st"> </span></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_light</a></span>() <span class="op">+</span></a>
@@ -145,17 +154,17 @@
 </p>
 </div>
 <div id="refs" class="references">
-<div id="ref-pdp-pkg">
-<p>Greenwell, Brandon. 2016. <em>Pdp: An R Package for Constructing Partial Dependence Functions</em>. <a href="https://CRAN.R-project.org/package=partial" class="uri">https://CRAN.R-project.org/package=partial</a>.</p>
+<div id="ref-R-vip">
+<p>Greenwell, Brandon, and Brad Boehmke. n.d. <em>Vip: Variable Importance Plots</em>. <a href="https://koalaverse.github.io/vip/index.html" class="uri">https://koalaverse.github.io/vip/index.html</a>.</p>
 </div>
-<div id="ref-pkg-vip">
-<p>Greenwell, Brandon, and Brad Boehmke. 2018. <em>Vip: Variable Importance Plots</em>. <a href="https://CRAN.R-project.org/package=vip" class="uri">https://CRAN.R-project.org/package=vip</a>.</p>
+<div id="ref-R-pdp">
+<p>Greenwell, Brandon M. 2017. “Pdp: An R Package for Constructing Partial Dependence Plots.” <em>The R Journal</em> 9 (1): 421–36. <a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>.</p>
 </div>
-<div id="ref-ggplot2-pkg">
-<p>Wickham, Hadley. 2009. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag. <a href="http://ggplot2.org" class="uri">http://ggplot2.org</a>.</p>
+<div id="ref-R-ggplot2">
+<p>Wickham, Hadley, Winston Chang, Lionel Henry, Thomas Lin Pedersen, Kohske Takahashi, Claus Wilke, and Kara Woo. 2018. <em>Ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics</em>. <a href="https://CRAN.R-project.org/package=ggplot2" class="uri">https://CRAN.R-project.org/package=ggplot2</a>.</p>
 </div>
-<div id="ref-ranger-pkg">
-<p>Wright, Marvin N. 2016. <em>Ranger: A Fast Implementation of Random Forests</em>. <a href="https://CRAN.R-project.org/package=ranger" class="uri">https://CRAN.R-project.org/package=ranger</a>.</p>
+<div id="ref-R-ranger">
+<p>Wright, Marvin N., Stefan Wager, and Philipp Probst. 2018. <em>Ranger: A Fast Implementation of Random Forests</em>. <a href="https://CRAN.R-project.org/package=ranger" class="uri">https://CRAN.R-project.org/package=ranger</a>.</p>
 </div>
 </div>
   </div>

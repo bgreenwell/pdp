@@ -1,7 +1,7 @@
 ---
-title: "Extending pdp with the pred.fun argument"
-subtitle: "A TensorFlow example using the Keras API"
-author: "Brandon M. Greenwell and Bradley C. Boehmke"
+title: "User-defined prediction functions"
+subtitle: "Extending pdp with the pred.fun argument"
+author: "Brandon M. Greenwell"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 bibliography: pdp.bib
@@ -10,175 +10,142 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  cache = FALSE,
   collapse = TRUE,
   comment = "#>",
-  fig.align = "left",
-  fig.width = 6, 
-  fig.asp = 0.618,
-  out.width = "70%"
+  fig.align = "left"
 )
 ```
 
-It is possible to use the [vip](https://koalaverse.github.io/vip/index.html) package [@pkg-vip] with any fitted model for which new predictions can be generated. This is possible via `method = "ice"`, `method = "pdp"`, and `method = "permute"` since these methods construct variable importance (VI) scores based solely off of a model's predictions---albeit, in different ways. In this vignette, we will demonstrate the construction of permutation-based VI scores (i.e., `method = "permute"`) using a TensorFlow model trained to the Boston housing data with the [keras](https://keras.rstudio.com/) package [@pkg-keras]. This particular example is adapted from @chollet-deep-2018. We'll supplement the the variable importance plot (VIP) with feature effect plots using the [pdp](https://github.com/bgreenwell/pdp) package [@greenwell-pdp-2017]---a general R package for constructing *partial dependence plots* (PDPs) [@friedman-greedy-2001] and *individual conditional expectation* (ICE) curves [@goldstein-peeking-2015].
 
-
-### Prerequisites
+## Prerequisites
 
 ```{r prerequisites, message=FALSE}
 # Load required packages
-library(dplyr)    # for data wrangling
+library(dplyr)    # for data wrangling 
 library(ggplot2)  # for general visualization
-library(keras)    # for fitting DNNs
-library(pdp)      # for partial depe
-library(vip)      # for visualizing feature importance
-
-# For reproducibility
-use_session_with_seed(101)
+library(kernlab)  # for fitting SVMs
+library(pdp)      # for partial dependence plots
+library(ranger)   # for fitting random forests
+library(vip)      # for variable importance plots
 ```
 
+## User-defined prediction functions
 
-## Predicting median home value using TensorFlow
+Partial dependence plots (PDPs) are essentially just averaged predictions; this is apparent from step 1. (c) in **Algorithm 1** in @R-pdp. Consequently, as pointed out by @goldstein-peeking-2015, strong heterogeneity can conceal the complexity of the modeled relationship between the response and predictors of interest. This was part of the motivation behind @goldstein-peeking-2015's ICE plot procedure.
 
-To illustrate, we'll fit a TensorFlow model to the Boston housing data [@harrison-1978-hedonic]. A corrected version of these data are available in the [pdp](https://github.com/bgreenwell/pdp) package. In the code chunk below, we load a corrected version of the original Boston housing data (see `?pdp::boston` for details) and separate the training features (`train_x`) from the training response values (`train_y`).
+With `partial()` it is possible to replace the mean in step 1. (c) of **Algorithm 1** with any other function (e.g., the median or trimmed mean), or obtain PDPs for classification problems on the probability scale^[This is more conveniently available via the `prob` argument starting with **pdp** version 0.5.0]. It is even possible to obtain ICE curves^[ICE curves are more conveniently available via the `ice` argument starting with **pdp** version 0.6.0]. This flexibility is due to the new `pred.fun` argument in `partial()` (starting with **pdp** version 0.4.0). This argument accepts an optional prediction function that requires two arguments: `object` and `newdata`. The supplied prediction function must return either a single prediction or a vector of predictions. Returning the mean of all the predictions will result in the traditional PDP. Returning a vector of predictions (i.e., one for each observation) will result in a set of ICE curves. The examples below illustrate. The point to be made is that the `pred.fun` argument gives `partial()` the flexibility to handle all kinds of situations!
 
-```{r load-data}
-# Loading (corrected) Boston housing data
-data(boston, package = "pdp")
+Using the `pred.fun` argument, it is possible to obtain PDPs for classification problems on the probability scale. We just need to write a function that computes the predicted class probability of interest averaged across all observations. 
 
-# Construct matrix of training data (features only)
-train_x <- boston %>%
-  select(-cmedv) %>%                   # remove response
-  mutate(chas = as.numeric(chas)) %>%  # convert factor to numeric
-  as.matrix()                          # convert to numeric matrix
+To illustrate, we consider Edgar Anderson's iris data from the **datasets** package. The `iris` data frame contains the sepal length, sepal width, petal length, and petal width (in centimeters) for 50 flowers from each of three species of iris: setosa, versicolor, and virginica (i.e., $K = 3$). In the code chunk below, we fit a support vector machine (SVM) with a Gaussian radial basis function kernel to the `iris` data using the `svm()` function in the **kernlab** package [@R-kernlab] (the tuning parameters were determined using 5-fold cross-validation). **Note that the `partial()` function has to be able to extract the predicted probabilities for each class**, so it is necessary to set `probability = TRUE` in the call to `svm()`. See the vignette titled **Interpretting classification models** for how to obtain variable importance plots for arbitrary models (like the SVM below) using the **vip** package [@R-vip].
 
-# Construct vector of training response values
-train_y <- boston$cmedv
+```{r iris-svm}
+# Fit an SVM to the Edgar Anderson's iris data
+iris_svm <- ksvm(Species ~ ., data = iris, kernel = "rbfdot", 
+                 kpar = list(sigma = 0.709), C = 0.5, prob.model = TRUE)
 ```
 
-Since the features are measured on very different scales (e.g., longitude and per capita crime rate by town), we center and scale the columns of `train_x` using the `scale()` function.
+The function below can be used to extract the average predicted probability of belonging to the `Setosa` class.
 
-```{r normalize-data}
-train_x <- scale(train_x, center = TRUE, scale = TRUE)  # normalize data
-apply(train_x, MARGIN = 2, FUN = function(x) c(mean(x), sd(x)))  # sanity check
-```
-
-Next, we define a function for fitting a Keras model composed of a linear stack of layers. Since the Boston housing data is rather small ($n =$ `r nrow(boston)`), we'll use a very small network with only two hidden layers, each with 64 units. Building small networks like this can help mitigate overfitting to smaller data sets.
-
-```{r define-model}
-build_model <- function() {                                
-  model <- keras_model_sequential() %>%
-    layer_dense(units = 64, activation = "relu",
-                input_shape = dim(train_x)[[2]]) %>%
-    layer_dense(units = 64, activation = "relu") %>%
-    layer_dense(units = 1)
-  model %>% compile(
-    optimizer = "rmsprop",
-    loss = "mse",
-    metrics = c("mae")
-  )
+```{r iris-svm-prob}
+# Function to return predicted class probabilities from a "ksvm" object
+pred_prob <- function(object, newdata) {  # see ?predict.ksvm
+  mean(predict(object, newdata, type = "prob")[, "setosa", drop = TRUE])
 }
 ```
 
-Since we don't have a lot of observations, we used $k$-fold cross-validation (CV) (with $k = 4$) to evaluate the network and choose the optimal number of *epochs*^[An epoch refers to a single iteration (both forward and backward) over the entire training data set.] ($k$-fold CV is illustrated in the **Figure 1** below). 
+Next, we simply pass this function via the `pred.fun` argument in the call to `partial()`. The following chunk of code uses `pred_prob` to obtain PDPs for `Petal.Width` and `Petal.Length` on the probability scale. The results are displayed in **Figure 1**.
 
-```{r cv-illustration, echo=FALSE, fig.cap="**Figure 1** Illustration of $k$-fold CV. The training data are split into $k$ (roughly) equal blocks at random. For each of $k$ iterations, $k-1$ blocks are used for training and the performace is evalutaed on the $k$-th block. The overall measure of performance is obtained by averaging the $k$ performance metrics together."}
-knitr::include_graphics("cv.png")
+```{r iris-svm-pdp, fig.width=9, fig.height=3, out.width="100%", fig.cap="**Figure 1** Partial dependence of `setosa` on `Petal.Width` and `Petal.Length` plotted on the probability scale; in this case, the probability of belonging to the setosa species."}
+# PDPs for Petal.Width and Petal.Length on the probability scale
+pdp1 <- partial(iris_svm, pred.var = "Petal.Width", pred.fun = pred_prob,
+                  plot = TRUE, train = iris)
+pdp2 <- partial(iris_svm, pred.var = "Petal.Length", pred.fun = pred_prob,
+                  plot = TRUE, train = iris)
+pdp3 <- partial(iris_svm, pred.var = c("Petal.Width", "Petal.Length"),
+                     pred.fun = pred_prob, plot = TRUE, train = iris)
+
+# Figure 1
+grid.arrange(pdp1, pdp2, pdp3, ncol = 3)
 ```
 
-The performance of the network was evaluated using *mean absolute error* (MAE), which is the absolute value of the difference between the predicted and observed outcomes. In this example, the cross-validated MAE stopped improving after about 125 epochs. Using this result, we train a final network using 80 epochs^[In practice, you'll want to tune various other hyperparameters of the network as well, like the size of the hidden layers.].
+We could also plot the PDP for a single feature and include pointwise standard deviation bands! To do this, we simply augment the user-defined prediction function to return the mean, as well as the mean +/- one standard deviation (see **Figure 2**):
 
-```{r train-final-model}
-model <- build_model()
-model %>% fit(train_x, train_y, epochs = 80, batch_size = 16, verbose = 0)
+```{r iris-svm-pdp-sd, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 2** Partial dependence of `setosa` on `Petal.Width` +/- one (pointwise) standard deviation."}
+# Function to return average prediction and average +/- one standard deviation
+pfun <- function(object, newdata) {  # see ?predict.ksvm
+  prob <- predict(object, newdata, type = "prob")[, "setosa"]
+  c("mean" = mean(prob), 
+    "mean-sd" = mean(prob) - sd(prob), 
+    "mean+sd" = mean(prob) + sd(prob))
+}
+
+# PDP for Petal.Width +/- one standard deviation (Figure 2)
+partial(iris_svm, pred.var = "Petal.Width", pred.fun = pfun, plot = TRUE,
+        train = iris, rug = TRUE, plot.engine = "ggplot2") + 
+  theme_light() +
+  labs(x = "Petal width (cm)", y = "Partial dependence")
 ```
 
+For regression problems, the default prediction function is essentially
 
-### Model interpreation
-
-Here we'll look at two methods for model interpretation: *variable importance* and *individual conditional expectation* (ICE) curves. The methods are available in the R packages [vip](https://koalaverse.github.io/vip/index.html) and [pdp](https://github.com/bgreenwell/pdp), respectively.
-
-While both packages support a wide range of models, it is rather straightforward to use them for any model for which new predictions can be obtained. To start, we'll have to define a prediction function wrapper which requires two arguments: `object` (the fitted model object) and `newdata`. The function needs to return a vector of predictions (one for each observation).
-
-```{r prediction-functions}
-pred_wrapper <- function(object, newdata) {
-  predict(object, x = as.matrix(newdata)) %>%
-    as.vector()
+```{r regression-predict}
+pred_fun <- function(object, newdata) {
+  mean(predict(object, newdata), na.rm = TRUE)
 }
 ```
 
+This corresponds to step step 1. (c) in **Algorithm 1**. Suppose we would like to manually construct ICE curves instead. To accomplish this we need to pass a prediction function that returns a vector of predictions, one for each observation in `newdata` (i.e., just remove the call to `mean` in `pred.fun`). 
 
-#### Variable importance plot
+For illustration, we'll use a corrected version of the Boston housing data analyzed in @harrison-hedonic-1978; the data are available in the **pdp** package (see `?pdp::boston` for details). We begin by loading the data and fitting a random forest with default tuning parameters and 500 trees using the **ranger** package [@R-ranger]. 
 
-A simple measure of variable importance can be obtained using the permutation approach described in @random-breiman-2001 for random forests. In essence, we randomly permute the values of each feature and record the drop in training performance. This can be accomplished using the `vip()` function with `method = "permute"`. To use this method we need to supply the original training response values via the `obs` argument and specify which performance metric we are interested in (in this case, we'll use $R^2$). The results are, which are displayed in **Figure 2**, indicate that the average number of rooms per dwelling (`rm`) and the percentage of lower status of the population (`lstat`) are the most important features in predicting median home value.
-
-```{r vip, fig.cap="**Figure 2** Permuation-based VIP for the fitted network."}
-set.seed(102)  # for reproducibility
-p1 <- vip(
-  object = model,                     # fitted model
-  method = "permute",                 # permutation-based VI scores
-  num_features = ncol(train_x),       # default only plots top 10 features
-  feature_names = colnames(train_x),  # feature names in training data
-  pred_fun = pred_wrapper,            # user-defined prediction function
-  obs = train_y,                      # response values used for training
-  metric = "rsquared",                # evaluation metric
-  train = as.data.frame(train_x)      # training data
-  # progress = "text"                 # request a text-based progress bar
-)
-print(p1)  # display plot
+```{r boston-ranger}
+# Fit a random forest to the Boston housing data
+set.seed(101)  # for reproducibility
+boston_rfo <- ranger(cmedv ~ ., data = boston)
 ```
 
+The model fit is reasonable, with an *out-of-bag* (pseudo) $R^2$ of `r round(boston_rfo$r.squared, digits = 3)`.
 
-#### ICE curves
+The code snippet below manually constructs ICE curves for the Boston housing example using the predictor `rm`. The result is displayed in **Figure 3**. Note that when the function supplied to `pred.fun` returns multiple predictions, the data frame returned by `partial()` includes an additional column, `yhat.id`, that indicates which curve a point belongs to; in the following code chunk, there will be one curve for each observation in `boston`.
 
-Next, we'll construct ICE curves for the top two features: `rm` and `lstat`. To do this we use `pdp`'s `partial()` function. By default, `partial()` constructs *partial dependence plots* (PDPs); The PDP for a feature of interest can be constructed by averaging together the ICE curves from each observation for that feature. To suppress this averaging and construct ICE curves, set `ice = TRUE` in the call to `partial()`. Since ICE curves require a prediction for each observations, we can use the same wrapper function we defined earlier. The ICE curves for both `rm` and `lstat` in **Figure 3** display a bit of heterogeneity indicating the possible presence of interaction effects. The solid red curve in each plot represents the average of all of the ICE curves (i.e., the PDP for that feature). 
-
-```{r ice-curves, fig.cap="**Figure 3** ICE curves (black lines) and PDPs (red lines) for the predictors `rm` (left) and `lstat` (right)."}
-p2 <- partial(model, pred.var = "rm", pred.fun = pred_wrapper, 
-              train = as.data.frame(train_x)) %>%
-  autoplot(alpha = 0.1)
-p3 <- partial(model, pred.var = "lstat", pred.fun = pred_wrapper, 
-              train = as.data.frame(train_x)) %>%
-  autoplot(alpha = 0.1)
-grid.arrange(p2, p3, ncol = 2)  # display plots side by side
-```
-
-A couple of additional points are worth noting:
-
-1. The default output from `partial()` is a data frame. You can set `plot = TRUE` to obtain a plot instead, but since these plots can be expensive to compute, it is better to store the results and plot them manually using, for example, `autoplot()` (for `ggplot2`-based plots) or `plotPartial()` (for `lattice`-based plots).
-
-2. Before fitting the network we normalized the data by centering and scaling each feature. In order for these plots to be on the original scale, you would need to unscale the corresponding column(s) in the output by multiplying by the original sample standard deviation and adding back the sample mean of that feature.
-
-3. ICE curves and PDPs can be computationally expensive. Some strategies are discussed in @greenwell-pdp-2017. The `partial()` function has many useful options to help, for example, `progress` and `parallel` (see `?pdp::partial` for details).
-
-
-#### PDP
-
-To obtain a PDP, we need to supply a prediction function that returns the average prediction across all observations. This can be easily accomplished by adding an extra line to the previously defined wrapper.
-
-```{r partial-fun}
-pdp_wrapper <- function(object, newdata) {
-  predict(object, x = as.matrix(newdata)) %>%
-    as.vector() %>%
-    mean()  # aggregate ICE curves
+```{r boston-ranger-ice-curves, fig.width=6, fig.asp=0.618, out.width="70%", fig.cap="**Figure 3** ICE curves depicting the relationship between `cmedv` and `rm` for the Boston housing example. Each curve corresponds to a different observation."}
+# Use partial to obtain ICE curves
+ranger_ice <- function(object, newdata) {
+  predict(object, newdata)$predictions
 }
+rm_ice <- partial(boston_rfo, pred.var = "rm", pred.fun = ranger_ice)
+
+# Figure 3
+autoplot(rm_ice, rug = TRUE, train = boston, alpha = 0.3)
 ```
 
-Next, we'll construct the partial dependence of medium home value (`cmedv`) on the average number of rooms per dwelling (`rm`) and the percentage of lower status of the population (`lstat`). To restrict the predictions to the region of joint values of `rm` and `lstat` observed in the training data (i.e., to avoid extrapolating) we set `chull = TRUE` in the call to `partial()`; this also helps speed up computation time by restricting the grid over which predictions are obtained. The resulting plot displayed in **Figure 4** indicates what we would naturally expect: that census tracts with a higher average number of rooms per dwelling and a lower percentage of lower status of the population tend to have a higher median value.
+The curves in **Figure 3** indicate some heterogeneity in the fitted model (i.e., some of the curves depict the opposite relationship). Such heterogeneity can be easier to spot using c-ICE curves; see Equation (4) on page 49 of @goldstein-peeking-2015. Using **dplyr** [@R-dplyr}, it is rather straightforward to post-process the output from `partial()` to obtain c-ICE curves (similar to the construction of *raw change scores* [@fitzmaurice-applied-2011, pg. 130] for longitudinal data)^[c-ICE curves are more conveniently available via the `ice` and `center` arguments starting with **pdp** version 0.6.0]. This is shown below.
 
-```{r pdp, fig.cap="**Figure 4** Partial dependence of `cmedv` on `rm` and `lstat`."}
-p4 <- partial(model, pred.var = c("rm", "lstat"), chull = TRUE, 
-              pred.fun = pdp_wrapper, train = as.data.frame(train_x)) %>%
-  autoplot()
-print(p4)  # display plot
+```{r boston-ranger-cice}
+# Post-process rm.ice to obtain c-ICE curves
+rm_ice <- rm_ice %>%
+  group_by(yhat.id) %>%  # perform next operation within each yhat.id
+  mutate(yhat.centered = yhat - first(yhat))  # so each curve starts at yhat = 0
 ```
 
-Finally, we can display all the results in a single plot.
+Since the PDP is just the average of the corresponding ICE curves, it is quite simple to display both on the same plot. This is easily accomplished using the `stat_summary()` function from the **ggplot2** package to average the ICE curves together. The code snippet below plots the ICE curves and c-ICE curves, along with their averages, for the predictor `rm` in the Boston housing example. The results are displayed in **Figure 4**.
 
-```{r all-results}
-grid.arrange(p1, p2, p3, p4, ncol = 2)  # display plots in a grid
+```{r boston-ranger-cice-curves, fig.width=7, fig.height=3.5, out.width="100%", fig.cap="**Figure 4** ICE curves (black curves) and their average (red curve) depicting the relationship between `cmedv` and `rm` for the Boston housing example. *Left*: Uncentered (here the red curve is just the traditional PDP). *Right*: Centered."}
+# ICE curves with their average
+p1 <- ggplot(rm_ice, aes(rm, yhat)) +
+  geom_line(aes(group = yhat.id), alpha = 0.2) +
+  stat_summary(fun.y = mean, geom = "line", col = "red", size = 1)
+
+# c-ICE curves with their average
+p2 <- ggplot(rm_ice, aes(rm, yhat.centered)) +
+  geom_line(aes(group = yhat.id), alpha = 0.2) +
+  stat_summary(fun.y = mean, geom = "line", col = "red", size = 1)
+
+# Figure 4
+grid.arrange(p1, p2, ncol = 2)
 ```
 
-## References

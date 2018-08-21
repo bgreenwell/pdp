@@ -1,0 +1,86 @@
+---
+title: "Interpreting XGBoost models"
+author: "Brandon M. Greenwell"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: pdp.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "left",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+
+## Prerequisites
+
+```{r xgb-prerequisites}
+# Load required packages
+library(xgboost)  # for gradient boosted decision trees
+library(pdp)      # for partial dependence plots (PDPs)
+library(vip)      # for variable importance plots (VIPs)
+
+# Load Ames housing data
+ames <- AmesHousing::make_ames()
+```
+
+In this vignette, we provide an example using a recently popular (and successful!) machine learning tool. XGBoost, short for eXtreme Gradient Boosting, is a popular library providing optimized distributed gradient boosting that is specifically designed to be highly efficient, flexible and portable. The associated R package **xgboost** [@R-xgboost] has been used to win a number of [Kaggle competitions](https://www.kaggle.com/). It has been shown to be many times faster than the well-known **gbm** package [@R-gbm]. However, unlike **gbm**, **xgboost** does not have built-in functions for constructing partial dependence plots (PDPs). Fortunately, the **pdp** package [@R-pdp] can be used to fill this gap.
+
+For illustration, we'll use the Ames housing data set [@cock-ames-2011] made available with the **AmesHousing** package [@R-AmesHousing]; see `?AmesHousing::make_ames` for details. The code chunk below uses **xgb.cv()** to tune an **xgboost** model using 5-fold cross-validation.
+
+```{r ames-xgb-cv}
+# Find the optimal number of rounds using 5-fold CV
+set.seed(749)  # for reproducibility
+ames_xgb_cv <- xgboost::xgb.cv(
+  data = data.matrix(subset(ames, select = -Sale_Price)),
+  label = ames$Sale_Price, objective = "reg:linear", verbose = 0,
+  nrounds = 1000, max_depth = 5, eta = 0.1, gamma = 0, nfold = 5,
+  early_stopping_rounds = 30
+)
+print(ames_xgb_cv$best_iteration)  # optimal number of trees
+```
+
+The optimal model had a cross-validated RMSE of `r ames_xgb_cv$evaluation_log[ames_xgb_cv$best_iteration, "test_rmse_mean"][[1L]]` based on `r ames_xgb_cv$best_iteration` rounds. The next snippet of code fits an **xgboost** model based on the optimal number of rounds and displays a variable importance plot (VIP) using the **vip** package [@R-vip]; see **Figure 1**. 
+
+```{r ames-xgb-vip, fig.width=6, fig.asp=0.618, out.width="70%", fic.cap="Variable importance plot for the Ames housing **xgboost** model."}
+# Fit an XGBoost model to the Boston housing data
+set.seed(804)  # for reproducibility
+ames_xgb <- xgboost::xgboost(
+  data = data.matrix(subset(ames, select = -Sale_Price)),
+  label = ames$Sale_Price, objective = "reg:linear", verbose = 0,
+  nrounds = ames_xgb_cv$best_iteration, max_depth = 5, eta = 0.1, gamma = 0
+)
+
+# Variable importance plot
+vip(ames_xgb, num_features = 10)  # 10 is the default
+```
+
+It appears that the overall quality of the home (`Overall_Qual`) and the above grade (ground) living area in square feet (`Gr_Liv_Area`) are important features in predicting the selling price (`Sale_Price`). The next snippet of code constructs c-ICE curves and PDPs for `Overall_Qual` and `Gr_Liv_Area`. The results are displayed in **Figure 2**. Notice how we supply the original training data (without the response!) via the `train` argument in the call to `partial()`. This is not always encessary (e.g., when using `partial()` with models that store a copy of the training data with the fitted model object). The heterogenity in the ICE curves suggest the possible presence of interafction effects with these features. In general, we see a mononoic increasing relationship between each feature and `Sale_Price`. This is clear from the (centered) PDP (red curve) which can be obtained by averaging the ICE curves together.
+```{r ames-xgb-pdp, fig.width=9, fig.height=3, out.width="100%", fig.cap="**Figure 2** c-ICE curves and PDPs for the two most important features in the Ames housing **xgboost** model."}
+# c-ICE curves and PDPs for Overall_Qual and Gr_Liv_Area
+x <- data.matrix(subset(ames, select = -Sale_Price))  # training features
+p1 <- partial(ames_xgb, pred.var = "Overall_Qual", ice = TRUE, center = TRUE, 
+              plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2", 
+              train = x)
+p2 <- partial(ames_xgb, pred.var = "Gr_Liv_Area", ice = TRUE, center = TRUE, 
+              plot = TRUE, rug = TRUE, alpha = 0.1, plot.engine = "ggplot2",
+              train = x)
+p3 <- partial(ames_xgb, pred.var = c("Overall_Qual", "Gr_Liv_Area"),
+              plot = TRUE, chull = TRUE, plot.engine = "ggplot2", train = x)
+
+# Figure 2
+grid.arrange(p1, p2, p3, ncol = 3)
+```
+
+
+## References

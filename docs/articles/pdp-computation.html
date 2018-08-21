@@ -55,10 +55,19 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/pdp-classification.html">Interpretting classification models</a>
+    </li>
+    <li>
       <a href="../articles/pdp-computation.html">Reducing computation time</a>
     </li>
     <li>
-      <a href="../articles/pdp-extending.html">Extending pdp with the pred.fun argument</a>
+      <a href="../articles/pdp-example-tensorflow.html">A TensorFlow example using the Keras API</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-example-xgboost.html">Interpreting XGBoost models</a>
+    </li>
+    <li>
+      <a href="../articles/pdp-extending.html">User-defined prediction functions</a>
     </li>
     <li>
       <a href="../articles/pdp-se.Rmd.html">Single-variable PDPs with standard deviations</a>
@@ -91,7 +100,7 @@
       <h1>Reducing computation time</h1>
                         <h4 class="author">Brandon M. Greenwell</h4>
             
-            <h4 class="date">2018-08-15</h4>
+            <h4 class="date">2018-08-21</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bgreenwell/pdp/blob/master/vignettes/pdp-computation.Rmd"><code>vignettes/pdp-computation.Rmd</code></a></small>
       <div class="hidden name"><code>pdp-computation.Rmd</code></div>
@@ -135,13 +144,15 @@
 <p>For convenience, the <code><a href="../reference/partial.html">partial()</a></code> function includes the <code>quantiles</code> argument for specifying whether or not to compute the PDP at specific quantiles (controlled by the <code>probs</code> argument which defaults to <code>1:9/10</code>—the deciles of the predictor’s distribution). Below, we plot centered individual conditional expectation (c-ICE) curves for <code>rm</code> using a reduced set of grid points occurring at specific quantiles of <code>rm</code>; the results are displayed in <strong>Figure 3</strong>. The heterogeneity in the curves indicates the potential presence of interaction effects between <code>rm</code> and other features.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="../reference/partial.html">partial</a></span>(boston.rf, <span class="dt">pred.var =</span> <span class="st">"rm"</span>, <span class="dt">quantiles =</span> <span class="ot">TRUE</span>, <span class="dt">probs =</span> <span class="dv">0</span><span class="op">:</span><span class="dv">20</span><span class="op">/</span><span class="dv">20</span>,</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2">        <span class="dt">ice =</span> <span class="ot">TRUE</span>, <span class="dt">center =</span> <span class="ot">TRUE</span>, <span class="dt">plot =</span> <span class="ot">TRUE</span>, <span class="dt">plot.engine =</span> <span class="st">"ggplot2"</span>,</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">        <span class="dt">alpha =</span> <span class="fl">0.1</span>)  <span class="co"># Figure 3</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-3" data-line-number="3">        <span class="dt">alpha =</span> <span class="fl">0.1</span>)  <span class="co"># Figure 3</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; Warning: Ignoring unknown parameters: smooth, contour, contour.color,</span></a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; palette</span></a></code></pre></div>
 <div class="figure" style="text-align: left">
 <img src="pdp-computation_files/figure-html/boston-rf-03-1.png" alt="**Figure 3** Individual conditional expectation of `cmedv` on `rm` using specific quantiles." width="70%"><p class="caption">
 <strong>Figure 3</strong> Individual conditional expectation of <code>cmedv</code> on <code>rm</code> using specific quantiles.
 </p>
 </div>
-<p>The <code><a href="../reference/partial.html">partial()</a></code> function relies on the <strong>plyr</strong> package <span class="citation">(Wickham 2011)</span>, rather than R’s built-in <code>for</code> loops. This makes it easy to request progress bars (e.g., <code>progress = "text"</code>) or run <code><a href="../reference/partial.html">partial()</a></code> in parallel. In fact, <code><a href="../reference/partial.html">partial()</a></code> can use any of the parallel backends supported by the <code>foreach</code> package. To use this functionality, we must first load and register a supported parallel backend (e.g., <strong>doMC</strong> <span class="citation">(Analytics and Weston 2015a)</span> or <strong>doParallel</strong> <span class="citation">(Analytics and Weston 2015b)</span>).</p>
+<p>The <code><a href="../reference/partial.html">partial()</a></code> function relies on the <strong>plyr</strong> package <span class="citation">(Wickham 2016)</span>, rather than R’s built-in <code>for</code> loops. This makes it easy to request progress bars (e.g., <code>progress = "text"</code>) or run <code><a href="../reference/partial.html">partial()</a></code> in parallel. In fact, <code><a href="../reference/partial.html">partial()</a></code> can use any of the parallel backends supported by the <code>foreach</code> package. To use this functionality, we must first load and register a supported parallel backend (e.g., <strong>doMC</strong> <span class="citation">(Analytics and Weston 2017)</span> or <strong>doParallel</strong> <span class="citation">(Corporation and Weston 2017)</span>).</p>
 <p>To illustrate, we will use the Los Angeles ozone pollution data described in <span class="citation">Breiman and Friedman (1985)</span>. The data contain daily measurements of ozone concentration (<code>ozone</code>) along with eight meteorological quantities for 330 days in the Los Angeles basin in 1976.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> The following code chunk loads the data into R:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">url &lt;-<span class="st"> "https://web.stanford.edu/~hastie/ElemStatLearn/datasets/LAozone.data"</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">ozone &lt;-<span class="st"> </span><span class="kw">read.csv</span>(url)</a>
@@ -215,26 +226,26 @@
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
 <div id="refs" class="references">
-<div id="ref-doMC-pkg">
-<p>Analytics, Revolution, and Steve Weston. 2015a. <em>DoMC: Foreach Parallel Adaptor for ’Parallel’</em>. <a href="https://CRAN.R-project.org/package=doMC" class="uri">https://CRAN.R-project.org/package=doMC</a>.</p>
-</div>
-<div id="ref-doParallel-pkg">
-<p>———. 2015b. <em>DoParallel: Foreach Parallel Adaptor for the ’Parallel’ Package</em>. <a href="https://CRAN.R-project.org/package=doParallel" class="uri">https://CRAN.R-project.org/package=doParallel</a>.</p>
+<div id="ref-R-doMC">
+<p>Analytics, Revolution, and Steve Weston. 2017. <em>DoMC: Foreach Parallel Adaptor for ’Parallel’</em>. <a href="https://CRAN.R-project.org/package=doMC" class="uri">https://CRAN.R-project.org/package=doMC</a>.</p>
 </div>
 <div id="ref-random-breiman-2001">
 <p>Breiman, Leo. 2001. “Random Forests.” <em>Machine Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324" class="uri">https://doi.org/10.1023/A:1010933404324</a>.</p>
 </div>
-<div id="ref-breiman-1985-estimating">
+<div id="ref-breiman-estimating-1985">
 <p>Breiman, Leo, and Jerome H. Friedman. 1985. “Estimating Optimal Transformations for Multiple Regression and Correlation.” <em>Journal of the American Statistical Association</em> 80 (391): 580–98. <a href="https://doi.org/10.1080/01621459.1985.10478157" class="uri">https://doi.org/10.1080/01621459.1985.10478157</a>.</p>
 </div>
-<div id="ref-friedman-1991-mars">
+<div id="ref-R-doParallel">
+<p>Corporation, Microsoft, and Steve Weston. 2017. <em>DoParallel: Foreach Parallel Adaptor for the ’Parallel’ Package</em>. <a href="https://CRAN.R-project.org/package=doParallel" class="uri">https://CRAN.R-project.org/package=doParallel</a>.</p>
+</div>
+<div id="ref-friedman-mars-1991">
 <p>Friedman, Jerome H. 1991. “Multivariate Adaptive Regression Splines.” <em>The Annals of Statistics</em> 19 (1): 1–67. <a href="https://doi.org/10.1214/aos/1176347963" class="uri">https://doi.org/10.1214/aos/1176347963</a>.</p>
 </div>
-<div id="ref-harrison-1978-hedonic">
+<div id="ref-harrison-hedonic-1978">
 <p>Harrison, David, and Daniel L. Rubinfeld. 1978. “Hedonic Housing Prices and the Demand for Clean Air.” <em>Journal of Environmental Economics and Management</em> 5 (1): 81–102. <a href="https://doi.org/10.1016/0095-0696(78)90006-2" class="uri">https://doi.org/10.1016/0095-0696(78)90006-2</a>.</p>
 </div>
-<div id="ref-plyr-pkg">
-<p>Wickham, Hadley. 2011. “The Split-Apply-Combine Strategy for Data Analysis.” <em>Journal of Statistical Software</em> 40 (1): 1–29. <a href="https://doi.org/10.18637/jss.v040.i01" class="uri">https://doi.org/10.18637/jss.v040.i01</a>.</p>
+<div id="ref-R-plyr">
+<p>Wickham, Hadley. 2016. <em>Plyr: Tools for Splitting, Applying and Combining Data</em>. <a href="https://CRAN.R-project.org/package=plyr" class="uri">https://CRAN.R-project.org/package=plyr</a>.</p>
 </div>
 </div>
 </div>

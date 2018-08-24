@@ -11,6 +11,7 @@ Status](https://img.shields.io/codecov/c/github/bgreenwell/pdp.svg)](https://cod
 [![Downloads](http://cranlogs.r-pkg.org/badges/pdp)](http://cranlogs.r-pkg.org/badges/pdp)
 [![Total
 Downloads](http://cranlogs.r-pkg.org/badges/grand-total/pdp)](http://cranlogs.r-pkg.org/badges/grand-total/pdp)
+[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 
 Overview
 --------

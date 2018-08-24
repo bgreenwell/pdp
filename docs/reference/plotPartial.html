@@ -152,7 +152,8 @@ lattice graphics." />
 
 <span class='co'># S3 method for cice</span>
 <span class='fu'>plotPartial</span>(<span class='no'>object</span>, <span class='kw'>plot.pdp</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>pdp.col</span> <span class='kw'>=</span> <span class='st'>"red2"</span>,
-  <span class='kw'>pdp.lwd</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>pdp.lty</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>rug</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>train</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='no'>...</span>)
+  <span class='kw'>pdp.lwd</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>pdp.lty</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>rug</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>train</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>alpha</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='no'>...</span>)
 
 <span class='co'># S3 method for partial</span>
 <span class='fu'>plotPartial</span>(<span class='no'>object</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>plot.pdp</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
@@ -225,7 +226,7 @@ Default is <code>FALSE</code>.</p></td>
     </tr>
     <tr>
       <th>chull</th>
-      <td><p>Logical indicating wether or not to restrict the first two
+      <td><p>Logical indicating whether or not to restrict the first two
 variables in <code>pred.var</code> to lie within the convex hull of their training
 values; this affects <code>pred.grid</code>. Default is <code>FALSE</code>.</p></td>
     </tr>

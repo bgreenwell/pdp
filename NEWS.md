@@ -1,6 +1,4 @@
-# NEWS for pdp package
-
-### Changes for version 0.6.1
+# pdp 0.6.1
 
 * Added support for `e1071::naiveBayes()`, an implementation of the standard naive Bayes classifier [(#42)](https://github.com/bgreenwell/pdp/issues/42).
 
@@ -28,7 +26,7 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * Removed use of `ggplot2::aes_string()` in `autoplot()` (which is soft deprecated as of `ggplot2` version 3.0.0) [(#73)](https://github.com/bgreenwell/pdp/issues/73).
 
 
-### Changes for version 0.6.0
+# pdp 0.6.0
 
 * Properly registered native routines and disabled symbol search.
 
@@ -49,19 +47,19 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * Fixed a bug for `nnet::multinom()` models with binary response.
 
 
-### Changes for version 0.5.2
+# pdp 0.5.2
 
 * Fixed minor pandoc conversion issue with `README.md`.
 
 * Added subdirectory called `tools` to hold figures for `README.md`.
 
 
-### Changes for version 0.5.1
+# pdp 0.5.1
 
 * Registered native routines and disabled symbol search.
 
 
-### Changes for version 0.5.0
+# pdp 0.5.0
 
 * Added support for `MASS::lda()`, `MASS::qda()`, and `mda::mars()`.
 
@@ -76,7 +74,7 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * New function `autoplot` for automatically creating `ggplot2` graphics from `"partial"` objects.
 
 
-### Changes for version 0.4.0
+# pdp 0.4.0
 
 * `partial()` is now much faster with `"gbm"` object due to a call to `gbm::plot.gbm()` whenever `pred.grid` is not explicitly given by the user. (`gbm::plot.gbm()` exploits a computational shortcut that does not involve any passes over the training data.)
 
@@ -87,7 +85,7 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * Minor bug fixes and documentation tweaks.
 
 
-### Changes for version 0.3.0
+# pdp 0.3.0
 
 * The `...` argument in the call to `partial()` now refers to additional arguments to be passed onto `stats::predict()` rather than `plyr::aaply()`. For example, using `partial()` with `"gbm"` objects will require specification of `n.trees` which can now simply be passed to `partial()` via the `...` argument.
 
@@ -100,7 +98,7 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * The column name for the predicted value has been changed from `"y"` to `"yhat"`.
 
 
-### Changes for version 0.2.0
+# pdp 0.2.0
 
 * `randomForest` is no longer imported.
 
@@ -115,33 +113,33 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * Added `gbm` support for most non-`"binomial"` families`.
 
 
-### Changes for version 0.1.0
+# pdp 0.1.0
 
 * `randomForest` is now imported.
 
 * Added examples.
 
 
-### Changes for version 0.0.6
+# pdp 0.0.6
 
 * Fixed a non canonical CRAN URL in the README file.
 
 
-### Changes for version 0.0.5
+# pdp 0.0.5
 
 * `partial()` now makes sure each column of `pred.grid` has the correct class, levels, etc.
 
 * `partial()` gained a new option, `levelplot`, which defaults to `TRUE`. The original option, `contour`, has changed and now specifies whether or not to add contour lines whenever `levelplot = TRUE`.
 
 
-### Changes for version 0.0.4
+# pdp 0.0.4
 
 * Fixed a number of URLs.
 
 * More thorough documentation.
 
 
-### Changes for version 0.0.2
+# pdp 0.0.2
 
 * Fixed a couple of URLs and typos.
 
@@ -150,6 +148,6 @@ as regression [(#68)](https://github.com/bgreenwell/pdp/issues/68).
 * Added support for C5.0, Cubist, nonlinear least squares, and XGBoost models.
 
 
-### Changes for version 0.0.1
+# pdp 0.0.1
 
 * Initial release.

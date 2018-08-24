@@ -60,7 +60,7 @@ smoother. Smaller numbers produce wigglier lines, larger numbers produce
 smoother lines. Default is \code{0.75}.}
 
 \item{smooth.method.args}{List containing additional arguments to be passed
-on to the modelling function defined by \code{smooth.method}.}
+on to the modeling function defined by \code{smooth.method}.}
 
 \item{contour}{Logical indicating whether or not to add contour lines to the
 level plot.}
@@ -75,14 +75,14 @@ and "cividis".}
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE} or \code{chull = TRUE}.}
 
-\item{xlab}{Charater string specifying the text for the x-axis label.}
+\item{xlab}{Character string specifying the text for the x-axis label.}
 
-\item{ylab}{Charater string specifying the text for the y-axis label.}
+\item{ylab}{Character string specifying the text for the y-axis label.}
 
 \item{main}{Character string specifying the text for the main title of the
 plot.}
 
-\item{legend.title}{Charater string specifying the text for the legend title.
+\item{legend.title}{Character string specifying the text for the legend title.
 Default is \code{"yhat"}.}
 
 \item{...}{Additional optional arguments to be passed onto \code{geom_line}.}

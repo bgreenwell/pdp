@@ -56,7 +56,7 @@
 #'
 #' @param inv.link Function specifying the transformation to be applied to the
 #' predictions before the partial dependence function is computed
-#' (experimental). Default is \code{NULL} (i.e., no transofrmation). This option
+#' (experimental). Default is \code{NULL} (i.e., no transformation). This option
 #' is intended to be used for models that allow for non-Gaussian response
 #' variables (e.g., counts). For these models, predictions are not typically
 #' returned on the original response scale by default. For example, Poisson GBMs
@@ -86,7 +86,7 @@
 #' \code{\link{plotPartial}} for plotting details.
 #'
 #' @param plot.engine Character string specifying which plotting engine to use
-#' whenever \code{plot = TRUE}. Options include \code{"lattice"} (defasult) or
+#' whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
 #' \code{"ggplot2"}.
 #'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
@@ -116,7 +116,7 @@
 #' transparency). In fact, this option only affects ICE/c-ICE curves and level
 #' plots.
 #'
-#' @param chull Logical indicating wether or not to restrict the values of the
+#' @param chull Logical indicating whether or not to restrict the values of the
 #' first two variables in \code{pred.var} to lie within the convex hull of their
 #' training values; this affects \code{pred.grid}. This helps reduce the risk of
 #' interpreting the partial dependence plot outside the region of the data

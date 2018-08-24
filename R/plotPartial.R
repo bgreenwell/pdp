@@ -29,7 +29,7 @@
 #' @param rug Logical indicating whether or not to include rug marks on the
 #' predictor axes. Default is \code{FALSE}.
 #'
-#' @param chull Logical indicating wether or not to restrict the first two
+#' @param chull Logical indicating whether or not to restrict the first two
 #' variables in \code{pred.var} to lie within the convex hull of their training
 #' values; this affects \code{pred.grid}. Default is \code{FALSE}.
 #'

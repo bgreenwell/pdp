@@ -15,8 +15,9 @@ partial(object, ...)
   plot.engine = c("lattice", "ggplot2"), smooth = FALSE, rug = FALSE,
   chull = FALSE, levelplot = TRUE, contour = FALSE,
   contour.color = "white", palette = c("viridis", "magma", "inferno",
-  "plasma", "cividis"), alpha = 1, train, cats = NULL, check.class = TRUE,
-  progress = "none", parallel = FALSE, paropts = NULL, ...)
+  "plasma", "cividis"), alpha = 1, train, cats = NULL,
+  check.class = TRUE, progress = "none", parallel = FALSE,
+  paropts = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object of appropriate class (e.g., \code{"gbm"},
@@ -75,7 +76,7 @@ to extract the necessary information from \code{object}.}
 
 \item{inv.link}{Function specifying the transformation to be applied to the
 predictions before the partial dependence function is computed
-(experimental). Default is \code{NULL} (i.e., no transofrmation). This option
+(experimental). Default is \code{NULL} (i.e., no transformation). This option
 is intended to be used for models that allow for non-Gaussian response
 variables (e.g., counts). For these models, predictions are not typically
 returned on the original response scale by default. For example, Poisson GBMs
@@ -105,7 +106,7 @@ function directly (\code{TRUE}). Default is \code{FALSE}. See
 \code{\link{plotPartial}} for plotting details.}
 
 \item{plot.engine}{Character string specifying which plotting engine to use
-whenever \code{plot = TRUE}. Options include \code{"lattice"} (defasult) or
+whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
 \code{"ggplot2"}.}
 
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
@@ -117,7 +118,7 @@ predictor distributions. This helps reduce the risk of interpreting the
 partial dependence plot outside the region of the data (i.e., extrapolating).
 Only used when \code{plot = TRUE}. Default is \code{FALSE}.}
 
-\item{chull}{Logical indicating wether or not to restrict the values of the
+\item{chull}{Logical indicating whether or not to restrict the values of the
 first two variables in \code{pred.var} to lie within the convex hull of their
 training values; this affects \code{pred.grid}. This helps reduce the risk of
 interpreting the partial dependence plot outside the region of the data

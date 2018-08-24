@@ -40,7 +40,7 @@
 #' smoother lines. Default is \code{0.75}.
 #'
 #' @param smooth.method.args List containing additional arguments to be passed
-#' on to the modelling function defined by \code{smooth.method}.
+#' on to the modeling function defined by \code{smooth.method}.
 #'
 #' @param contour Logical indicating whether or not to add contour lines to the
 #' level plot.
@@ -55,14 +55,14 @@
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
 #'
-#' @param xlab Charater string specifying the text for the x-axis label.
+#' @param xlab Character string specifying the text for the x-axis label.
 #'
-#' @param ylab Charater string specifying the text for the y-axis label.
+#' @param ylab Character string specifying the text for the y-axis label.
 #'
 #' @param main Character string specifying the text for the main title of the
 #' plot.
 #'
-#' @param legend.title Charater string specifying the text for the legend title.
+#' @param legend.title Character string specifying the text for the legend title.
 #' Default is \code{"yhat"}.
 #'
 #' @param ... Additional optional arguments to be passed onto \code{geom_line}.

@@ -16,7 +16,7 @@
   \item \code{nox} Nitric oxides concentration (parts per 10 million).
   \item \code{rm} Average number of rooms per dwelling.
   \item \code{age} Proportion of owner-occupied units built prior to 1940.
-  \item \code{dis} Weighted distances to five Boston employment centres.
+  \item \code{dis} Weighted distances to five Boston employment centers.
   \item \code{rad} Index of accessibility to radial highways.
   \item \code{tax} Full-value property-tax rate per USD 10,000.
   \item \code{ptratio} Pupil-teacher ratio by town.

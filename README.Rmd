@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 
 [pdp](https://cran.r-project.org/package=pdp) is an R package for constructing _**p**artial **d**ependence **p**lots_ (PDPs) and _**i**ndividual **c**onditional **e**xpectation_ (ICE) curves. PDPs and ICE curves are part of a larger framework referred to as *interpretable machine learning* (IML), which also includes (but not limited to) _**v**ariable **i**mportance **p**lots_ (VIPs). While VIPs (available in the R package [vip](https://koalaverse.github.io/vip/index.html)) help visualize feature impact (either locally or globally), PDPs and ICE curves help visualize feature effects. An in-progress, but comprehensive, overview of IML can be found at the following URL: https://github.com/christophM/interpretable-ml-book.
 
-A detailed introduction to [pdp](https://cran.r-project.org/package=pdp) has been published in The R Journal: "pdp: An R Package for Constructing Partial Dependence Plots", https://journal.r-project.org/archive/2017/RJ-2017-016/index.html. You can track development at https://github.com/bgreenwell/pdp. To report bugs or issues, contact the main author directly or submit them to https://github.com/bgreenwell/pdp/issues. 
+A detailed introduction to [pdp](https://cran.r-project.org/package=pdp) has been published in The R Journal: "pdp: An R Package for Constructing Partial Dependence Plots", https://journal.r-project.org/archive/2017/RJ-2017-016/index.html. You can track development at https://github.com/bgreenwell/pdp. To report bugs or issues, contact the main author directly or submit them to https://github.com/bgreenwell/pdp/issues. For additional documentation and examples, visit the [package website](https://bgreenwell.github.io/pdp/index.html).
 
 As of right now, `pdp` exports four functions:
 

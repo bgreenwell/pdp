@@ -34,7 +34,9 @@ Partial Dependence Plots”,
 <https://journal.r-project.org/archive/2017/RJ-2017-016/index.html>. You
 can track development at <https://github.com/bgreenwell/pdp>. To report
 bugs or issues, contact the main author directly or submit them to
-<https://github.com/bgreenwell/pdp/issues>.
+<https://github.com/bgreenwell/pdp/issues>. For additional documentation
+and examples, visit the [package
+website](https://bgreenwell.github.io/pdp/index.html).
 
 As of right now, `pdp` exports four functions:
 

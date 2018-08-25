@@ -13,6 +13,8 @@ env:
   global:
   - _R_CHECK_FORCE_SUGGESTS_=false
 
+r_build_args: "--no-build-vignettes"
+
 r_check_args: "--no-vignettes"
 
 after_success:

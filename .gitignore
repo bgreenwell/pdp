@@ -5,3 +5,4 @@ slowtests/*.html
 src/*.o
 src/*.so
 inst/doc
+/revdep/.cache.rds

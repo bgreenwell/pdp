@@ -29,7 +29,6 @@ library(ggplot2)  # for general visualization
 library(kernlab)  # for fitting SVMs
 library(pdp)      # for partial dependence plots
 library(ranger)   # for fitting random forests
-library(vip)      # for variable importance plots
 ```
 
 ## User-defined prediction functions

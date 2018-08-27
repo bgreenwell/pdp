@@ -37,24 +37,24 @@ boston.rf %>%
 # ICE curves (numeric)
 boston.rf %>%
   partial(pred.var = "lstat", ice = TRUE) %>%
-  plotPartial(alpha = 0.3, main = "ICE curves")
+  plotPartial(alpha = 0.1, main = "ICE curves")
 
 # c-ICE curves (numeric)
 boston.rf %>%
   partial(pred.var = "lstat", ice = TRUE) %>%
-  plotPartial(center = TRUE, alpha = 0.3, main = "c-ICE curves")
+  plotPartial(center = TRUE, alpha = 0.1, main = "c-ICE curves")
 
 # c-ICE curves (numeric)
 boston.rf %>%
   partial(pred.var = "lstat", ice = TRUE, center = TRUE) %>%
-  plotPartial(alpha = 0.3, main = "c-ICE curves")
+  plotPartial(alpha = 0.1, main = "c-ICE curves")
 
 # ICE curves (factor)
 boston.rf %>%
   partial(pred.var = "chas", ice = TRUE) %>%
-  plotPartial(alpha = 0.3, main = "ICE curves")
+  plotPartial(alpha = 0.1, main = "ICE curves")
 
 # c-ICE curves (factor)
 boston.rf %>%
   partial(pred.var = "chas", ice = TRUE, center = TRUE) %>%
-  plotPartial(alpha = 0.3, main = "ICE curves")
+  plotPartial(alpha = 0.1, main = "ICE curves")

@@ -46,6 +46,7 @@ p4 <- bst %>%
 # Compare plots
 grid.arrange(p1, p2, p3, p4, ncol = 2)
 
+# Fit a gbm model
 set.seed(101)
 mtcars.gbm <- gbm(carb ~ ., data = mtcars, distribution = "poisson",
                   n.trees = 2000, interaction.depth = 3, shrinkage = 0.01,
@@ -54,17 +55,21 @@ best.iter <- gbm.perf(mtcars.gbm, method = "cv")
 summary(mtcars.gbm, n.trees = best.iter, las = 1)
 
 # Log scale
-plot(mtcars.gbm, i.var = "mpg")
-partial(mtcars.gbm, pred.var = "mpg", n.trees = best.iter, plot = TRUE)
+plot(mtcars.gbm, i.var = "mpg", main = "Log scale")
+partial(mtcars.gbm, pred.var = "mpg", n.trees = best.iter, plot = TRUE,
+        plot.engine = "ggplot2") +
+  ggtitle("Log scale")
 
 # Response scale
 par(mfrow = c(1, 2))
-plot(mtcars.gbm, i.var = "mpg", type = "link")
-plot(mtcars.gbm, i.var = "mpg", type = "response")
+plot(mtcars.gbm, i.var = "mpg", type = "link", main = "link")
+plot(mtcars.gbm, i.var = "mpg", type = "response", main = "response")
 grid.arrange(
   partial(mtcars.gbm, pred.var = "mpg", recursive = FALSE,
-          n.trees = best.iter, plot = TRUE),
+          n.trees = best.iter, plot = TRUE, plot.engine = "ggplot2") +
+    ggtitle("Link scale"),
   partial(mtcars.gbm, pred.var = "mpg", recursive = FALSE, inv.link = exp,
-          n.trees = best.iter, plot = TRUE),
+          n.trees = best.iter, plot = TRUE, plot.engine = "ggplot2") +
+    ggtitle("Response scale"),
   ncol = 2
 )

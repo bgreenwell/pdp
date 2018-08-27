@@ -1,170 +1,178 @@
 ---
-title: "Bouston  Tests"
+title: "Tests: Edgar Anderson's Iris Data"
 author: "Brandon M. Greenwell"
-date: "July 15, 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 # Load required packages
 library(ggplot2)
 library(grid)
 library(pdp)
 
-# Set knitr chunk options
-knitr::opts_chunk$set(echo = TRUE)
-
-# Function to run tests for a fitted model object using the iris data
-irisTest <- function(object, ...) {
-  
-  # Training data
+# Test function
+iris_test <- function(object, ...) {
   trn <- subset(iris, select = -Species)
-  
-  # Partial dependence plot for Petal.Length on class 1 (i.e. setosa)
   pd1 <- partial(object, pred.var = "Petal.Length", which.class = 1, 
                  prob = TRUE, train = trn, ...)
-  
-  # Partial dependence plot for Petal.Length on class 2 (i.e. versicolor)
   pd2 <- partial(object, pred.var = "Petal.Length", which.class = 2, 
                  prob = TRUE, train = trn, ...)
-  
-  # Partial dependence plot for Petal.Length on class 3 (i.e. verginica)
   pd3 <- partial(object, pred.var = "Petal.Length", which.class = 3, 
                  prob = TRUE, train = trn, ...)
-  
-  # Bind together into a single data frame
-  pd <- rbind(cbind(pd1, "Class" = "1"),
-              cbind(pd2, "Class" = "2"),
+  pd <- rbind(cbind(pd1, "Class" = "1"), cbind(pd2, "Class" = "2"),
               cbind(pd3, "Class" = "3"))
-  
-  # Display all three plots
   ggplot(pd, aes(x = Petal.Length, y = yhat, color = Class)) +
     geom_line() +
     xlab("Petal length") +
     ylab("Probability") +
     ggtitle(deparse(substitute(object))) +
     theme_light()
-  
 }
 ```
 
 
 # Discriminant analysis
 
+
 ## Package: `MASS`
 
-```{r}
-iris.lda <- MASS::lda(Species ~ ., data = iris)
-irisTest(iris.lda)
+```{r mass_lda}
+iris_lda <- MASS::lda(Species ~ ., data = iris)
+iris_test(iris_lda)
 ```
 
-```{r}
-iris.qda <- MASS::qda(Species ~ ., data = iris)
-irisTest(iris.qda)
+```{r mass_qda}
+iris_qda <- MASS::qda(Species ~ ., data = iris)
+iris_test(iris_qda)
 ```
+
 
 ## Package: `mda`
+
+```{r mda_fda}
+iris_fda <- mda::fda(Species ~ ., data = iris)
+iris_test(iris_fda)
+```
+
+```{r mda_mda}
+iris_fda <- mda::mda(Species ~ ., data = iris)
+iris_test(iris_fda)
+```
 
 
 # Decision trees
 
+
 ## Package: `rpart`
 
-```{r}
-iris.rpart <- rpart::rpart(Species ~ ., data = iris)
-irisTest(iris.rpart)
+```{r rpart_rpart}
+iris_rpart <- rpart::rpart(Species ~ ., data = iris)
+iris_test(iris_rpart)
 ```
+
 
 ## Package: `C50`
-```{r}
-set.seed(101)
-iris.C5.0 <- C50::C5.0(Species ~ ., data = iris, trials = 100)
-irisTest(iris.C5.0)
+
+```{r C50_C50}
+set.seed(101)  # for reproducibility
+iris_C5.0 <- C50::C5.0(Species ~ ., data = iris, trials = 100)
+iris_test(iris_C5.0)
 ```
 
-## Package: `party
 
-```{r}
-iris.ctree <- party::ctree(Species ~ ., data = iris)
-irisTest(iris.ctree)
+## Package: `party`
+
+```{r party_ctree}
+iris_ctree <- party::ctree(Species ~ ., data = iris)
+iris_test(iris_ctree)
 ```
 
-## Package: `partykit
 
-```{r}
-iris.ctree2 <- partykit::ctree(Species ~ ., data = iris)
-irisTest(iris.ctree2)
+## Package: `partykit`
+
+```{r partykit_ctree}
+iris_ctree2 <- partykit::ctree(Species ~ ., data = iris)
+iris_test(iris_ctree2)
 ```
 
 
 # Bagging
 
+
 ## Package: `adabag`
 
-```{r}
-set.seed(101)
-iris.bagging <- adabag::bagging(Species ~ ., data = iris)
-irisTest(iris.bagging)
+```{r adabag_bagging}
+set.seed(101)  # for reproducibility
+iris_bagging <- adabag::bagging(Species ~ ., data = iris)
+iris_test(iris_bagging)
 ```
 
-## Package: `ipred
 
-```{r}
-set.seed(101)
-iris.ipred <- ipred::bagging(Species ~ ., data = iris, nbagg = 500)
-irisTest(iris.ipred)
+## Package: `ipred`
+
+```{r ipred_bagging}
+set.seed(101)  # for reproducibility
+iris_ipred <- ipred::bagging(Species ~ ., data = iris, nbagg = 500)
+iris_test(iris_ipred)
 ```
+
 
 # Random forests
 
-## Package: `randomForest
 
-```{r}
-set.seed(101)
-iris.rf <- randomForest::randomForest(Species ~ ., data = iris)
-irisTest(iris.rf)
+## Package: `randomForest`
+
+```{r randomForest_randomForest}
+set.seed(101)  # for reproducibility
+iris_rf <- randomForest::randomForest(Species ~ ., data = iris)
+iris_test(iris_rf)
 ```
 
 
-## Package: `party
+## Package: `party`
 
-```{r}
-set.seed(101)
-iris.crf <- party::cforest(Species ~ ., data = iris)
-irisTest(iris.crf, quantiles = TRUE)
+```{r party_cforest}
+set.seed(101)  # for reproducibility
+iris_crf <- party::cforest(Species ~ ., data = iris)
+iris_test(iris_crf, quantiles = TRUE)
 ```
+
 
 ## Package: `partykit`
-```{r}
-set.seed(101)
-iris.crf2 <- partykit::cforest(Species ~ ., data = iris)
-irisTest(iris.crf2, quantiles = TRUE)
+
+```{r partykit_cforest}
+set.seed(101)  # for reproducibility
+iris_crf2 <- partykit::cforest(Species ~ ., data = iris)
+iris_test(iris_crf2, quantiles = TRUE)
 ```
+
 
 ## Package: `ranger`
 
-```{r}
-set.seed(101)
-iris.ranger <- ranger::ranger(Species ~ ., data = iris, probability = TRUE)
-irisTest(iris.ranger)
+```{r ranger_ranger}
+set.seed(101)  # for reproducibility
+iris_ranger <- ranger::ranger(Species ~ ., data = iris, probability = TRUE)
+iris_test(iris_ranger)
 ```
 
 
 # Boosting
 
+
 ## Package: `adabag`
 
-```{r}
-set.seed(101)
-iris.boosting <- adabag::boosting(Species ~ ., data = iris)
-irisTest(iris.boosting)
+```{r adabag_boosting}
+set.seed(101)  # for reproducibility
+iris_boosting <- adabag::boosting(Species ~ ., data = iris)
+iris_test(iris_boosting)
 ```
+
 
 ## Package: `gbm`
 
-```{r}
-set.seed(101)
-iris.gbm <- gbm::gbm(Species ~ ., 
+```{r gbm_gbm}
+set.seed(101)  # for reproducibility
+iris_gbm <- gbm::gbm(Species ~ ., 
                      data = iris,
                      distribution = "multinomial",
                      n.trees = 5000,
@@ -172,59 +180,66 @@ iris.gbm <- gbm::gbm(Species ~ .,
                      shrinkage = 0.001,
                      cv.folds = 5,
                      verbose = FALSE)
-best.iter <- gbm::gbm.perf(iris.gbm, method = "cv", plot.it = FALSE)
-irisTest(iris.gbm, n.trees = best.iter)
+best.iter <- gbm::gbm.perf(iris_gbm, method = "cv", plot.it = FALSE)
+iris_test(iris_gbm, n.trees = best.iter)
 ```
 
+
 ## Package: `xgboost`
-```{r}
-set.seed(101)
-iris.xgb <- xgboost::xgboost(
+
+```{r xgboost_xgboost}
+set.seed(101)  # for reproducibility
+iris_xgb <- xgboost::xgboost(
   data = data.matrix(subset(iris, select = -Species)), 
   label = unclass(iris$Species) - 1, num_class = 3, 
   objective = "multi:softprob", nrounds = 100, max_depth = 3, eta = 0.1, 
   gamma = 0, colsample_bytree = 0.8, min_child_weight = 1, subsample = 0.7,
   verbose = 0
 )
-irisTest(iris.xgb)
+iris_test(iris_xgb)
 ```
+
 
 # Neural networks
 
 ## Package: `nnet`
-```{r}
-set.seed(101)
-iris.nnet <- nnet::nnet(Species ~ ., data = iris, size = 10, decay = 0.1, 
+
+```{r nnet_nnet}
+set.seed(101)  # for reproducibility
+iris_nnet <- nnet::nnet(Species ~ ., data = iris, size = 10, decay = 0.1, 
                         maxit = 500, trace = FALSE)
-irisTest(iris.nnet)
+iris_test(iris_nnet)
 ```
 
 
 # Support vector machines
 
+
 ## Package: `e1071`
 
-```{r}
-iris.svm <- e1071::svm(Species ~ ., data = iris, type = "C-classification", 
+```{r e1071_svm}
+iris_svm <- e1071::svm(Species ~ ., data = iris, type = "C-classification", 
                        probability = TRUE)
-irisTest(iris.svm)
+iris_test(iris_svm)
 ```
+
 
 ## Package: `kernlab`
 
-```{r}
-iris.ksvm <- kernlab::ksvm(Species ~ ., data = iris, type = "C-svc", 
+```{r kernlab_ksvm}
+iris_ksvm <- kernlab::ksvm(Species ~ ., data = iris, type = "C-svc", 
                            prob.model = TRUE)
-irisTest(iris.ksvm)
+iris_test(iris_ksvm)
 ```
 
 
 # Linear/generalized linear models
 
+
 ## Package: `nnet`
 
-```{r}
-set.seed(101)
-iris.multinom <- nnet::multinom(Species ~ ., data = iris, trace = FALSE)
-irisTest(iris.multinom)
+```{r nnet_multinom}
+set.seed(101)  # for reproducibility
+iris_multinom <- nnet::multinom(Species ~ ., data = iris, trace = FALSE)
+iris_test(iris_multinom)
 ```

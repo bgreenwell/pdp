@@ -1,208 +1,209 @@
 ---
-title: "Bouston Housing Tests"
+title: "Tests: Bouston Housing Data"
 author: "Brandon M. Greenwell"
-date: "July 15, 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 # Load required packages
 library(ggplot2)
 library(grid)
 library(pdp)
 
-# Set knitr chunk options
-knitr::opts_chunk$set(echo = TRUE)
-
-# Function to run tests for a fitted model object using the Boston housing data
-bostonHousingTest <- function(object, ...) {
-
-  # Training data
+# Test function
+boston_test <- function(object, ...) {
   trn <- subset(boston, select = -cmedv)
-  
-  # Partial dependence plot for lstat
   pd1 <- partial(object, pred.var = "lstat", train = trn, ...)
-
-  # Partial dependence plot for lstat and rm
   pd2 <- partial(object, pred.var = c("lstat", "rm"), chull = TRUE,
                  train = trn, ...)
-
-  # Individual conditional expectation curves for age
-  pd3 <- partial(object, pred.var = "age", ice = TRUE, train = trn, ...)
-
-  # Centered individual conditional expectation curves for lstat
-  pd4 <- partial(object, pred.var = "age", ice = TRUE, center = TRUE,
+  pd3 <- partial(object, pred.var = "rm", ice = TRUE, train = trn, ...)
+  pd4 <- partial(object, pred.var = "rm", ice = TRUE, center = TRUE,
                  train = trn, ...)
-
-  # Display plots
   grid.arrange(
     autoplot(pd1, rug = TRUE, train = trn, main = "PDP for lstat"),
     autoplot(pd2, main = "PDP for lstat and rm"),
-    autoplot(pd3, main = "ICE curves for age", alpha = 0.25),
-    autoplot(pd4, main = "c-ICE curves for age", alpha = 0.25),
-    ncol = 2, 
-    top = textGrob(deparse(substitute(object)),
-                   gp = gpar(fontsize = 20, font = 3))
+    autoplot(pd3, main = "ICE curves for rm", alpha = 0.1),
+    autoplot(pd4, main = "c-ICE curves for rm", alpha = 0.1),
+    ncol = 2, top = textGrob(deparse(substitute(object)),
+                             gp = gpar(fontsize = 20, font = 3))
   )
-
 }
 ```
 
 
 # Cubist
 
-## `Cubist` package
 
-```{r}
-boston.cubist <- Cubist::cubist(x = subset(boston, select = -cmedv),
+## Package: `Cubist`
+
+```{r Cubist_cubist}
+boston_cubist <- Cubist::cubist(x = subset(boston, select = -cmedv),
                                 y = boston$cmedv, committees = 100)
-bostonHousingTest(boston.cubist)
+boston_test(boston_cubist)
 ```
 
 
 # Decision trees
 
-## `rpart` package
 
-```{r}
-boston.rpart <- rpart::rpart(cmedv ~ ., data = boston)
-bostonHousingTest(boston.rpart)
+## Package: `rpart`
+
+```{r rpart_rpart}
+boston_rpart <- rpart::rpart(cmedv ~ ., data = boston)
+boston_test(boston_rpart)
 ```
 
-## `party` package
 
-```{r}
-boston.ctree <- party::ctree(cmedv ~ ., data = boston)
-bostonHousingTest(boston.ctree)
+## Package: `party`
+
+```{r party_ctree}
+boston_ctree <- party::ctree(cmedv ~ ., data = boston)
+boston_test(boston_ctree)
 ```
 
-## `partykit` package
 
-```{r}
-boston.ctree2 <- partykit::ctree(cmedv ~ ., data = boston)
-bostonHousingTest(boston.ctree2)
+## Package: `partykit`
+
+```{r partykit_ctree}
+boston_ctree2 <- partykit::ctree(cmedv ~ ., data = boston)
+boston_test(boston_ctree2)
 ```
 
 
 # Bagging
 
-## `ipred` package
 
-```{r}
+## Package: `ipred`
+
+```{r ipred_bagging}
 set.seed(101)
-boston.ipred <- ipred::bagging(cmedv ~ ., data = boston, nbagg = 500)
-bostonHousingTest(boston.ipred)
+boston_ipred <- ipred::bagging(cmedv ~ ., data = boston, nbagg = 500)
+boston_test(boston_ipred)
 ```
+
 
 # Random forests
 
-## `randomForest` package
 
-```{r}
+## Package: `randomForest`
+
+```{r randomForest_randomForest}
 set.seed(101)
-boston.rf <- randomForest::randomForest(cmedv ~ ., data = boston)
-bostonHousingTest(boston.rf)
+boston_rf <- randomForest::randomForest(cmedv ~ ., data = boston)
+boston_test(boston_rf)
 ```
 
 
-## `party` package
+## Package: `party`
 
-```{r}
+```{r party_cforest}
 set.seed(101)
-boston.crf <- party::cforest(cmedv ~ ., data = boston)
-bostonHousingTest(boston.crf, quantiles = TRUE)
+boston_crf <- party::cforest(cmedv ~ ., data = boston)
+boston_test(boston_crf, quantiles = TRUE)
 ```
 
-## `ranger` package
 
-```{r}
+## Package: `ranger`
+
+```{r ranger_ranger}
 set.seed(101)
-boston.ranger <- ranger::ranger(cmedv ~ ., data = boston)
-bostonHousingTest(boston.ranger)
+boston_ranger <- ranger::ranger(cmedv ~ ., data = boston)
+boston_test(boston_ranger)
 ```
 
 
 # Boosting
 
-## `gbm` package
 
-```{r}
+## Package: `gbm`
+
+```{r gbm_gbm}
 set.seed(101)
-boston.gbm <- gbm::gbm(cmedv ~ ., data = boston, distribution = "gaussian",
+boston_gbm <- gbm::gbm(cmedv ~ ., data = boston, distribution = "gaussian",
                        n.trees = 5000, interaction.depth = 3, shrinkage = 0.001,
                        cv.folds = 5)
-best.iter <- gbm::gbm.perf(boston.gbm, method = "OOB", plot.it = FALSE)
-bostonHousingTest(boston.gbm, n.trees = best.iter)
+best.iter <- gbm::gbm.perf(boston_gbm, method = "OOB", plot.it = FALSE)
+boston_test(boston_gbm, n.trees = best.iter)
 ```
 
-## `xgboost` package
-```{r}
+
+## Package: `xgboost`
+
+```{r xgboost_xgboost}
 set.seed(101)
-boston.xgb <- xgboost::xgboost(
+boston_xgb <- xgboost::xgboost(
   data = data.matrix(subset(boston, select = -cmedv)), label = boston$cmedv,
   objective = "reg:linear", nrounds = 5000, max_depth = 3, eta = 0.001,
   colsample_bytree = 0.8, subsample = 0.5,
   save_period = NULL, verbose = 0
 )
-bostonHousingTest(boston.xgb)
+boston_test(boston_xgb)
 ```
+
 
 # Neural networks
 
-## `nnet` package
-```{r}
+
+## Package: `nnet`
+
+```{r nnet_nnet}
 set.seed(101)
-boston.nnet <- nnet::nnet(cmedv ~ ., data = boston, size = 6, decay = 0.1,
+boston_nnet <- nnet::nnet(cmedv ~ ., data = boston, size = 6, decay = 0.1,
                           linout = TRUE, trace = FALSE)
-bostonHousingTest(boston.nnet)
+boston_test(boston_nnet)
 ```
 
 
 # Support vector machines
 
-## `e1071` package
 
-```{r}
-boston.svm <- e1071::svm(cmedv ~ ., data = boston, type = "eps-regression")
-bostonHousingTest(boston.svm)
+## Package: `e1071`
+
+```{r e1071_svm}
+boston_svm <- e1071::svm(cmedv ~ ., data = boston, type = "eps-regression")
+boston_test(boston_svm)
 ```
 
-## `kernlab` package
 
-```{r}
-boston.ksvm <- kernlab::ksvm(cmedv ~ ., data = boston, type= "eps-svr")
-bostonHousingTest(boston.ksvm)
+## Package: `kernlab`
+
+```{r kernlab_ksvm}
+boston_ksvm <- kernlab::ksvm(cmedv ~ ., data = boston, type= "eps-svr")
+boston_test(boston_ksvm)
 ```
 
 
 # Linear/generalized linear models
 
-## `stats` package
 
-```{r}
-boston.lm <- lm(cmedv ~ . ^ 2, data = boston)
-bostonHousingTest(boston.lm)
+## Package: `stats`
+
+```{r stats_lm}
+boston_lm <- lm(cmedv ~ . ^ 2, data = boston)
+boston_test(boston_lm)
 ```
 
-```{r}
-boston.glm <- glm(cmedv ~ . ^ 2, data = boston)
-bostonHousingTest(boston.glm)
+```{r stats_glm}
+boston_glm <- glm(cmedv ~ . ^ 2, data = boston)
+boston_test(boston_glm)
 ```
 
 
 # Multivariate adaptive regression splines
 
-## `earth` package
 
-```{r}
-boston.earth <- earth::earth(cmedv ~ ., degree = 3, data = boston)
-bostonHousingTest(boston.earth)
+## Package: `earth`
+
+```{r earth_earth}
+boston_earth <- earth::earth(cmedv ~ ., degree = 3, data = boston)
+boston_test(boston_earth)
 ```
 
-## `mda` package
 
-```{r}
-boston.mars <- mda::mars(x = subset(boston, select = - cmedv), 
+## Package: `mda` 
+
+```{r mda_mars}
+boston_mars <- mda::mars(x = subset(boston, select = - cmedv), 
                          y = boston$cmedv, degree = 3)
-bostonHousingTest(boston.mars)
+boston_test(boston_mars)
 ```

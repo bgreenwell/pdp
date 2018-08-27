@@ -42,12 +42,10 @@ super_type.C5.0 <- function(object) {
 
 
 super_type.cforest <- function(object) {
-  if (attr(object$terms, "response") == 1 &&
-      attr(object$terms, "dataClasses")[1L] == "numeric") {
-    "regression"
-  } else if (attr(object$terms, "response") == 1 &&
-             attr(object$terms, "dataClasses")[1L] == "factor") {
+  if (is.factor(object$fitted[["(response)"]])) {
     "classification"
+  } else if (is.numeric(object$fitted[["(response)"]])) {
+    "regression"
   } else {
     "other"
   }
@@ -127,7 +125,7 @@ super_type.ksvm <- function(object) {
 
 
 #' @keywords internal
-super_type.lda<- function(object) {
+super_type.lda <- function(object) {
   "classification"
 }
 
@@ -178,12 +176,10 @@ super_type.nnet <- function(object) {
 
 
 super_type.party <- function(object) {
-  if (attr(object$terms, "response") == 1 &&
-      attr(object$terms, "dataClasses")[1L] == "numeric") {
-    "regression"
-  } else if (attr(object$terms, "response") == 1 &&
-             attr(object$terms, "dataClasses")[1L] == "factor") {
+  if (is.factor(object$fitted[["(response)"]])) {
     "classification"
+  } else if (is.numeric(object$fitted[["(response)"]])) {
+    "regression"
   } else {
     "other"
   }

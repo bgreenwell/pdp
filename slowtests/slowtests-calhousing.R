@@ -5,36 +5,22 @@
 # Description: Reproducing the California housing example from Section 14.1 of
 # Chapter 10 in
 #
-#   Hastie, Trevor, Robert Tibshirani, and J. H. Friedman. The elements of 
-#   statistical learning : data mining, inference, and prediction. New York: 
+#   Hastie, Trevor, Robert Tibshirani, and J. H. Friedman. The elements of
+#   statistical learning : data mining, inference, and prediction. New York:
 #   Springer, 2009. Print.
 #
-# WARNING: This is simply a test file. These models are not trained to be 
+# WARNING: This is simply a test file. These models are not trained to be
 # "optimal" in any sense.
 #
 #-------------------------------------------------------------------------------
-
-
-################################################################################
-# Setup
-################################################################################
 
 # Load required packages
 library(gbm)
 library(pdp)
 
-# Download function from gist
-url <- "b1330460eec5acf1c81fae71902e331c"
-devtools::source_gist(url, filename = "fetchCaliforniaHousingData.R")
-
 # Fetch California housing data
-cal <- fetchCaliforniaHousingData()
+cal <- read.csv("slowtests/california_housing.csv")
 head(cal)
-
-
-################################################################################
-# Fit models
-################################################################################
 
 # Fit a GBM with the same parameters as in Hastie et al. (2009, pp 371-375)
 set.seed(102)
@@ -48,13 +34,8 @@ cal.gbm <- gbm(AvgValue ~ ., data = cal,
                verbose = TRUE)
 best.iter <- gbm.perf(cal.gbm, method = "test")
 
-
-################################################################################
-# Construct and display partial dependence plots
-################################################################################
-
 # There seems to be a fair amount of outliers in the datset so we have two
-# options: 
+# options:
 #
 #   (1) use the quantiles options with specific probabilities;
 #   (2) use the trim.outliers option.
@@ -92,8 +73,10 @@ grid.arrange(
 grid.arrange(
   plotPartial(pd.HouseAge.AveOccup, levelplot = FALSE, zlab = "",
               scales = list(arrows = FALSE),
+              col.regions = viridis::magma(100, begin = 0.4),
+              # palette = "magma",
               drape = TRUE, colorkey = TRUE,
-              screen = list(z = 120, x = -60)),
+              screen = list(z = 140, x = -60)),
   plotPartial(pd.HouseAge.AveOccup),
   ncol = 2
 )

@@ -1,201 +1,199 @@
 ---
-title: "Pima  Tests"
+title: "Tests: Pima Indians Diabetes Data"
 author: "Brandon M. Greenwell"
-date: "July 15, 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup}
 # Load required packages
 library(ggplot2)
 library(grid)
 library(pdp)
 
-# Set knitr chunk options
-knitr::opts_chunk$set(echo = TRUE)
-
-# Function to run tests for a fitted model object using the Pima Indians 
-# diabetes data
-pimaIndiansTest <- function(object, ...) {
-
-  # Training data
+# Test function
+pima_test <- function(object, ...) {
   pima <- na.omit(pima)
   trn <- subset(pima, select = -diabetes)
-  
-  # Partial dependence plot for lstat
   pd1 <- partial(object, pred.var = "glucose", train = trn, ...)
-
-  # Partial dependence plot for lstat and rm
   pd2 <- partial(object, pred.var = c("glucose", "age"), chull = TRUE,
                  train = trn, ...)
-
-  # Individual conditional expectation curves for age
-  pd3 <- partial(object, pred.var = "glucose", ice = TRUE, train = trn,
-                 ...)
-
-  # Centered individual conditional expectation curves for lstat
+  pd3 <- partial(object, pred.var = "glucose", ice = TRUE, train = trn, ...)
   pd4 <- partial(object, pred.var = "glucose", ice = TRUE, center = TRUE,
                  train = trn, ...)
-
-  # Display plots
   grid.arrange(
     autoplot(pd1, rug = TRUE, train = pima, main = "PDP for glucose"),
     autoplot(pd2, main = "PDP for glucose and age"),
     autoplot(pd3, rug = TRUE, train = pima,
-             main = "ICE curves for glucose", alpha = 0.25),
+             main = "ICE curves for glucose", alpha = 0.1),
     autoplot(pd4, rug = TRUE, train = pima,
-             main = "c-ICE curves for glucose", alpha = 0.25),
+             main = "c-ICE curves for glucose", alpha = 0.1),
     ncol = 2,
     top = textGrob(deparse(substitute(object)),
                    gp = gpar(fontsize = 20, font = 3))
   )
-
 }
 ```
 
 
 # Discriminant analysis
 
+
 ## Package: `MASS`
 
-```{r}
-pima.lda <- MASS::lda(diabetes ~ . ^ 2, data = na.omit(pima))
-pimaIndiansTest(pima.lda)
-pimaIndiansTest(pima.lda, prob = TRUE)
+```{r mass_lda}
+pima_lda <- MASS::lda(diabetes ~ . ^ 2, data = na.omit(pima))
+pima_test(pima_lda)
+pima_test(pima_lda, prob = TRUE)
 ```
 
-```{r}
-pima.qda <- MASS::qda(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.qda)
-pimaIndiansTest(pima.qda, prob = TRUE)
+```{r mass_qda}
+pima_qda <- MASS::qda(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_qda)
+pima_test(pima_qda, prob = TRUE)
 ```
+
 
 ## Package: `mda`
 
-```{r}
-pima.mda <- mda::mda(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.mda)
-pimaIndiansTest(pima.mda, prob = TRUE)
+```{r mda_fda}
+pima_fda <- mda::fda(diabetes ~ ., data = na.omit(pima), method = mda::mars,
+                     degree = 2)
+pima_test(pima_fda)
+pima_test(pima_fda, prob = TRUE)
 ```
 
-```{r}
-pima.fda <- mda::fda(diabetes ~ ., data = na.omit(pima), method = mda::mars,
-                     degree = 2)
-pimaIndiansTest(pima.fda)
-pimaIndiansTest(pima.fda, prob = TRUE)
+```{r mda_mda}
+pima_mda <- mda::mda(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_mda)
+pima_test(pima_mda, prob = TRUE)
 ```
 
 
 # Decision trees
 
+
 ## Package: `rpart`
 
-```{r}
-pima.rpart <- rpart::rpart(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.rpart)
-pimaIndiansTest(pima.rpart, prob = TRUE)
+```{r rpart_rpart}
+pima_rpart <- rpart::rpart(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_rpart)
+pima_test(pima_rpart, prob = TRUE)
 ```
 
+
 ## Package: `C50`
-```{r}
-set.seed(101)
-pima.C5.0 <- C50::C5.0(diabetes ~ ., data = na.omit(pima), trials = 100)
-pimaIndiansTest(pima.C5.0)
-pimaIndiansTest(pima.C5.0, prob = TRUE)
+
+```{r C50_C50}
+set.seed(101)  # for reproducibility
+pima_C5.0 <- C50::C5.0(diabetes ~ ., data = na.omit(pima), trials = 100)
+pima_test(pima_C5.0)
+pima_test(pima_C5.0, prob = TRUE)
 ```
+
 
 ## Package: `party
 
-```{r}
-pima.ctree <- party::ctree(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.ctree)
-pimaIndiansTest(pima.ctree, prob = TRUE)
+```{r party_ctree}
+pima_ctree <- party::ctree(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_ctree)
+pima_test(pima_ctree, prob = TRUE)
 ```
+
 
 ## Package: `partykit
 
-```{r}
-pima.ctree2 <- partykit::ctree(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.ctree2)
-pimaIndiansTest(pima.ctree2, prob = TRUE)
+```{r partykit_ctree}
+pima_ctree2 <- partykit::ctree(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_ctree2)
+pima_test(pima_ctree2, prob = TRUE)
 ```
 
 
 # Bagging
 
+
 ## Package: `adabag`
 
-```{r}
-set.seed(101)
-pima.bagging <- adabag::bagging(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.bagging, quantiles = TRUE)
-pimaIndiansTest(pima.bagging, quantiles = TRUE, prob = TRUE)
+```{r adabag_bagging}
+set.seed(101)  # for reproducibility
+pima_bagging <- adabag::bagging(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_bagging, quantiles = TRUE)
+pima_test(pima_bagging, quantiles = TRUE, prob = TRUE)
 ```
+
 
 ## Package: `ipred
 
-```{r}
-set.seed(101)
-pima.ipred <- ipred::bagging(diabetes ~ ., data = na.omit(pima), nbagg = 500)
-pimaIndiansTest(pima.ipred, quantiles = TRUE)
-pimaIndiansTest(pima.ipred, quantiles = TRUE, prob = TRUE)
+```{r ipred_bagging}
+set.seed(101)  # for reproducibility
+pima_ipred <- ipred::bagging(diabetes ~ ., data = na.omit(pima), nbagg = 500)
+pima_test(pima_ipred, quantiles = TRUE)
+pima_test(pima_ipred, quantiles = TRUE, prob = TRUE)
 ```
+
 
 # Random forests
 
+
 ## Package: `randomForest
 
-```{r}
-set.seed(101)
-pima.rf <- randomForest::randomForest(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.rf)
-pimaIndiansTest(pima.rf, prob = TRUE)
+```{r randomForest_randomForest}
+set.seed(101)  # for reproducibility
+pima_rf <- randomForest::randomForest(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_rf)
+pima_test(pima_rf, prob = TRUE)
 ```
+
 
 ## Package: `party
 
-```{r}
-set.seed(101)
-pima.crf <- party::cforest(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.crf, quantiles = TRUE)
-pimaIndiansTest(pima.crf, quantiles = TRUE, prob = TRUE)
+```{r party_cforest}
+set.seed(101)  # for reproducibility
+pima_crf <- party::cforest(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_crf, quantiles = TRUE)
+pima_test(pima_crf, quantiles = TRUE, prob = TRUE)
 ```
 
+
 ## Package: `partykit`
-```{r}
-set.seed(101)
-pima.crf2 <- partykit::cforest(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.crf2, quantiles = TRUE)
-pimaIndiansTest(pima.crf2, quantiles = TRUE, prob = TRUE)
+
+```{r partykit_cforest}
+set.seed(101)  # for reproducibility
+pima_crf2 <- partykit::cforest(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_crf2, quantiles = TRUE)
+pima_test(pima_crf2, quantiles = TRUE, prob = TRUE)
 ```
+
 
 ## Package: `ranger`
 
-```{r}
-set.seed(101)
-pima.ranger <- ranger::ranger(diabetes ~ ., data = na.omit(pima), 
+```{r ranger_ranger}
+set.seed(101)  # for reproducibility
+pima_ranger <- ranger::ranger(diabetes ~ ., data = na.omit(pima), 
                               probability = TRUE)
-pimaIndiansTest(pima.ranger)
-pimaIndiansTest(pima.ranger, prob = TRUE)
+pima_test(pima_ranger)
+pima_test(pima_ranger, prob = TRUE)
 ```
 
 
 # Boosting
 
+
 ## Package: `adabag`
 
-```{r}
-set.seed(101)
-pima.boosting <- adabag::boosting(diabetes ~ ., data = na.omit(pima))
-pimaIndiansTest(pima.boosting, quantiles = TRUE)
-pimaIndiansTest(pima.boosting, quantiles = TRUE, prob = TRUE)
+```{r adabag_boosting}
+set.seed(101)  # for reproducibility
+pima_boosting <- adabag::boosting(diabetes ~ ., data = na.omit(pima))
+pima_test(pima_boosting, quantiles = TRUE)
+pima_test(pima_boosting, quantiles = TRUE, prob = TRUE)
 ```
+
 
 ## Package: `gbm`
 
-```{r}
-set.seed(101)
-pima.gbm <- gbm::gbm(ifelse(diabetes == "neg", 1, 0) ~ ., 
+```{r gbm_gbm}
+set.seed(101)  # for reproducibility
+pima_gbm <- gbm::gbm(ifelse(diabetes == "neg", 1, 0) ~ ., 
                      data = na.omit(pima),
                      distribution = "bernoulli",
                      n.trees = 5000,
@@ -203,65 +201,73 @@ pima.gbm <- gbm::gbm(ifelse(diabetes == "neg", 1, 0) ~ .,
                      shrinkage = 0.001,
                      # cv.folds = 5,
                      verbose = FALSE)
-best.iter <- gbm::gbm.perf(pima.gbm, method = "OOB", plot.it = FALSE)
-pimaIndiansTest(pima.gbm, n.trees = best.iter)
-pimaIndiansTest(pima.gbm, n.trees = best.iter, prob = TRUE)
+best.iter <- gbm::gbm.perf(pima_gbm, method = "OOB", plot.it = FALSE)
+pima_test(pima_gbm, n.trees = best.iter)
+pima_test(pima_gbm, n.trees = best.iter, prob = TRUE)
 ```
 
+
 ## Package: `xgboost`
-```{r}
-set.seed(101)
-pima.xgb <- xgboost::xgboost(
+
+```{r xgboost_xgboost}
+set.seed(101)  # for reproducibility
+pima_xgb <- xgboost::xgboost(
   data = data.matrix(subset(pima, select = -diabetes)),
   label = unclass(pima$diabetes) - 1, objective = "binary:logistic",
   nrounds = 100, max_depth = 3, eta = 0.1, gamma = 0, colsample_bytree = 0.8, 
   min_child_weight = 1, subsample = 0.7, verbose = 0
 )
-pimaIndiansTest(pima.xgb)
-pimaIndiansTest(pima.xgb, prob = TRUE)
+pima_test(pima_xgb, which.class = 2)
+pima_test(pima_xgb, prob = TRUE, which.class = 2)
 ```
+
 
 # Neural networks
 
+
 ## Package: `nnet`
-```{r}
-set.seed(101)
-pima.nnet <- nnet::nnet(diabetes ~ ., data = na.omit(pima), size = 10, 
+
+```{r nnet_nnet}
+set.seed(101)  # for reproducibility
+pima_nnet <- nnet::nnet(diabetes ~ ., data = na.omit(pima), size = 10, 
                         decay = 0.1, maxit = 500, trace = FALSE)
-pimaIndiansTest(pima.nnet)
-pimaIndiansTest(pima.nnet, prob = TRUE)
+pima_test(pima_nnet)
+pima_test(pima_nnet, prob = TRUE)
 ```
 
 
 # Support vector machines
 
+
 ## Package: `e1071`
 
-```{r}
-pima.svm <- e1071::svm(diabetes ~ ., data = na.omit(pima), type = "C-classification", 
+```{r e1071_svm}
+pima_svm <- e1071::svm(diabetes ~ ., data = na.omit(pima), type = "C-classification", 
                        probability = TRUE)
-pimaIndiansTest(pima.svm)
-pimaIndiansTest(pima.svm, prob = TRUE)
+pima_test(pima_svm)
+pima_test(pima_svm, prob = TRUE)
 ```
+
 
 ## Package: `kernlab`
 
-```{r}
-pima.ksvm <- kernlab::ksvm(diabetes ~ ., data = na.omit(pima), type = "C-svc", 
+```{r kernlab_svm}
+pima_ksvm <- kernlab::ksvm(diabetes ~ ., data = na.omit(pima), type = "C-svc", 
                            prob.model = TRUE)
-pimaIndiansTest(pima.ksvm)
-pimaIndiansTest(pima.ksvm, prob = TRUE)
+pima_test(pima_ksvm)
+pima_test(pima_ksvm, prob = TRUE)
 ```
 
 
 # Multinomial models
 
+
 ## Package: `nnet`
 
-```{r}
-set.seed(101)
-pima.multinom <- nnet::multinom(diabetes ~ . ^ 2, data = na.omit(pima), 
+```{r nnet_multinom}
+set.seed(101)  # for reproducibility
+pima_multinom <- nnet::multinom(diabetes ~ . ^ 2, data = na.omit(pima), 
                                 trace = FALSE)
-pimaIndiansTest(pima.multinom)
-pimaIndiansTest(pima.multinom, prob = TRUE)
+pima_test(pima_multinom)
+pima_test(pima_multinom, prob = TRUE)
 ```

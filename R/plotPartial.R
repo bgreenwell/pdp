@@ -457,7 +457,7 @@ plot_two_predictor_pdp <- function(
 
         # Draw a wireframe plot
         wireframe(
-          form, data = object, col.regions = col.regions, drape = TRUE, ...
+          form, data = object, col.regions = col.regions, ...
         )
 
       }
@@ -565,7 +565,7 @@ plot_three_predictor_pdp <- function(
 
       # Draw a wireframe plot
       wireframe(
-        form, data = object, col.regions = col.regions, drape = TRUE, ...
+        form, data = object, col.regions = col.regions, ...
       )
 
     }

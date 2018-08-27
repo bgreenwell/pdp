@@ -6,18 +6,13 @@
 # formats:
 #
 #   (1) "matrix" - base R;
-#   (2) "dgCMatrix" (sparce matrix format from Matrix pkg);
-#   (3) "xgb.DMatrix" (XGBoost matrix format).
+#   (2) "dgCMatrix" - sparse matrix format from package Matrix;
+#   (3) "xgb.DMatrix" - XGBoost matrix format.
 #
 # WARNING: This is simply a test file. These models are not trained to be
 # "optimal" in any sense.
 #
 #-------------------------------------------------------------------------------
-
-
-################################################################################
-# Setup
-################################################################################
 
 # Load required packages
 library(ggplot2)
@@ -26,12 +21,7 @@ library(pdp)
 library(xgboost)
 
 # Load the data
-data(pima)
-
-
-################################################################################
-# Fit models
-################################################################################
+data(pima)  # xgboost can handle missing values, so no need for na.omit()
 
 # Set up training data
 X <- subset(pima, select = -diabetes)
@@ -61,11 +51,6 @@ bst.dgCMatrix <- xgboost(data = X.dgCMatrix, label = y, params = plist,
 set.seed(101)
 bst.xgb.DMatrix <- xgboost(data = xgb.DMatrix(data.matrix(X), label = y),
                            params = plist, nrounds = 100, save_period = NULL)
-
-
-################################################################################
-# Construct and display partial dependence plots
-################################################################################
 
 # Function to construct a PDP for glucose on the probability scale
 parDepPlot <- function(object, train, ...) {

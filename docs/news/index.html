@@ -58,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pdp</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.6.0.9000</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.7.0</span>
       </span>
     </div>
 
@@ -131,18 +131,18 @@
       <small>Source: <a href='https://github.com/bgreenwell/pdp/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
-    <div id="pdp-0-6-1" class="section level1">
+    <div id="pdp-0-7-0" class="section level1">
 <h1 class="page-header">
-<a href="#pdp-0-6-1" class="anchor"></a>pdp 0.6.1<small> Unreleased </small>
+<a href="#pdp-0-7-0" class="anchor"></a>pdp 0.7.0<small> Unreleased </small>
 </h1>
 <ul>
 <li><p>Added support for <code><a href="http://www.rdocumentation.org/packages/e1071/topics/naiveBayes">e1071::naiveBayes()</a></code>, an implementation of the standard naive Bayes classifier <a href="https://github.com/bgreenwell/pdp/issues/42">(<a href='https://github.com/bgreenwell/pdp/issues/42'>#42</a>)</a>.</p></li>
-<li><p>Fixed a bug in <code><a href="../reference/plotPartial.html">plotPartial()</a></code> that caused the <code>col.regions</code> argument to have no effects when <code>levelplot = FALSE</code> <a href="https://github.com/bgreenwell/pdp/issues/58">(<a href='https://github.com/bgreenwell/pdp/issues/58'>#58</a>)</a>.</p></li>
+<li><p>Fixed a bug in <code><a href="../reference/plotPartial.html">plotPartial()</a></code> that caused the <code>col.regions</code> argument to have no effect when <code>levelplot = FALSE</code> <a href="https://github.com/bgreenwell/pdp/issues/58">(<a href='https://github.com/bgreenwell/pdp/issues/58'>#58</a>)</a>.</p></li>
 <li><p>Fixed a bug with categorical variables in <code>gbm</code> models when <code>recursive = TRUE</code> <a href="https://github.com/bgreenwell/pdp/issues/63">(<a href='https://github.com/bgreenwell/pdp/issues/63'>#63</a>)</a>.</p></li>
-<li><p>More informative progress bars powered by the <a href="https://cran.r-project.org/package=progress"><code>progress</code></a> package. To use, simply call <code><a href="../reference/partial.html">partial()</a></code> with the option <code>progress = "progress"</code> <a href="https://github.com/bgreenwell/pdp/issues/66">(<a href='https://github.com/bgreenwell/pdp/issues/66'>#66</a>)</a>.</p></li>
+<li><p>More informative progress bars (with estimated time to completion!!) powered by the <a href="https://cran.r-project.org/package=progress"><code>progress</code></a> package. To use, simply call <code><a href="../reference/partial.html">partial()</a></code> with the option <code>progress = "progress"</code> <a href="https://github.com/bgreenwell/pdp/issues/66">(<a href='https://github.com/bgreenwell/pdp/issues/66'>#66</a>)</a>.</p></li>
 <li><p>Added ORCiD ID to the author field in the <code>DESCRIPTION</code> file.</p></li>
-<li><p>Way cooler logo.</p></li>
-<li><p><code><a href="../reference/partial.html">partial()</a></code> gained several new plotting options: <code>plot.engine</code>, which controls the plotting engine used whenever <code>plot = TRUE</code> (current options include <code>"lattice"</code> (the default) or <code>"ggplot2"</code> <a href="https://github.com/bgreenwell/pdp/issues/71">(<a href='https://github.com/bgreenwell/pdp/issues/71'>#71</a>)</a>.</p></li>
+<li><p>Way cooler logo?</p></li>
+<li><p><code><a href="../reference/partial.html">partial()</a></code> gained several new plotting options: <code>plot.engine</code>, which controls the plotting engine used whenever <code>plot = TRUE</code> (current options include <code>"lattice"</code> (the default) and <code>"ggplot2"</code> <a href="https://github.com/bgreenwell/pdp/issues/71">(<a href='https://github.com/bgreenwell/pdp/issues/71'>#71</a>)</a>.</p></li>
 <li><p>The arguments to <code>autoplot()</code> and <code><a href="../reference/plotPartial.html">plotPartial()</a></code> are now more consistent with each other.</p></li>
 <li><p>The names of (most) helper functions have changed from lowerCamelCase to snake_case.</p></li>
 <li><p><code><a href="../reference/partial.html">partial()</a></code> now works (better) with tibbles <a href="https://github.com/bgreenwell/pdp/issues/59">(<a href='https://github.com/bgreenwell/pdp/issues/59'>#59</a>)</a>.</p></li>
@@ -291,7 +291,7 @@
     <div id="tocnav">
       <h2>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="#pdp-0-6-1">0.6.1</a></li>
+        <li><a href="#pdp-0-7-0">0.7.0</a></li>
         <li><a href="#pdp-0-6-0">0.6.0</a></li>
         <li><a href="#pdp-0-5-2">0.5.2</a></li>
         <li><a href="#pdp-0-5-1">0.5.1</a></li>

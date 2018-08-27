@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pdp</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.6.0.9000</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.7.0</span>
       </span>
     </div>
 
@@ -101,7 +101,7 @@
             <h3 class="subtitle">Extending pdp with the pred.fun argument</h3>
                         <h4 class="author">Brandon M. Greenwell</h4>
             
-            <h4 class="date">2018-08-26</h4>
+            <h4 class="date">2018-08-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/bgreenwell/pdp/blob/master/vignettes/pdp-extending.Rmd"><code>vignettes/pdp-extending.Rmd</code></a></small>
       <div class="hidden name"><code>pdp-extending.Rmd</code></div>
@@ -115,10 +115,11 @@
 <a href="#prerequisites" class="anchor"></a>Prerequisites</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># Load required packages</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(dplyr)    <span class="co"># for data wrangling </span></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="kw">library</span>(ggplot2)  <span class="co"># for general visualization</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(kernlab)  <span class="co"># for fitting SVMs</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(pdp)      <span class="co"># for partial dependence plots</span></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(ranger)   <span class="co"># for fitting random forests</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#&gt; Warning: package 'dplyr' was built under R version 3.5.1</span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(ggplot2)  <span class="co"># for general visualization</span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(kernlab)  <span class="co"># for fitting SVMs</span></a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">library</span>(pdp)      <span class="co"># for partial dependence plots</span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(ranger)   <span class="co"># for fitting random forests</span></a></code></pre></div>
 </div>
 <div id="user-defined-prediction-functions" class="section level2">
 <h2 class="hasAnchor">

@@ -1,4 +1,4 @@
-# pdp 0.6.1
+# pdp 0.7.0
 
 * Added support for `e1071::naiveBayes()`, an implementation of the standard naive Bayes classifier [(#42)](https://github.com/bgreenwell/pdp/issues/42).
 

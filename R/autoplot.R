@@ -113,27 +113,12 @@
 #' )
 #' }
 autoplot.partial <- function(
-  object,
-  center = FALSE,
-  plot.pdp = TRUE,
-  pdp.color = "red",
-  pdp.size = 1,
-  pdp.linetype = 1,
-  rug = FALSE,
-  smooth = FALSE,
-  smooth.method = "auto",
-  smooth.formula = y ~ x,
-  smooth.span = 0.75,
-  smooth.method.args = list(),
-  contour = FALSE,
-  contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
-  train = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  main = NULL,
-  legend.title = "yhat",
-  ...
+  object, center = FALSE, plot.pdp = TRUE, pdp.color = "red", pdp.size = 1,
+  pdp.linetype = 1, rug = FALSE, smooth = FALSE, smooth.method = "auto",
+  smooth.formula = y ~ x, smooth.span = 0.75, smooth.method.args = list(),
+  contour = FALSE, contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"), train = NULL,
+  xlab = NULL, ylab = NULL, main = NULL, legend.title = "yhat", ...
 ) {
 
   # Determine if object contains an ID column (i.e., multiple curves)
@@ -194,18 +179,9 @@ autoplot.partial <- function(
 #'
 #' @export
 autoplot.ice <- function(
-  object,
-  center = FALSE,
-  plot.pdp = TRUE,
-  pdp.color = "red",
-  pdp.size = 1,
-  pdp.linetype = 1,
-  rug = FALSE,
-  train = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  main = NULL,
-  ...
+  object, center = FALSE, plot.pdp = TRUE, pdp.color = "red", pdp.size = 1,
+  pdp.linetype = 1, rug = FALSE, train = NULL, xlab = NULL, ylab = NULL,
+  main = NULL, ...
 ) {
 
   # Call workhorse function
@@ -222,17 +198,8 @@ autoplot.ice <- function(
 #'
 #' @export
 autoplot.cice <- function(
-  object,
-  plot.pdp = TRUE,
-  pdp.color = "red",
-  pdp.size = 1,
-  pdp.linetype = 1,
-  rug = FALSE,
-  train = NULL,
-  xlab = NULL,
-  ylab = NULL,
-  main = NULL,
-  ...
+  object, plot.pdp = TRUE, pdp.color = "red", pdp.size = 1, pdp.linetype = 1,
+  rug = FALSE, train = NULL, xlab = NULL, ylab = NULL, main = NULL, ...
 ) {
 
   # Call workhorse function
@@ -247,19 +214,9 @@ autoplot.cice <- function(
 
 #' @keywords internal
 ggplot_ice_curves <- function(
-  object,
-  center,
-  plot.pdp,
-  pdp.color,
-  pdp.size,
-  pdp.linetype,
-  rug,
-  train,
-  xlab,
-  ylab,
-  main,
-  ...)
-{
+  object, center, plot.pdp, pdp.color, pdp.size, pdp.linetype, rug, train,
+  xlab, ylab, main, ...
+) {
 
   # Should the curves be centered to start at yhat = 0?
   if (center) {
@@ -336,18 +293,8 @@ ggplot_ice_curves <- function(
 
 #' @keywords internal
 ggplot_one_predictor_pdp <- function(
-  object,
-  rug,
-  smooth,
-  smooth.method,
-  smooth.formula,
-  smooth.span,
-  smooth.method.args,
-  train,
-  xlab,
-  ylab,
-  main,
-  ...
+  object, rug, smooth, smooth.method, smooth.formula, smooth.span,
+  smooth.method.args, train, xlab, ylab, main, ...
 ) {
 
   # Use the first column to determine which type of plot to construct
@@ -410,22 +357,9 @@ ggplot_one_predictor_pdp <- function(
 
 #' @keywords internal
 ggplot_two_predictor_pdp <- function(
-  object,
-  rug,
-  smooth,
-  smooth.method,
-  smooth.formula,
-  smooth.span,
-  smooth.method.args,
-  contour,
-  contour.color,
-  palette,
-  train,
-  xlab,
-  ylab,
-  main,
-  legend.title,
-  ...
+  object, rug, smooth, smooth.method, smooth.formula, smooth.span,
+  smooth.method.args, contour, contour.color, palette, train, xlab, ylab, main,
+  legend.title, ...
 ) {
 
   # Use the first two columns to determine which type of plot to construct

@@ -119,16 +119,8 @@ plotPartial <- function(object, ...) {
 #'
 #' @export
 plotPartial.ice <- function(
-  object,
-  center = FALSE,
-  plot.pdp = TRUE,
-  pdp.col = "red2",
-  pdp.lwd = 2,
-  pdp.lty = 1,
-  rug = FALSE,
-  train = NULL,
-  alpha = 1,
-  ...
+  object, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
+  pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...
 ) {
 
   # Call workhorse function
@@ -145,15 +137,8 @@ plotPartial.ice <- function(
 #'
 #' @export
 plotPartial.cice <- function(
-  object,
-  plot.pdp = TRUE,
-  pdp.col = "red2",
-  pdp.lwd = 2,
-  pdp.lty = 1,
-  rug = FALSE,
-  train = NULL,
-  alpha = 1,
-  ...
+  object, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1,
+  rug = FALSE, train = NULL, alpha = 1, ...
 ) {
 
   # Call workhorse function
@@ -170,25 +155,11 @@ plotPartial.cice <- function(
 #'
 #' @export
 plotPartial.partial <- function(
-  object,
-  center = FALSE,
-  plot.pdp = TRUE,
-  pdp.col = "red2",
-  pdp.lwd = 2,
-  pdp.lty = 1,
-  smooth = FALSE,
-  rug = FALSE,
-  chull = FALSE,
-  levelplot = TRUE,
-  contour = FALSE,
-  contour.color = "white",
-  col.regions = NULL,
+  object, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
+  pdp.lty = 1, smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
+  contour = FALSE, contour.color = "white", col.regions = NULL,
   palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
-  alpha = 1,
-  number = 4,
-  overlap = 0.1,
-  train = NULL,
-  ...
+  alpha = 1, number = 4, overlap = 0.1, train = NULL, ...
 ) {
 
   # Determine if object contains multiple curves
@@ -252,15 +223,7 @@ plotPartial.partial <- function(
 
 #' @keywords internal
 plot_ice_curves <- function(
-  object,
-  plot.pdp,
-  center,
-  pdp.col,
-  pdp.lwd,
-  pdp.lty,
-  rug,
-  train,
-  alpha = 1,
+  object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty, rug, train, alpha = 1,
   ...
 ) {
 
@@ -343,18 +306,8 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
 
 #' @keywords internal
 plot_two_predictor_pdp <- function(
-  object,
-  smooth,
-  levelplot,
-  rug,
-  chull,
-  train,
-  contour,
-  contour.color,
-  col.regions,
-  palette,
-  alpha,
-  ...
+  object, smooth, levelplot, rug, chull, train, contour, contour.color,
+  col.regions, palette, alpha, ...
 ) {
 
   # Use the first two columns to determine which type of plot to construct
@@ -468,21 +421,8 @@ plot_two_predictor_pdp <- function(
 
 #' @keywords internal
 plot_three_predictor_pdp <- function(
-  object,
-  nx,
-  smooth,
-  levelplot,
-  rug,
-  chull,
-  train,
-  contour,
-  contour.color,
-  col.regions,
-  palette,
-  alpha,
-  number,
-  overlap,
-  ...
+  object, nx, smooth, levelplot, rug, chull, train, contour, contour.color,
+  col.regions, palette, alpha, number, overlap, ...
 ) {
 
   # Convert third predictor to a factor using the equal count algorithm

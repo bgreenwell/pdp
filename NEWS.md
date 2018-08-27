@@ -2,17 +2,17 @@
 
 * Added support for `e1071::naiveBayes()`, an implementation of the standard naive Bayes classifier [(#42)](https://github.com/bgreenwell/pdp/issues/42).
 
-* Fixed a bug in `plotPartial()` that caused the `col.regions` argument to have no effects when `levelplot = FALSE` [(#58)](https://github.com/bgreenwell/pdp/issues/58).
+* Fixed a bug in `plotPartial()` that caused the `col.regions` argument to have no effect when `levelplot = FALSE` [(#58)](https://github.com/bgreenwell/pdp/issues/58).
 
 * Fixed a bug with categorical variables in `gbm` models when `recursive = TRUE` [(#63)](https://github.com/bgreenwell/pdp/issues/63).
 
-* More informative progress bars powered by the [`progress`](https://cran.r-project.org/package=progress) package. To use, simply call `partial()` with the option `progress = "progress"` [(#66)](https://github.com/bgreenwell/pdp/issues/66).
+* More informative progress bars (with estimated time to completion!!) powered by the [`progress`](https://cran.r-project.org/package=progress) package. To use, simply call `partial()` with the option `progress = "progress"` [(#66)](https://github.com/bgreenwell/pdp/issues/66).
 
 * Added ORCiD ID to the author field in the `DESCRIPTION` file.
 
-* Way cooler logo.
+* Way cooler logo?
 
-* `partial()` gained several new plotting options: `plot.engine`, which controls the plotting engine used whenever `plot = TRUE` (current options include `"lattice"` (the default) or `"ggplot2"` [(#71)](https://github.com/bgreenwell/pdp/issues/71). 
+* `partial()` gained several new plotting options: `plot.engine`, which controls the plotting engine used whenever `plot = TRUE` (current options include `"lattice"` (the default) and `"ggplot2"` [(#71)](https://github.com/bgreenwell/pdp/issues/71). 
 
 * The arguments to `autoplot()` and `plotPartial()` are now more consistent with each other.
 

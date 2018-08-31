@@ -362,20 +362,24 @@ ggplot_two_predictor_pdp <- function(
   legend.title, ...
 ) {
 
-  # Use the first two columns to determine which type of plot to construct
-  if (is.factor(object[[1L]]) && is.factor(object[[2L]])) {
+  factor_cols_bool <- vapply(object, is.factor, logical(1L))
+  factor_cols <- names(object)[factor_cols_bool]
+  non_factor_cols <- names(object)[! factor_cols_bool & names(object) != "yhat"]
+  num_factor_cols <- length(factor_cols)
+
+  if (identical(num_factor_cols, 2L)) {
 
     # Draw a faceted scatterplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes_string(x = factor_cols[2L], y = "yhat")) +
       geom_point(...) +
-      facet_wrap(~ object[[2L]])
+      facet_wrap(factor_cols[1L])
 
-  } else if (is.factor(object[[1L]]) && !is.factor(object[[2L]])) {
+  } else if (identical(num_factor_cols, 1L)) {
 
     # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[2L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes_string(x = non_factor_cols[1L], y = "yhat")) +
       geom_line(...) +
-      facet_wrap(~ object[[1L]])
+      facet_wrap(factor_cols[1L])
 
     # Add rug plot to the x-axis
     if (rug) {
@@ -399,41 +403,12 @@ ggplot_two_predictor_pdp <- function(
       )
     }
 
-  } else if (!is.factor(object[[1L]]) && is.factor(object[[2L]])) {
-
-    # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
-      geom_line(...) +
-      facet_wrap(~ object[[2L]])
-
-    # Add rug plot to x-axis
-    if (rug) {
-      if (is.null(train)) {
-        stop("The training data must be supplied for rug display.")
-      } else {
-        x.name <- which(names(train) == names(object)[[1L]])
-        x.rug <- data.frame(as.numeric(
-          stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
-                          na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
-                          inherit.aes = FALSE)
-      }
-    }
-
-    # Add smoother
-    if (smooth) {
-      p <- p + geom_smooth(
-        method = smooth.method, formula = smooth.formula, span = smooth.span,
-        se = FALSE, method.args = smooth.method.args
-      )
-    }
-
   } else {
 
     # Draw a false color level plot
     p <- ggplot(
-      object, aes(x = object[[1L]], y = object[[2L]],
-                  z = object[["yhat"]], fill = object[["yhat"]])
+      object, aes_string(x = non_factor_cols[1L], y = non_factor_cols[2L],
+                  z = "yhat", fill = "yhat")
     ) +
       geom_tile()
 
@@ -452,17 +427,17 @@ ggplot_two_predictor_pdp <- function(
 
   # Add axis labels and title
   if (is.null(xlab)) {
-    p <- if (is.factor(object[[1L]]) && !is.factor(object[[2L]])) {
-      p + xlab(names(object)[2L])
+    p <- if (identical(num_factor_cols, 2L)) {
+      p + xlab(factor_cols[2L])
     } else {
-      p + xlab(names(object)[1L])
+      p + xlab(non_factor_cols[1L])
     }
   } else {
     p <- p + xlab(xlab)
   }
   if (is.null(ylab)) {
-    p <- if (!is.factor(object[[1L]]) && !is.factor(object[[2L]])) {
-      p + ylab(names(object)[2L])
+    p <- if (identical(num_factor_cols, 0L)) {
+      p + ylab(non_factor_cols[2L])
     } else {
       p + ylab("yhat")
     }

@@ -386,11 +386,10 @@ ggplot_two_predictor_pdp <- function(
       if (is.null(train)) {
         stop("The training data must be supplied for rug display.")
       } else {
-        x.name <- which(names(train) == names(object)[[2L]])
-        x.rug <- data.frame(as.numeric(
-          stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
+        x.rug <- data.frame(quants = as.numeric(
+          stats::quantile(train[[non_factor_cols]], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
+        p <- p + geom_rug(data = x.rug, aes_string(x = "quants"), sides = "b",
                           inherit.aes = FALSE)
       }
     }

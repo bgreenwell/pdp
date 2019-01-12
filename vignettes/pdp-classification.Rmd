@@ -1,7 +1,7 @@
 ---
 title: "Interpretting classification models"
 author: "Brandon M. Greenwell"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: rmarkdown::html_vignette
 bibliography: pdp.bib
 ---

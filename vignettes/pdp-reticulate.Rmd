@@ -1,0 +1,92 @@
+---
+title: "Explaining scikit-learn models with pdp via reticulate"
+author: "Brandon M. Greenwell "
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: rmarkdown::html_vignette
+bibliography: pdp.bib
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  cache = TRUE,
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "left",
+  fig.width = 6, 
+  fig.asp = 0.618,
+  out.width = "70%"
+)
+```
+
+In this vignette, we'll cover how to use [reticulate](https://rstudio.github.io/reticulate/) to interface [pdp](https://bgreenwell.github.io/pdp/index.html) with [scikit-learn](https://scikit-learn.org/stable/index.html) models. First, we'll install (if necessary) and load any required packages:
+
+```{r load-packages}
+# Install required packages
+pkgs <- c("ggplot2", "pdp", "reticulate")
+for (pkg in pkgs) {
+  if (!(pkg %in% installed.packages()[, "Package"])) {
+    install.packages(pkg)
+  }
+}
+
+# Load required packages
+library(ggplot2)     # for awesome graphics
+library(pdp)         # for feature effects
+library(reticulate)  # for R interface to Python
+```
+
+Depending on your setup, you may need to point to the location of a specific version of Python (you can use `reticulate::py_config()` to see what the default is on your system). Below, we point to a specific Anaconda distribution of Python installed in a local directory:
+
+```{r reticulate}
+use_python("/Users/b780620/anaconda3/bin/python3")
+```
+
+Next, we'll set up the training data for modeling (in this case, we'll use the well-known Boston housing data):
+
+```{r boston}
+X <- data.matrix(subset(pdp::boston, select = -cmedv))
+y <- pdp::boston$cmedv
+```
+
+Finally, we'll fit a $k$-nearest neighbor regressor (with $k = 10$) to the training data using __scikit-learn__'s `neighbors` module:
+
+```{r scikit-learn}
+neighbors <- import("sklearn.neighbors")
+knr <- neighbors$KNeighborsRegressor(n_neighbors = 10L)
+knr_fit <- knr$fit(X, y)
+```
+
+To use **pdp** with **scikit-learn** models via **reticulate**, you just need to tell `partial()` how to compute predictions for new data. For this, we can write a simple wrapper function (__Note:__ see [this vignette](https://bgreenwell.github.io/pdp/articles/pdp-extending.html) for details on using **pdp** with user-defined prediction functions). In particular, we'll write two functions: one to compute predictions for _individual conditional expectation_ (ICE) curves [@goldstein-peeking-2015], and one to compute averaged predictions for _partial dependence plots_ (PDPs) [@friedman-greedy-2001].
+
+```{r pfun}
+# For ICE curves, this function should return one prediction for each row
+pfun_ice <- function(object, newdata) {
+  object$predict(newdata)
+}
+
+# For PDPs, this function should return one averaged prediction
+pfun_pdp <- function(object, newdata) {
+  mean(object$predict(newdata))
+}
+```
+
+Next, we'll call `partial()` as usual and pass the prediction wrappers to the `pred.fun` argument. In the first code chunk, we pass in the `pfun_ice` function and request centered ICE curves (i.e., `center = TRUE`):
+
+```{r ice}
+partial(knr_fit, pred.var = "age", train = as.data.frame(X), 
+        pred.fun = pfun_ice, plot = TRUE, plot.engine = "ggplot2", 
+        center = TRUE, alpha = 0.1)
+```
+
+While ICE curves only work for a single feature, PDPs can be plotted for any subset of the feature space (although, plotting more than 2--3 features is not very useful). In the code chunks below, we construct PDPs for `lstat` and (`lstat`, `rm`):
+
+```{r pdp}
+partial(knr_fit, pred.var = "lstat", train = as.data.frame(X), 
+        pred.fun = pfun_pdp, plot = TRUE, plot.engine = "ggplot2")
+```
+
+```{r pdp-bivariate}
+partial(knr_fit, pred.var = c("lstat", "rm"), train = as.data.frame(X), 
+        pred.fun = pfun_pdp, plot = TRUE, plot.engine = "ggplot2", 
+        palette = "magma", chull = TRUE)
+```

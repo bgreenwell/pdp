@@ -33,6 +33,7 @@ Suggests:
     progress,
     randomForest,
     ranger,
+    reticulate,
     rpart,
     testthat,
     xgboost (>= 0.6-0),
@@ -52,5 +53,6 @@ Imports:
     viridis,
     utils
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Encoding: UTF-8
+VignetteBuilder: knitr

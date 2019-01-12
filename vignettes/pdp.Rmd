@@ -1,7 +1,7 @@
 ---
 title: "pdp: An R Package for Constructing Partial Dependence Plots"
 author: "Brandon M. Greenwell"
-date: "`r Sys.Date()`"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: rmarkdown::html_vignette
 bibliography: pdp.bib
 ---

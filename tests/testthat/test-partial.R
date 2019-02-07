@@ -12,6 +12,10 @@ df.class$y <- df.class$diabetes
 df.reg$cmedv <- NULL
 df.class$diabetes <- NULL
 
+# Boston housing
+boston2 <- boston
+boston2$chas <- ifelse(boston2$chas == "0", yes = "a", no = "b")
+
 # Fit regression (lm) and classification (glm) models
 df.reg.lm <- lm(y ~ ., data = df.reg)
 df.class.glm <- glm(y ~ ., data = df.class, family = binomial)
@@ -111,5 +115,30 @@ test_that("order of pred.grid does not matter", {
 
   # Expectations
   expect_identical(pd1, pd2)
+
+})
+
+test_that("cats argument works", {
+
+  # Don't test on CRAN
+  skip_on_cran()
+
+  if (require(gbm, quietly = TRUE)) {
+
+    # Trees
+    tree1 <- rpart::rpart(cmedv ~ chas, data = boston, control = list(cp = 0))
+    tree2 <- rpart::rpart(cmedv ~ chas, data = boston2, control = list(cp = 0))
+
+    # Partial dependence
+    pd1 <- partial(tree1, pred.var = "chas")
+    pd2 <- partial(tree2, pred.var = "chas", cats = "chas", train = boston2)
+
+    # Expectations
+    expect_s3_class(pd1, class = "partial")
+    expect_s3_class(pd2, class = "partial")
+    expect_error(partial(tree2, pred.var = "chas"))
+    expect_identical(pd1$yhat, pd2$yhat)
+
+  }
 
 })

@@ -332,7 +332,8 @@ partial.default <- function(
   pred.grid <- if (missing(pred.grid)) {
     pred_grid(
       train = train, pred.var = pred.var, grid.resolution = grid.resolution,
-      quantiles = quantiles, probs = probs, trim.outliers = trim.outliers
+      quantiles = quantiles, probs = probs, trim.outliers = trim.outliers,
+      cats = cats
     )
   } else {
     if (!is.data.frame(pred.grid)) {

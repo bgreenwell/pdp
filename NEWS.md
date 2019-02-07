@@ -1,3 +1,7 @@
+# pdp 0.7.0.9000
+
+* Fixed a bug in `partial()` where the `cats` argument was never actually passed to `pred_grid()` [(#86)](https://github.com/bgreenwell/pdp/issues/86).
+
 # pdp 0.7.0
 
 * Added support for `e1071::naiveBayes()`, an implementation of the standard naive Bayes classifier [(#42)](https://github.com/bgreenwell/pdp/issues/42).

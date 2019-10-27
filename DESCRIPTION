@@ -13,10 +13,37 @@ URL: https://bgreenwell.github.io/pdp/index.html,
         https://github.com/bgreenwell/pdp
 BugReports: https://github.com/bgreenwell/pdp/issues
 Depends: R (>= 3.2.5)
-Suggests: adabag, AmesHousing, C50, caret, Cubist, doParallel, dplyr, e1071,
-        earth, gbm, ipred, keras, kernlab, MASS, mda, nnet, party,
-        partykit, progress, randomForest, ranger, reticulate, rpart,
-        testthat, xgboost (>= 0.6-0), knitr, rmarkdown, vip, tinytest
+Suggests: 
+    adabag,
+    AmesHousing,
+    C50,
+    caret,
+    Cubist,
+    doParallel,
+    dplyr,
+    e1071,
+    earth,
+    gbm,
+    ipred,
+    keras,
+    kernlab,
+    MASS,
+    mda,
+    nnet,
+    party,
+    partykit,
+    progress,
+    randomForest,
+    ranger,
+    reticulate,
+    rpart,
+    testthat,
+    xgboost (>= 0.6-0),
+    knitr,
+    rmarkdown,
+    vip,
+    tinytest,
+    covr
 Imports: ggplot2 (>= 0.9.0), grDevices, gridExtra, lattice, magrittr,
         methods, mgcv, plyr, stats, viridis, utils
 LazyData: TRUE

@@ -6,8 +6,8 @@ pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" /
 Status](https://travis-ci.org/bgreenwell/pdp.svg?branch=master)](https://travis-ci.org/bgreenwell/pdp)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/bgreenwell/pdp?branch=master&svg=true)](https://ci.appveyor.com/project/bgreenwell/pdp)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/bgreenwell/pdp.svg)](https://codecov.io/github/bgreenwell/pdp?branch=master)
+[![Codecov test
+coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://codecov.io/gh/bgreenwell/pdp?branch=master)
 [![Downloads](http://cranlogs.r-pkg.org/badges/pdp)](http://cranlogs.r-pkg.org/badges/pdp)
 [![Total
 Downloads](http://cranlogs.r-pkg.org/badges/grand-total/pdp)](http://cranlogs.r-pkg.org/badges/grand-total/pdp)
@@ -26,16 +26,18 @@ the R package [vip](https://koalaverse.github.io/vip/index.html)) help
 visualize feature impact (either locally or globally), PDPs and ICE
 curves help visualize feature effects. An in-progress, but
 comprehensive, overview of IML can be found at the following URL:
-<https://github.com/christophM/interpretable-ml-book>.
+<a href="https://github.com/christophM/interpretable-ml-book" class="uri">https://github.com/christophM/interpretable-ml-book</a>.
 
 A detailed introduction to [pdp](https://cran.r-project.org/package=pdp)
 has been published in The R Journal: “pdp: An R Package for Constructing
 Partial Dependence Plots”,
-<https://journal.r-project.org/archive/2017/RJ-2017-016/index.html>. You
-can track development at <https://github.com/bgreenwell/pdp>. To report
-bugs or issues, contact the main author directly or submit them to
-<https://github.com/bgreenwell/pdp/issues>. For additional documentation
-and examples, visit the [package
+<a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>.
+You can track development at
+<a href="https://github.com/bgreenwell/pdp" class="uri">https://github.com/bgreenwell/pdp</a>.
+To report bugs or issues, contact the main author directly or submit
+them to
+<a href="https://github.com/bgreenwell/pdp/issues" class="uri">https://github.com/bgreenwell/pdp/issues</a>.
+For additional documentation and examples, visit the [package
 website](https://bgreenwell.github.io/pdp/index.html).
 
 As of right now, `pdp` exports four functions:
@@ -60,8 +62,6 @@ Installation
 install.packages("pdp")
 
 # Alternatively, you can install the development version from GitHub:
-if (!requireNamespace("devtools")) {
-  install.packages("devtools")
-}
-devtools::install_github("bgreenwell/pdp")
+# install.packages("remotes")
+remotes::install_github("bgreenwell/pdp")
 ```

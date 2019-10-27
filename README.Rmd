@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
 [![Build Status](https://travis-ci.org/bgreenwell/pdp.svg?branch=master)](https://travis-ci.org/bgreenwell/pdp)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bgreenwell/pdp?branch=master&svg=true)](https://ci.appveyor.com/project/bgreenwell/pdp)
-[![Coverage Status](https://img.shields.io/codecov/c/github/bgreenwell/pdp.svg)](https://codecov.io/github/bgreenwell/pdp?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://codecov.io/gh/bgreenwell/pdp?branch=master)
 [![Downloads](http://cranlogs.r-pkg.org/badges/pdp)](http://cranlogs.r-pkg.org/badges/pdp)
 [![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/pdp)](http://cranlogs.r-pkg.org/badges/grand-total/pdp)
 [![lifecycle](https://img.shields.io/badge/lifecycle-maturing-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
@@ -50,8 +50,6 @@ As of right now, `pdp` exports four functions:
 install.packages("pdp")
 
 # Alternatively, you can install the development version from GitHub:
-if (!requireNamespace("devtools")) {
-  install.packages("devtools")
-}
-devtools::install_github("bgreenwell/pdp")
+# install.packages("remotes")
+remotes::install_github("bgreenwell/pdp")
 ```

@@ -13,7 +13,8 @@ if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
     interaction.depth = 6,
     shrinkage = 0.1,
     bag.fraction = 1,
-    cv.folds = 5
+    cv.folds = 5,  # implicitly uses more cores than R CMD Check will allow
+    n.cores = 2  # set to CRAN max
   )
   best_iter <- gbm.perf(fit, method = "cv")
 

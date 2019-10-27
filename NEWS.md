@@ -1,6 +1,25 @@
 # pdp 0.7.0.9000
 
+## New features
+
+* New (experimental) function `exemplar()` for constructing an "exemplar" record from a data frame or matrix-like object. See `?pdp::exemplar` for details.
+
+* `partial()` gained a new (experimental) feature via the new `approx` argument. If `approx = TRUE`, then `partial()` will will compute predictions across the predictors specified in `pred.var` while holding the other predictors constant (a "poor man's partial dependence" function as Stephen Milborrow, the author of [potmo](https://cran.r-project.org/package=plotmo), puts it). See `?pdp::partial` for details.
+
+## Breaking changes
+
+* `topPredictors()` is now deprecated and will be removed in the next update. Users are advised to use the [vip](https://github.com/koalaverse/vip) package instead.
+
+## Minor changes
+
 * Fixed a bug in `partial()` where the `cats` argument was never actually passed to `pred_grid()` [(#86)](https://github.com/bgreenwell/pdp/issues/86).
+
+## Miscellaneous
+
+* Switched to **tinytest** framework.
+
+* The internal function `get_training_data()`, which is used to (attempt to) extract a fitted models training data whenever `train` is not specified, is (hopefully) a bit more flexible and robust in certain special cases.
+
 
 # pdp 0.7.0
 

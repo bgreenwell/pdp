@@ -115,11 +115,11 @@ copy_classes <- function(x, y) {
       # Convert to factor or ordered class
       if (is.factor(y[[name]])) {
         if (is.ordered(y[[name]])) {
-          x[[name]] <- as.ordered(x[[name]])
+          x[[name]] <- ordered(x[[name]], levels = levels(y[[name]]))
         } else {
-          x[[name]] <- as.factor(x[[name]])
+          x[[name]] <- factor(x[[name]], levels = levels(y[[name]]))
         }
-        levels(x[[name]]) <- levels(y[[name]])
+        # levels(x[[name]]) <- levels(y[[name]])
         # if (!all(levels(y[[name]]) %in% x[[name]])) {
         #   stop("Factors levels ", paste0("{", paste(
         #     levels(y[[name]])[!(levels(y[[name]]) %in% x[[name]])],
@@ -160,12 +160,13 @@ multiclass_logit <- function(x, which.class = 1L) {
     rowMeans(log(ifelse(x > 0, x, eps)))
 }
 
+
 #' @keywords internal
 train_chull <- function(pred.var, pred.grid, train) {
   if (length(pred.var) >= 2 && is.numeric(pred.grid[, 1L]) &&
       is.numeric(pred.grid[, 2L])) {  # if the first two columns are numeric
     if (is.data.frame(train)) {
-      train <- data.matrix(train)  # mgcv::in.out requires a matrix
+      train <- data.matrix(train)  # `mgcv::in.out()` requires a matrix
     }
     X <- stats::na.omit(train[, pred.var[1L:2L]])
     Y <- stats::na.omit(data.matrix(pred.grid[, 1L:2L]))

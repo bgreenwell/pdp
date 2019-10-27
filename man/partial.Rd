@@ -9,15 +9,15 @@ partial(object, ...)
 
 \method{partial}{default}(object, pred.var, pred.grid, pred.fun = NULL,
   grid.resolution = NULL, ice = FALSE, center = FALSE,
-  quantiles = FALSE, probs = 1:9/10, trim.outliers = FALSE,
-  type = c("auto", "regression", "classification"), inv.link = NULL,
-  which.class = 1L, prob = FALSE, recursive = TRUE, plot = FALSE,
-  plot.engine = c("lattice", "ggplot2"), smooth = FALSE, rug = FALSE,
-  chull = FALSE, levelplot = TRUE, contour = FALSE,
-  contour.color = "white", palette = c("viridis", "magma", "inferno",
-  "plasma", "cividis"), alpha = 1, train, cats = NULL,
-  check.class = TRUE, progress = "none", parallel = FALSE,
-  paropts = NULL, ...)
+  approx = FALSE, quantiles = FALSE, probs = 1:9/10,
+  trim.outliers = FALSE, type = c("auto", "regression",
+  "classification"), inv.link = NULL, which.class = 1L, prob = FALSE,
+  recursive = TRUE, plot = FALSE, plot.engine = c("lattice",
+  "ggplot2"), smooth = FALSE, rug = FALSE, chull = FALSE,
+  levelplot = TRUE, contour = FALSE, contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  alpha = 1, train, cats = NULL, check.class = TRUE,
+  progress = "none", parallel = FALSE, paropts = NULL, ...)
 }
 \arguments{
 \item{object}{A fitted model object of appropriate class (e.g., \code{"gbm"},
@@ -51,6 +51,18 @@ Goldstein et al. (2014) for details.}
 \item{center}{Logical indicating whether or not to produce centered ICE
 curves (c-ICE curves). Only used when \code{ice = TRUE}. Default is
 \code{FALSE}. See Goldstein et al. (2014) for details.}
+
+\item{approx}{Logical indicating whether or not to compute a faster, but
+approximate, marginal effect plot (similar in spirit to
+\code{\link[plotmo]{plotmo}}). If \code{TRUE}, then `partial()` will compute
+predictions across the predictors specified in \code{pred.var} while holding
+the other predictors constant (a "poor man's partial dependence" function as
+Stephen Milborrow, the author of \code{\link[plotmo]{plotmo}}, puts it).
+Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
+WARNING: This option is currently experimental. Use at your own risk. It is
+possible (and arguably safer) to do this manually by passing a specific
+"exemplar" observation to the train argument and specifying `pred.grid`
+manually.}
 
 \item{quantiles}{Logical indicating whether or not to use the sample
 quantiles of the continuous predictors listed in \code{pred.var}. If

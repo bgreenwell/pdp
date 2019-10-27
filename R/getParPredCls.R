@@ -269,10 +269,10 @@ getParClsProb.RandomForest <- function(object, newdata, which.class, ...) {
 
 #' @keywords internal
 getParClsLogit.ranger <- function(object, newdata, which.class, ...) {
-  if (object$treetype != "Probability estimation") {
-    stop(paste("Cannot obtain predicted probabilities from",
-               deparse(substitute(object))))
-  }
+  # if (object$treetype != "Probability estimation") {
+  #   stop(paste("Cannot obtain predicted probabilities from",
+  #              deparse(substitute(object))))
+  # }
   pr <- stats::predict(object, data = newdata, ...)$predictions
   mean(multiclass_logit(pr, which.class = which.class), na.rm = TRUE)
 }
@@ -280,10 +280,10 @@ getParClsLogit.ranger <- function(object, newdata, which.class, ...) {
 
 #' @keywords internal
 getParClsProb.ranger <- function(object, newdata, which.class, ...) {
-  if (object$treetype != "Probability estimation") {
-    stop(paste("Cannot obtain predicted probabilities from",
-               deparse(substitute(object))))
-  }
+  # if (object$treetype != "Probability estimation") {
+  #   stop(paste("Cannot obtain predicted probabilities from",
+  #              deparse(substitute(object))))
+  # }
   pr <- stats::predict(object, data = newdata, ...)$predictions
   mean(pr[, which.class], na.rm = TRUE)
 }
@@ -291,10 +291,10 @@ getParClsProb.ranger <- function(object, newdata, which.class, ...) {
 
 #' @keywords internal
 getParClsLogit.svm <- function(object, newdata, which.class, ...) {
-  if (is.null(object$call$probability)) {
-    stop(paste("Cannot obtain predicted probabilities from",
-               deparse(substitute(object))))
-  }
+  # if (is.null(object$call$probability)) {
+  #   stop(paste("Cannot obtain predicted probabilities from",
+  #              deparse(substitute(object))))
+  # }
   pr <- attr(stats::predict(object, newdata = newdata, probability = TRUE, ...),
              which = "probabilities")
   mean(multiclass_logit(pr, which.class = which.class), na.rm = TRUE)
@@ -303,10 +303,10 @@ getParClsLogit.svm <- function(object, newdata, which.class, ...) {
 
 #' @keywords internal
 getParClsProb.svm <- function(object, newdata, which.class, ...) {
-  if (is.null(object$call$probability)) {
-    stop(paste("Cannot obtain predicted probabilities from",
-               deparse(substitute(object))))
-  }
+  # if (is.null(object$call$probability)) {
+  #   stop(paste("Cannot obtain predicted probabilities from",
+  #              deparse(substitute(object))))
+  # }
   pr <- attr(stats::predict(object, newdata = newdata, probability = TRUE, ...),
              which = "probabilities")
   mean(pr[, which.class], na.rm = TRUE)

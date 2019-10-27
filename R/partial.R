@@ -1,3 +1,5 @@
+# FIXME: partial() returns character columns for factors.
+
 #' Partial Dependence Functions
 #'
 #' Compute partial dependence functions (i.e., marginal effects) for various
@@ -31,6 +33,18 @@
 #' @param center Logical indicating whether or not to produce centered ICE
 #' curves (c-ICE curves). Only used when \code{ice = TRUE}. Default is
 #' \code{FALSE}. See Goldstein et al. (2014) for details.
+#'
+#' @param approx Logical indicating whether or not to compute a faster, but
+#' approximate, marginal effect plot (similar in spirit to
+#' \code{\link[plotmo]{plotmo}}). If \code{TRUE}, then `partial()` will compute
+#' predictions across the predictors specified in \code{pred.var} while holding
+#' the other predictors constant (a "poor man's partial dependence" function as
+#' Stephen Milborrow, the author of \code{\link[plotmo]{plotmo}}, puts it).
+#' Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
+#' WARNING: This option is currently experimental. Use at your own risk. It is
+#' possible (and arguably safer) to do this manually by passing a specific
+#' "exemplar" observation to the train argument and specifying `pred.grid`
+#' manually.
 #'
 #' @param quantiles Logical indicating whether or not to use the sample
 #' quantiles of the continuous predictors listed in \code{pred.var}. If
@@ -270,7 +284,7 @@ partial <- function(object, ...) {
 #' @export
 partial.default <- function(
   object, pred.var, pred.grid, pred.fun = NULL, grid.resolution = NULL,
-  ice = FALSE, center = FALSE, quantiles = FALSE, probs = 1:9/10,
+  ice = FALSE, center = FALSE, approx = FALSE, quantiles = FALSE, probs = 1:9/10,
   trim.outliers = FALSE, type = c("auto", "regression", "classification"),
   inv.link = NULL, which.class = 1L, prob = FALSE, recursive = TRUE,
   plot = FALSE, plot.engine = c("lattice", "ggplot2"),
@@ -375,13 +389,18 @@ partial.default <- function(
   # Determine the type of supervised learning used
   type <- match.arg(type)
   if (type == "auto" && is.null(pred.fun)) {
-    type <- super_type(object)  # determine if regression or classification
+    type <- get_task(object)  # determine if regression or classification
   }
 
   # Display warning for GBM objects when recursive = TRUE and ice = TRUE
   if (inherits(object, "gbm") && recursive && ice) {
     warning("Recursive method not available for \"gbm\" objects when `ice = ",
             "TRUE`. Using brute force method instead.")
+  }
+
+  # Compute "poor man's partial dependence"
+  if (isTRUE(approx)) {
+    train <- exemplar(train)  # FIXME: Better handling for matrix-like objects
   }
 
   # Calculate partial dependence values
@@ -483,7 +502,7 @@ partial.default <- function(
   # Plot partial dependence function (if requested)
   if (plot) {  # return a graph (i.e., a "trellis" or "ggplot" object)
     plot.engine <- match.arg(plot.engine)
-    res <- if (inherits(pd.df, what = "ice")) {
+    res <- if (inherits(pd.df, what = c("ice", "cice"))) {
       if (plot.engine == "ggplot2") {
         autoplot(
           object = pd.df, plot.pdp = TRUE, rug = rug, train = train,

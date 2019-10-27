@@ -2,56 +2,23 @@ Package: pdp
 Type: Package
 Title: Partial Dependence Plots
 Version: 0.7.0.9000
-Authors@R: person("Brandon", "Greenwell", email = "greenwell.brandon@gmail.com",
-  role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8120-0084"))
-Description: A general framework for constructing partial dependence (i.e., 
-  marginal effect) plots from various types machine learning models in R.
+Authors@R: person("Brandon", "Greenwell", email =
+        "greenwell.brandon@gmail.com", role = c("aut", "cre"), comment =
+        c(ORCID = "0000-0002-8120-0084"))
+Description: A general framework for constructing partial dependence (i.e.,
+        marginal effect) plots from various types machine learning models
+        in R.
 License: GPL (>= 2)
-URL: https://bgreenwell.github.io/pdp/index.html, https://github.com/bgreenwell/pdp
+URL: https://bgreenwell.github.io/pdp/index.html,
+        https://github.com/bgreenwell/pdp
 BugReports: https://github.com/bgreenwell/pdp/issues
-Depends:
-    R (>= 3.2.5)
-Suggests:
-    adabag,
-    AmesHousing,
-    C50,
-    caret,
-    Cubist,
-    doParallel,
-    dplyr,
-    e1071,
-    earth,
-    gbm,
-    ipred,
-    keras,
-    kernlab,
-    MASS,
-    mda,
-    nnet,
-    party,
-    partykit,
-    progress,
-    randomForest,
-    ranger,
-    reticulate,
-    rpart,
-    testthat,
-    xgboost (>= 0.6-0),
-    knitr,
-    rmarkdown,
-    vip
-Imports:
-    ggplot2 (>= 0.9.0),
-    grDevices,
-    gridExtra,
-    lattice,
-    magrittr,
-    methods,
-    mgcv,
-    plyr,
-    stats,
-    viridis,
-    utils
+Depends: R (>= 3.2.5)
+Suggests: adabag, AmesHousing, C50, caret, Cubist, doParallel, dplyr, e1071,
+        earth, gbm, ipred, keras, kernlab, MASS, mda, nnet, party,
+        partykit, progress, randomForest, ranger, reticulate, rpart,
+        testthat, xgboost (>= 0.6-0), knitr, rmarkdown, vip, tinytest
+Imports: ggplot2 (>= 0.9.0), grDevices, gridExtra, lattice, magrittr,
+        methods, mgcv, plyr, stats, viridis, utils
 LazyData: TRUE
 RoxygenNote: 6.1.1
 Encoding: UTF-8

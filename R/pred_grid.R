@@ -22,7 +22,8 @@ pred_grid <- function(
   pred.val <- lapply(pred.var, function(x) {
     if (is.factor(train[, x, drop = TRUE])) {
       levels(train[, x, drop = TRUE])
-    } else if (x %in% cats) {
+    } else if (inherits(train[, x, drop = TRUE], what = "character") ||
+               (x %in% cats)) {
       sort(unique(train[, x, drop = TRUE]))  # martices cannot contain factors
     } else {
       if (!is.null(grid.resolution) && quantiles) {

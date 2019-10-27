@@ -34,7 +34,7 @@ cal.gbm <- gbm(AvgValue ~ ., data = cal,
                verbose = TRUE)
 best.iter <- gbm.perf(cal.gbm, method = "test")
 
-# There seems to be a fair amount of outliers in the datset so we have two
+# There seems to be a fair amount of outliers in this data set so we have two
 # options:
 #
 #   (1) use the quantiles options with specific probabilities;
@@ -55,6 +55,7 @@ pd.AveRooms <- partial(cal.gbm, pred.var = "AveRooms", quantiles = TRUE,
 # Partial dependence of AvgValue on AveOccup and HouseAge (together)
 pd.HouseAge.AveOccup <- partial(
   cal.gbm, pred.var = c("HouseAge", "AveOccup"), quantiles = TRUE,
+  # chull = TRUE,
   probs = 5:95/100, n.trees = best.iter
 )
 

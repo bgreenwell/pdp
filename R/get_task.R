@@ -1,18 +1,18 @@
 #' @keywords internal
-super_type <- function(object) {
-  UseMethod("super_type")
+get_task <- function(object) {
+  UseMethod("get_task")
 }
 
 
 #' @keywords internal
-super_type.default <- function(object) {
+get_task.default <- function(object) {
   warning('`type` could not be determined; assuming `type = "regression"`')
   "regression"
 }
 
 
 #' @keywords internal
-super_type.BinaryTree <- function(object) {
+get_task.BinaryTree <- function(object) {
   if (object@responses@is_nominal) {
     "classification"
   } else if (object@responses@is_ordinal || object@responses@is_censored) {
@@ -24,24 +24,24 @@ super_type.BinaryTree <- function(object) {
 
 
 #' @keywords internal
-super_type.bagging <- function(object) {
+get_task.bagging <- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.boosting <- function(object) {
+get_task.boosting <- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.C5.0 <- function(object) {
+get_task.C5.0 <- function(object) {
   "classification"
 }
 
 
-super_type.cforest <- function(object) {
+get_task.cforest <- function(object) {
   if (is.factor(object$fitted[["(response)"]])) {
     "classification"
   } else if (is.numeric(object$fitted[["(response)"]])) {
@@ -53,19 +53,19 @@ super_type.cforest <- function(object) {
 
 
 #' @keywords internal
-super_type.classbagg <- function(object) {
+get_task.classbagg <- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.cubist <- function(object) {
+get_task.cubist <- function(object) {
   "regression"
 }
 
 
 #' @keywords internal
-super_type.earth <- function(object) {
+get_task.earth <- function(object) {
   if (!is.null(object$glm.list) &&
       object$glm.list[[1L]]$family$family == "binomial") {
     "classification"
@@ -80,13 +80,13 @@ super_type.earth <- function(object) {
 
 
 #' @keywords internal
-super_type.fda<- function(object) {
+get_task.fda<- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.gbm <- function(object) {
+get_task.gbm <- function(object) {
   if (object$distribution %in%
       c("gaussian", "laplace", "tdist", "gamma", "poisson", "tweedie")) {
     "regression"
@@ -100,7 +100,7 @@ super_type.gbm <- function(object) {
 
 
 #' @keywords internal
-super_type.glm <- function(object) {
+get_task.glm <- function(object) {
   if(object$family$family == "binomial") {
     "classification"
   } else if (object$family$family %in%
@@ -113,7 +113,7 @@ super_type.glm <- function(object) {
 
 
 #' @keywords internal
-super_type.ksvm <- function(object) {
+get_task.ksvm <- function(object) {
   if (grepl("svr$", object@type)) {
     "regression"
   } else if (grepl("svc$", object@type)) {
@@ -125,20 +125,20 @@ super_type.ksvm <- function(object) {
 
 
 #' @keywords internal
-super_type.lda <- function(object) {
+get_task.lda <- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.lm <- function(object) {
+get_task.lm <- function(object) {
   # FIXME: What about multivariate response models?
   "regression"
 }
 
 
 #' @keywords internal
-super_type.mars <- function(object) {
+get_task.mars <- function(object) {
   if (ncol(object$fitted.values) > 1) {
     stop("`partial` does not currently support multivariate response models.")
   }
@@ -147,26 +147,26 @@ super_type.mars <- function(object) {
 
 
 #' @keywords internal
-super_type.multinom <- function(object) {
+get_task.multinom <- function(object) {
   # FIXME: What about multivariate response models?
   "classification"
 }
 
 
 #' @keywords internal
-super_type.naiveBayes <- function(object) {
+get_task.naiveBayes <- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.nls <- function(object) {
+get_task.nls <- function(object) {
   "regression"
 }
 
 
 #' @keywords internal
-super_type.nnet <- function(object) {
+get_task.nnet <- function(object) {
   if (is.null(object$lev)) {
     "regression"
   } else {
@@ -175,7 +175,7 @@ super_type.nnet <- function(object) {
 }
 
 
-super_type.party <- function(object) {
+get_task.party <- function(object) {
   if (is.factor(object$fitted[["(response)"]])) {
     "classification"
   } else if (is.numeric(object$fitted[["(response)"]])) {
@@ -187,7 +187,7 @@ super_type.party <- function(object) {
 
 
 #' @keywords internal
-super_type.ppr <- function(object) {
+get_task.ppr <- function(object) {
   if (object$q > 1) {
     stop("`partial` does not currently support multivariate response models.")
   }
@@ -196,13 +196,13 @@ super_type.ppr <- function(object) {
 
 
 #' @keywords internal
-super_type.qda<- function(object) {
+get_task.qda<- function(object) {
   "classification"
 }
 
 
 #' @keywords internal
-super_type.RandomForest <- function(object) {
+get_task.RandomForest <- function(object) {
   if (object@responses@is_nominal) {
     "classification"
   } else if (object@responses@is_ordinal || object@responses@is_censored) {
@@ -214,7 +214,7 @@ super_type.RandomForest <- function(object) {
 
 
 #' @keywords internal
-super_type.randomForest <- function(object) {
+get_task.randomForest <- function(object) {
   if (object$type == "regression") {
     "regression"
   } else if (object$type == "classification") {
@@ -226,12 +226,16 @@ super_type.randomForest <- function(object) {
 
 
 #' @keywords internal
-super_type.ranger <- function(object) {
+get_task.ranger <- function(object) {
   if (object$treetype == "Regression") {
     "regression"
-  } else if (object$treetype %in%
-             c("Classification", "Probability estimation")) {
+  } else if (object$treetype == "Probability estimation") {
     "classification"
+  } else if (object$treetype == "Classification") {
+    stop("Partial dependence for classification tasks with \"ranger\" objects ",
+         "requires a probability forest. Try refitting the model with ",
+         "`probability = TRUE`; see `?ranger::ranger` for details.",
+         call. = FALSE)
   } else {
     "other"
   }
@@ -239,13 +243,13 @@ super_type.ranger <- function(object) {
 
 
 #' @keywords internal
-super_type.regbagg <- function(object) {
+get_task.regbagg <- function(object) {
   "regression"
 }
 
 
 #' @keywords internal
-super_type.rpart <- function(object) {
+get_task.rpart <- function(object) {
   if (object$method == "anova") {
     "regression"
   } else if (object$method == "class") {
@@ -257,17 +261,23 @@ super_type.rpart <- function(object) {
 
 
 #' @keywords internal
-super_type.svm <- function(object) {
+get_task.svm <- function(object) {
   if (object$type %in% c(3, 4)) {
     "regression"
   } else {
+    if (is.null(object$call$probability)) {
+      stop("Partial dependence for classification tasks with \"svm\" objects ",
+           "requires estimating predicted class probabilities. Try refitting ",
+           "the model with `probability = TRUE`; see `?e1071::svm` for ",
+           "details.", call. = FALSE)
+    }
     "classification"
   }
 }
 
 
 #' @keywords internal
-super_type.train <- function(object) {
+get_task.train <- function(object) {
   if (object$modelType == "Classification") {
     "classification"
   } else if (object$modelType == "Regression") {
@@ -279,14 +289,15 @@ super_type.train <- function(object) {
 
 
 #' @keywords internal
-super_type.xgb.Booster <- function(object) {
+get_task.xgb.Booster <- function(object) {
+  # FIXME: "reg:linear" was changed to "reg:squarederror" in v0.90.0, but the
+  # following should suffice without having to check package version.
   if (object$params$objective %in%
-      c("reg:linear", "reg:logistic", "count:poisson", "reg:gamma")) {
+      c("reg:gamma", "reg:linear", "reg:logistic", "reg:squarederror",
+        "count:poisson")) {
     "regression"
   } else if (object$params$objective %in%
              c("binary:logistic", "multi:softprob")) {
-    # FIXME: Throw a warning if objective function is classification, but does
-    # not return the predicted probabilities (e.g., "binary:logitraw").
     "classification"
   } else if (object$params$objective %in%
              c("binary:logitraw", "multi:softmax")) {

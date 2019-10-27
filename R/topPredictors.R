@@ -54,6 +54,11 @@
 #'
 #' }
 topPredictors <- function(object, n = 1L, ...) {
+  .Deprecated(
+    msg = paste("pdp::topPredictors() is now deprecated and will be removed in",
+                "the next version. For a more general replacement, check out",
+                "the vip package: https://github.com/koalaverse/vip.")
+  )
   UseMethod("topPredictors")
 }
 

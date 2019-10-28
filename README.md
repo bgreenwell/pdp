@@ -40,7 +40,7 @@ them to
 For additional documentation and examples, visit the [package
 website](https://bgreenwell.github.io/pdp/index.html).
 
-As of right now, `pdp` exports four functions:
+As of right now, `pdp` exports the following functions:
 
 -   `partial()` - compute partial dependence functions and individual
     conditional expectations (i.e., objects of class `"partial"` and
@@ -50,9 +50,14 @@ As of right now, `pdp` exports four functions:
 
 -   `autoplot()` - construct `ggplot2`-based PDPs and ICE curves;
 
--   `topPredictors()` extract most “important” predictors from various
-    types of fitted models. (Will soon be replaced by functionality from
-    [vip](https://koalaverse.github.io/vip/index.html).)
+-   ~~`topPredictors()` extract most “important” predictors from various
+    types of fitted models.~~ see
+    [vip](https://koalaverse.github.io/vip/index.html) instead for a
+    more robust and flexible replacement;
+
+-   `exemplar()` - construct an exemplar record from a data frame
+    (**experimental** feature that may be useful for constructing fast,
+    approximate feature effect plots.)
 
 Installation
 ------------
@@ -62,6 +67,8 @@ Installation
 install.packages("pdp")
 
 # Alternatively, you can install the development version from GitHub:
-# install.packages("remotes")
+if (!("remotes" %in% installed.packages()[, "Package"])) {
+  install.packages("remotes")
+}
 remotes::install_github("bgreenwell/pdp")
 ```

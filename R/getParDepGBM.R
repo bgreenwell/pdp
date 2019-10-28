@@ -18,14 +18,39 @@ getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
     object$num.classes <- 1
   }
 
+  ##############################################################################
+
+  # FIXME: What's the best way to do this?
+
   # Convert categorical variables to integer (i.e., 0, 1, 2, ..., K)
   for (i in seq_len(length(pred.grid))) {
-    if (!is.numeric(pred.grid[[i]])) {
-      factor.vals <- as.character(pred.grid[[i]])  # save original factor values
-      pred.grid[[i]] <- as.numeric(pred.grid[[i]]) - 1  # convert to 0, 1, ..., K
-      attr(pred.grid[[i]], which = "factor.vals") <- factor.vals  # store as attribute
+
+    # For `"gbm"` objects, possibilities are "numeric", "ordered", or "factor".
+    # But ordered factors actually inherit from class `"factor"`, so only need
+    # to check for that here.
+    if (inherits(pred.grid, "factor")) {
+
+      # Save original factor values (could possibly be "ordered")
+      levs <- levels(pred.grid[[i]])
+      vals <- as.character(pred.grid[[i]])
+      type <- class(pred.grid[[i]])
+
+      # Convert from categorical to integer (i.e., 0, 1, ..., K). For example,
+      # c("low", "hot", "med"), w/ low < med < hot, should be converted to
+      # c(0, 2, 1).
+      pred.grid[[i]] <- as.numeric(pred.grid[[i]]) - 1
+
+      # Store original categorical values, class information, etc.
+      attr(pred.grid[[i]], which = "cat") <- TRUE  # categorical indicator
+      attr(pred.grid[[i]], which = "levs") <- levs  # factor levels
+      attr(pred.grid[[i]], which = "vals") <- vals  # factor values
+      attr(pred.grid[[i]], which = "original_class") <- type  # factor type
+
     }
+
   }
+
+  ##############################################################################
 
   # Partial dependence values
   y <- .Call("PartialGBM",
@@ -69,10 +94,24 @@ getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
     pd.df$yhat <- y
   }
 
+  ##############################################################################
+
+  # FIXME: What's the best way to do this?
+
   # Transform categorical variables back to factors
   for (i in seq_len(length(pred.var))) {
-    if (!is.null(attr(pd.df[[i]], which = "factor.vals"))) {
-      pd.df[[i]] <- attr(pd.df[[i]], which = "factor.vals")
+    if (isTRUE(attr(pd.df[[i]], which = "cat"))) {
+      if ("ordered" %in% attr(pd.df[[i]], which = "original_class")) {
+        pd.df[[i]] <- ordered(  # ordered factor
+          x = attr(pd.df[[i]], which = "vals"),
+          levels = attr(pd.df[[i]], which = "levs")
+        )
+      } else {
+        pd.df[[i]] <- factor(  # plain vanilla factor
+          x = attr(pd.df[[i]], which = "vals"),
+          levels = attr(pd.df[[i]], which = "levs")
+        )
+      }
     }
   }
 

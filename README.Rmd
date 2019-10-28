@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 
 A detailed introduction to [pdp](https://cran.r-project.org/package=pdp) has been published in The R Journal: "pdp: An R Package for Constructing Partial Dependence Plots", https://journal.r-project.org/archive/2017/RJ-2017-016/index.html. You can track development at https://github.com/bgreenwell/pdp. To report bugs or issues, contact the main author directly or submit them to https://github.com/bgreenwell/pdp/issues. For additional documentation and examples, visit the [package website](https://bgreenwell.github.io/pdp/index.html).
 
-As of right now, `pdp` exports four functions:
+As of right now, `pdp` exports the following functions:
 
   * `partial()` - compute partial dependence functions and individual conditional expectations (i.e., objects of class `"partial"` and `"ice"`, respectively) from various fitted model objects;
 
@@ -40,7 +40,9 @@ As of right now, `pdp` exports four functions:
 
   * `autoplot()` - construct `ggplot2`-based PDPs and ICE curves;
 
-  * `topPredictors()` extract most "important" predictors from various types of fitted models. (Will soon be replaced by functionality from [vip](https://koalaverse.github.io/vip/index.html).)
+  * ~~`topPredictors()` extract most "important" predictors from various types of fitted models.~~ see [vip](https://koalaverse.github.io/vip/index.html) instead for a more robust and flexible replacement;
+  
+  * `exemplar()` - construct an exemplar record from a data frame (**experimental** feature that may be useful for constructing fast, approximate feature effect plots.)
 
 
 ## Installation
@@ -50,6 +52,8 @@ As of right now, `pdp` exports four functions:
 install.packages("pdp")
 
 # Alternatively, you can install the development version from GitHub:
-# install.packages("remotes")
+if (!("remotes" %in% installed.packages()[, "Package"])) {
+  install.packages("remotes")
+}
 remotes::install_github("bgreenwell/pdp")
 ```

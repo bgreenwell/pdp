@@ -257,7 +257,7 @@ plot_ice_curves <- function(
           stop("The training data must be supplied for rug display.")
         } else {
           panel.rug(
-            stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
+            stats::quantile(train[[names(object)[1L]]], probs = 0:10/10,
                             na.rm = TRUE)
           )
         }
@@ -286,7 +286,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
             stop("The training data must be supplied for rug display.")
           } else {
             panel.rug(
-              stats::quantile(train[, names(object)[1L]],
+              stats::quantile(train[[names(object)[1L]]],
                               probs = 0:10/10, na.rm = TRUE)
             )
           }
@@ -343,7 +343,7 @@ plot_two_predictor_pdp <- function(
             stop("The training data must be supplied for rug display.")
            } else {
              panel.rug(
-               stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
+               stats::quantile(train[[names(object)[1L]]], probs = 0:10/10,
                                na.rm = TRUE)
              )
            }
@@ -383,10 +383,10 @@ plot_two_predictor_pdp <- function(
             if (rug) {
               panel.rug(
                 x = stats::quantile(
-                  train[, names(object)[1L]], probs = 0:10/10, na.rm = TRUE
+                  train[[names(object)[1L]]], probs = 0:10/10, na.rm = TRUE
                 ),
                 y = stats::quantile(
-                  train[, names(object)[2L]], probs = 0:10/10, na.rm = TRUE
+                  train[[names(object)[2L]]], probs = 0:10/10, na.rm = TRUE
                 ),
                 col = "black"
               )
@@ -471,7 +471,7 @@ plot_three_predictor_pdp <- function(
             stop("The training data must be supplied for rug display.")
           } else {
             panel.rug(
-              stats::quantile(train[, names(object)[1L]], probs = 0:10/10,
+              stats::quantile(train[[names(object)[1L]]], probs = 0:10/10,
                               na.rm = TRUE)
             )
           }

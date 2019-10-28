@@ -399,7 +399,7 @@ partial.default <- function(
   }
 
   # Compute "poor man's partial dependence"
-  if (isTRUE(approx)) {
+  if (isTRUE(approx)) {       # FIXME: What about when `rug/chull = TRUE`
     train <- exemplar(train)  # FIXME: Better handling for matrix-like objects
   }
 

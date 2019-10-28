@@ -1,7 +1,7 @@
 if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
 
   # Load the Ames housing data
-  ames <- AmesHousing::make_ames()
+  ames <- as.data.frame(AmesHousing::make_ames())
 
   # Fit a gbm model
   set.seed(1918)  # for reproducibility
@@ -37,6 +37,16 @@ if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
     plotPartial(pd2),
     nrow = 1
   )
+
+  # Users can call plotPartial() to construct lattice-based PDPs
+  pdp1_lattice <- plotPartial(pd1, smooth = TRUE, rug = TRUE, train = ames)
+
+  # Users can call autoplot() to construct ggplot2-based PDPs
+  pdp1_ggplot2 <- autoplot(pd1, smooth = TRUE, rug = TRUE, train = ames)
+
+  # Expectation(s)
+  expect_true(inherits(pdp1_lattice, what = "trellis"))
+  expect_true(inherits(pdp1_ggplot2, what = "ggplot"))
 
   # Users should be able to supply the predictor name(s) or column position(s)
   # in train
@@ -127,6 +137,19 @@ if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
     partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1, pred.fun = pfun2)
   )
 
+  # ICE curves constructed manually
+  pdp_pfun3_ggplot2 <- autoplot(pd_pfun3, center = TRUE, rug = TRUE,
+                                train = ames, alpha = 0.1)
+  pdp_pfun3_lattice <- plotPartial(pd_pfun3, center = TRUE, rug = TRUE,
+                                   train = ames, alpha = 0.1)
+
+  # Expectation(s)
+  expect_true(inherits(pdp_pfun3_ggplot2, what = "ggplot"))
+  expect_true(inherits(pdp_pfun3_lattice, what = "trellis"))
+
+  # Display plots side by side
+  grid.arrange(pdp_pfun3_ggplot2, pdp_pfun3_lattice, nrow = 1)
+
   # c-ICE curves
   ice <- partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1, ice = TRUE,
                  center = TRUE, n.trees = best_iter)
@@ -154,6 +177,23 @@ if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
   # Display plots side by side
   grid.arrange(pdp1, pdp2, ice1, ice2, nrow = 2)
 
+  # plotPartial() and autoplot() also work with "ice" and "cice" objects
+  ice <- partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1, ice = TRUE,
+                 n.trees = best_iter)
+  cice <- partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1, ice = TRUE,
+                  center = TRUE, n.trees = best_iter)
+  ice_lattice <- plotPartial(ice, alpha = 0.1, center = TRUE)
+  cice_lattice <- plotPartial(cice, alpha = 0.1)
+  ice_ggplot2 <- autoplot(ice, alpha = 0.1, center = TRUE)
+  cice_ggplot2 <- autoplot(cice, alpha = 0.1)
+  expect_true(inherits(ice_lattice, what = "trellis"))
+  expect_true(inherits(cice_lattice, what = "trellis"))
+  expect_true(inherits(ice_ggplot2, what = "ggplot"))
+  expect_true(inherits(cice_ggplot2, what = "ggplot"))
+
+  # Display plots in a grid (all plots should look the same)
+  grid.arrange(ice_lattice, cice_lattice, ice_ggplot2, cice_ggplot2, nrow = 2)
+
   # Two-predictor partial dependence
   pd3 <- partial(fit, pred.var = c("Gr_Liv_Area", "Total_Bsmt_SF"),
                  chull = TRUE, n.trees = best_iter)
@@ -169,11 +209,65 @@ if (require(gbm, quietly = TRUE) && require(ggplot2, quietly = TRUE)) {
   )
 
   # Plot results
-  pdp3_lattice <- plotPartial(pd3)
-  pdp3_ggplot2 <- autoplot(pd3)
+  pdp3_lattice <- plotPartial(pd3, rug = TRUE, chull = TRUE, train = ames,
+                              contour = TRUE)
+  pdp3_lattice_3d <- plotPartial(pd3, levelplot = FALSE, shade = TRUE)
+  pdp3_ggplot2 <- autoplot(pd3, rug = TRUE, train = ames, contour = TRUE)
+
+  # Display plots side by side
+  grid.arrange(pdp3_lattice, pdp3_lattice_3d, pdp3_ggplot2)
 
   # Basic expectation(s)
   expect_true(inherits(pdp3_lattice, what = "trellis"))
+  expect_true(inherits(pdp3_lattice_3d, what = "trellis"))
   expect_true(inherits(pdp3_ggplot2, what = "ggplot"))
+
+  # Try `plot.engine = "ggplot2"` with different feature type combinations
+  pdp_ggplot2_cat_cat <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Overall_Qual", "Neighborhood"),
+    plot = TRUE,
+    plot.engine = "ggplot2"
+  )
+  pdp_ggplot2_cat_num <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Overall_Qual", "Gr_Liv_Area"),
+    plot = TRUE,
+    plot.engine = "ggplot2"
+  )
+  pdp_ggplot2_num_cat <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Gr_Liv_Area", "Overall_Qual"),
+    plot = TRUE,
+    plot.engine = "ggplot2"
+  )
+
+  # Expectation(s)
+  expect_true(inherits(pdp_ggplot2_cat_cat, what = "ggplot"))
+  expect_true(inherits(pdp_ggplot2_cat_num, what = "ggplot"))
+  expect_true(inherits(pdp_ggplot2_num_cat, what = "ggplot"))
+
+  # Try `plot.engine = "lattice"` with different feature type combinations
+  pdp_lattice_cat_cat <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Overall_Qual", "Neighborhood"),
+    plot = TRUE
+  )
+  pdp_lattice_cat_num <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Overall_Qual", "Gr_Liv_Area"),
+    plot = TRUE
+  )
+  pdp_lattice_num_cat <- partial(
+    object = fit, n.trees = best_iter,
+    pred.var = c("Gr_Liv_Area", "Overall_Qual"),
+    plot = TRUE
+  )
+
+  # Expectation(s)
+  expect_true(inherits(pdp_lattice_cat_cat, what = "trellis"))
+  expect_true(inherits(pdp_lattice_cat_num, what = "trellis"))
+  expect_true(inherits(pdp_lattice_num_cat, what = "trellis"))
+
 
 }

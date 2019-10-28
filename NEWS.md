@@ -2,9 +2,9 @@
 
 ## New features
 
-* New (experimental) function `exemplar()` for constructing an "exemplar" record from a data frame or matrix-like object. See `?pdp::exemplar` for details.
+* New (experimental) function `exemplar()` for constructing an "exemplar" record from a data frame or matrix-like object. See `?pdp::exemplar` for details [(#91)](https://github.com/bgreenwell/pdp/issues/91).
 
-* `partial()` gained a new (experimental) feature via the new `approx` argument. If `approx = TRUE`, then `partial()` will will compute predictions across the predictors specified in `pred.var` while holding the other predictors constant (a "poor man's partial dependence" function as Stephen Milborrow, the author of [potmo](https://cran.r-project.org/package=plotmo), puts it). See `?pdp::partial` for details.
+* `partial()` gained a new (experimental) feature via the new `approx` argument. If `approx = TRUE`, then `partial()` will will compute predictions across the predictors specified in `pred.var` while holding the other predictors constant (a "poor man's partial dependence" function as Stephen Milborrow, the author of [plotmo](https://cran.r-project.org/package=plotmo), puts it). See `?pdp::partial` for details.
 
 ## Breaking changes
 
@@ -14,11 +14,19 @@
 
 * Fixed a bug in `partial()` where the `cats` argument was never actually passed to `pred_grid()` [(#86)](https://github.com/bgreenwell/pdp/issues/86).
 
+* Fixed a bug in `partial()` for `"gbm"` objects when `recursive = TRUE` that caused factors (including ordered factors) to be coerced to characters. 
+
 ## Miscellaneous
 
-* Switched to **tinytest** framework.
+* Switched to **tinytest** framework and increased test coverage [(#84)](https://github.com/bgreenwell/pdp/issues/84).
 
-* The internal function `get_training_data()`, which is used to (attempt to) extract a fitted models training data whenever `train` is not specified, is (hopefully) a bit more flexible and robust in certain special cases.
+* The internal function `get_training_data()`, which is used to (attempt to) extract a fitted models training data whenever `train` is not specified, is (hopefully) a bit more flexible and robust in certain special cases[(#90)](https://github.com/bgreenwell/pdp/issues/90).
+
+* Minor bug fixes in plotting functions (i.e., `autoplot()` and `plotPartial()`). 
+
+* Training data that inherits from class `"tibble"` is still not fully officially, but shouldn't cause as many errors from this point on.
+
+* Using `autoplot()` with a factor followed by numeric in `pred.var` no longer seems to be an issue [(#79)](https://github.com/bgreenwell/pdp/issues/79).
 
 
 # pdp 0.7.0

@@ -88,7 +88,7 @@ center_ice_curves.ice <- function(object) {
     "yhat.id" = object["yhat.id"]
   )
   names(res)[1L] <- names(object)[1L]
-  class(res) <- c("data.frame", "cice")
+  class(res) <- c("cice", "data.frame")
   res
 }
 

@@ -44,8 +44,19 @@ Suggests:
     vip,
     tinytest,
     covr
-Imports: ggplot2 (>= 0.9.0), grDevices, gridExtra, lattice, magrittr,
-        methods, mgcv, plyr, stats, viridis, utils
+Imports:
+    data.table,
+    ggplot2 (>= 0.9.0), 
+    grDevices, 
+    gridExtra, 
+    lattice, 
+    magrittr,
+    methods, 
+    mgcv, 
+    plyr, 
+    stats, 
+    viridis, 
+    utils
 LazyData: TRUE
 RoxygenNote: 6.1.1
 Encoding: UTF-8

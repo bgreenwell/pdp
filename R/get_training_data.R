@@ -121,6 +121,14 @@ get_training_data.C5.0 <- function(object) {
 }
 
 
+# Package: Cubist --------------------------------------------------------------
+
+#' @keywords internal
+get_training_data.cubist <- function(object) {
+  get_training_data.default(object, arg = "x")
+}
+
+
 # Package: e1071 ---------------------------------------------------------------
 
 #' @keywords internal

@@ -3,6 +3,7 @@
 \name{partial}
 \alias{partial}
 \alias{partial.default}
+\alias{partial.model_fit}
 \title{Partial Dependence Functions}
 \usage{
 partial(object, ...)
@@ -17,7 +18,10 @@ partial(object, ...)
   levelplot = TRUE, contour = FALSE, contour.color = "white",
   palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
   alpha = 1, train, cats = NULL, check.class = TRUE,
-  progress = "none", parallel = FALSE, paropts = NULL, ...)
+  progress = "none", parallel = FALSE, paropts = NULL,
+  in.memory = FALSE, ...)
+
+\method{partial}{model_fit}(object, ...)
 }
 \arguments{
 \item{object}{A fitted model object of appropriate class (e.g., \code{"gbm"},
@@ -179,6 +183,20 @@ parallel using a backend provided by the \code{foreach} package. Default is
 
 \item{paropts}{List containing additional options to be passed onto
 \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.}
+
+\item{in.memory}{Logical indicating whether or not to do all the computations
+in memory. By default, \code{partial()} computes each ICE/partial dependence
+value one by one; this helps reduce memory and computational costs. However,
+this can be slow as it requires making multiple modified copies of the
+training data and an equal number of calls to a (potentially expensive)
+scoring function. When \code{in.memory = TRUE}, these computations are done
+all at once by stacking all the modified copies of the training data and
+using a single call to a scoring function.
+\strong{WARNING:} This feature is only partially supported and
+not well tested. It is ill-advised to use this feature with large data sets
+as it is likely that you will run out of memory. Setting
+\code{in.memory = TRUE} requires storing and scoring a data frame with
+\code{nrow(pred.grid)} x \code{nrow(train)} rows.}
 }
 \value{
 By default, \code{partial} returns an object of class

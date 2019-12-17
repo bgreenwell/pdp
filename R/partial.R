@@ -432,7 +432,7 @@ partial.default <- function(
     # Use Friedman's weighted tree traversal approach
     pd.df <- getParDepGBM(object, pred.var = pred.var, pred.grid = pred.grid,
                           which.class = which.class, prob = prob, ...)
-    class(pd.df) <- c("data.frame", "partial")  # assign class labels
+    class(pd.df) <- c("partial", "data.frame")  # assign class labels
     names(pd.df) <- c(pred.var, "yhat")  # rename columns
     rownames(pd.df) <- NULL  # remove row names
 
@@ -480,7 +480,7 @@ partial.default <- function(
       names(pd.df)[ncol(pd.df)] <- "yhat.id"  # rename "time" column
 
       # Assign class labels
-      class(pd.df) <- c("data.frame", "ice")
+      class(pd.df) <- c("ice", "data.frame")
 
       # c-ICE curves
       if (center) {
@@ -493,7 +493,7 @@ partial.default <- function(
 
     } else {  # single curve
       names(pd.df) <- c(pred.var, "yhat")  # rename columns
-      class(pd.df) <- c("data.frame", "partial")  # assign class labels
+      class(pd.df) <- c("partial", "data.frame")  # assign class labels
     }
     rownames(pd.df) <- NULL  # remove row names
 

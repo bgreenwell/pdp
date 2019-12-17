@@ -8,18 +8,41 @@
 \usage{
 partial(object, ...)
 
-\method{partial}{default}(object, pred.var, pred.grid, pred.fun = NULL,
-  grid.resolution = NULL, ice = FALSE, center = FALSE,
-  approx = FALSE, quantiles = FALSE, probs = 1:9/10,
-  trim.outliers = FALSE, type = c("auto", "regression",
-  "classification"), inv.link = NULL, which.class = 1L, prob = FALSE,
-  recursive = TRUE, plot = FALSE, plot.engine = c("lattice",
-  "ggplot2"), smooth = FALSE, rug = FALSE, chull = FALSE,
-  levelplot = TRUE, contour = FALSE, contour.color = "white",
+\method{partial}{default}(
+  object,
+  pred.var,
+  pred.grid,
+  pred.fun = NULL,
+  grid.resolution = NULL,
+  ice = FALSE,
+  center = FALSE,
+  approx = FALSE,
+  quantiles = FALSE,
+  probs = 1:9/10,
+  trim.outliers = FALSE,
+  type = c("auto", "regression", "classification"),
+  inv.link = NULL,
+  which.class = 1L,
+  prob = FALSE,
+  recursive = TRUE,
+  plot = FALSE,
+  plot.engine = c("lattice", "ggplot2"),
+  smooth = FALSE,
+  rug = FALSE,
+  chull = FALSE,
+  levelplot = TRUE,
+  contour = FALSE,
+  contour.color = "white",
   palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
-  alpha = 1, train, cats = NULL, check.class = TRUE,
-  progress = "none", parallel = FALSE, paropts = NULL,
-  in.memory = FALSE, ...)
+  alpha = 1,
+  train,
+  cats = NULL,
+  check.class = TRUE,
+  progress = "none",
+  parallel = FALSE,
+  paropts = NULL,
+  ...
+)
 
 \method{partial}{model_fit}(object, ...)
 }
@@ -183,20 +206,6 @@ parallel using a backend provided by the \code{foreach} package. Default is
 
 \item{paropts}{List containing additional options to be passed onto
 \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.}
-
-\item{in.memory}{Logical indicating whether or not to do all the computations
-in memory. By default, \code{partial()} computes each ICE/partial dependence
-value one by one; this helps reduce memory and computational costs. However,
-this can be slow as it requires making multiple modified copies of the
-training data and an equal number of calls to a (potentially expensive)
-scoring function. When \code{in.memory = TRUE}, these computations are done
-all at once by stacking all the modified copies of the training data and
-using a single call to a scoring function.
-\strong{WARNING:} This feature is only partially supported and
-not well tested. It is ill-advised to use this feature with large data sets
-as it is likely that you will run out of memory. Setting
-\code{in.memory = TRUE} requires storing and scoring a data frame with
-\code{nrow(pred.grid)} x \code{nrow(train)} rows.}
 }
 \value{
 By default, \code{partial} returns an object of class
@@ -271,7 +280,7 @@ plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
 
 # The autplot function can be used to produce graphics based on ggplot2
 library(ggplot2)
-autoplot(pd, contour = TRUE, legend.title = "Partial\\ndependence")
+autoplot(pd, contour = TRUE, legend.title = "Partial\ndependence")
 
 #
 # Individual conditional expectation (ICE) curves

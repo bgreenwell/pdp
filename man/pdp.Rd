@@ -3,7 +3,6 @@
 \docType{package}
 \name{pdp}
 \alias{pdp}
-\alias{pdp-package}
 \title{pdp: A general framework for constructing partial dependence (i.e., marginal
 effect) plots from various types machine learning models in R.}
 \description{

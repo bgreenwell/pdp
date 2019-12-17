@@ -18,7 +18,7 @@ pred_grid <- function(
   }
 
   # Create a list containing the values of interest for each of the predictor
-  # variables listed in pred.var
+  # variables listed in `pred.var`
   pred.val <- lapply(pred.var, function(x) {
     if (is.factor(train[, x, drop = TRUE])) {
       levels(train[, x, drop = TRUE])

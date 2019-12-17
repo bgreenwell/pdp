@@ -162,20 +162,6 @@
 #' @param paropts List containing additional options to be passed onto
 #' \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.
 #'
-#' @param in.memory Logical indicating whether or not to do all the computations
-#' in memory. By default, \code{partial()} computes each ICE/partial dependence
-#' value one by one; this helps reduce memory and computational costs. However,
-#' this can be slow as it requires making multiple modified copies of the
-#' training data and an equal number of calls to a (potentially expensive)
-#' scoring function. When \code{in.memory = TRUE}, these computations are done
-#' all at once by stacking all the modified copies of the training data and
-#' using a single call to a scoring function.
-#' \strong{WARNING:} This feature is only partially supported and
-#' not well tested. It is ill-advised to use this feature with large data sets
-#' as it is likely that you will run out of memory. Setting
-#' \code{in.memory = TRUE} requires storing and scoring a data frame with
-#' \code{nrow(pred.grid)} x \code{nrow(train)} rows.
-#'
 #' @param ... Additional optional arguments to be passed onto
 #' \code{\link[stats]{predict}}.
 #'
@@ -306,18 +292,8 @@ partial.default <- function(
   contour = FALSE, contour.color = "white",
   palette = c("viridis", "magma", "inferno", "plasma", "cividis"), alpha = 1,
   train, cats = NULL, check.class = TRUE, progress = "none", parallel = FALSE,
-  paropts = NULL, in.memory = FALSE, ...
+  paropts = NULL, ...
 ) {
-
-  # Print warning message for in-memory computation
-  if (isTRUE(in.memory)) {
-    if (!requireNamespace("data.table", quietly = TRUE)) {
-      stop("Package \"data.table\" needed for this function to work. ",
-           "Please install it.", call. = FALSE)
-    }
-    warning("Setting `in.memory = TRUE` is experimental. Use at your own ",
-            "risk!", call. = FALSE)
-  }
 
   # Check prediction function if given
   if (!is.null(pred.fun)) {
@@ -471,7 +447,7 @@ partial.default <- function(
       getParDepReg(object, pred.var = pred.var, pred.grid = pred.grid,
                    inv.link = inv.link, ice = ice, train = train,
                    progress = progress, parallel = parallel,
-                   paropts = paropts, in.memory = in.memory, ...)
+                   paropts = paropts, ...)
     } else if (type == "classification") {
       getParDepCls(object, pred.var = pred.var, pred.grid = pred.grid,
                    which.class = which.class, prob = prob, ice = ice,

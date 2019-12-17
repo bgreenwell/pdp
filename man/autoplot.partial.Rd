@@ -6,21 +6,58 @@
 \alias{autoplot.cice}
 \title{Plotting Partial Dependence Functions}
 \usage{
-\method{autoplot}{partial}(object, center = FALSE, plot.pdp = TRUE,
-  pdp.color = "red", pdp.size = 1, pdp.linetype = 1, rug = FALSE,
-  smooth = FALSE, smooth.method = "auto", smooth.formula = y ~ x,
-  smooth.span = 0.75, smooth.method.args = list(), contour = FALSE,
-  contour.color = "white", palette = c("viridis", "magma", "inferno",
-  "plasma", "cividis"), train = NULL, xlab = NULL, ylab = NULL,
-  main = NULL, legend.title = "yhat", ...)
+\method{autoplot}{partial}(
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.color = "red",
+  pdp.size = 1,
+  pdp.linetype = 1,
+  rug = FALSE,
+  smooth = FALSE,
+  smooth.method = "auto",
+  smooth.formula = y ~ x,
+  smooth.span = 0.75,
+  smooth.method.args = list(),
+  contour = FALSE,
+  contour.color = "white",
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  train = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  main = NULL,
+  legend.title = "yhat",
+  ...
+)
 
-\method{autoplot}{ice}(object, center = FALSE, plot.pdp = TRUE,
-  pdp.color = "red", pdp.size = 1, pdp.linetype = 1, rug = FALSE,
-  train = NULL, xlab = NULL, ylab = NULL, main = NULL, ...)
+\method{autoplot}{ice}(
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.color = "red",
+  pdp.size = 1,
+  pdp.linetype = 1,
+  rug = FALSE,
+  train = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  main = NULL,
+  ...
+)
 
-\method{autoplot}{cice}(object, plot.pdp = TRUE, pdp.color = "red",
-  pdp.size = 1, pdp.linetype = 1, rug = FALSE, train = NULL,
-  xlab = NULL, ylab = NULL, main = NULL, ...)
+\method{autoplot}{cice}(
+  object,
+  plot.pdp = TRUE,
+  pdp.color = "red",
+  pdp.size = 1,
+  pdp.linetype = 1,
+  rug = FALSE,
+  train = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  main = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{An object that inherits from the \code{"partial"} class.}

@@ -9,20 +9,52 @@
 \usage{
 plotPartial(object, ...)
 
-\method{plotPartial}{ice}(object, center = FALSE, plot.pdp = TRUE,
-  pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, rug = FALSE,
-  train = NULL, alpha = 1, ...)
+\method{plotPartial}{ice}(
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  rug = FALSE,
+  train = NULL,
+  alpha = 1,
+  ...
+)
 
-\method{plotPartial}{cice}(object, plot.pdp = TRUE, pdp.col = "red2",
-  pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1,
-  ...)
+\method{plotPartial}{cice}(
+  object,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  rug = FALSE,
+  train = NULL,
+  alpha = 1,
+  ...
+)
 
-\method{plotPartial}{partial}(object, center = FALSE, plot.pdp = TRUE,
-  pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1, smooth = FALSE,
-  rug = FALSE, chull = FALSE, levelplot = TRUE, contour = FALSE,
-  contour.color = "white", col.regions = NULL, palette = c("viridis",
-  "magma", "inferno", "plasma", "cividis"), alpha = 1, number = 4,
-  overlap = 0.1, train = NULL, ...)
+\method{plotPartial}{partial}(
+  object,
+  center = FALSE,
+  plot.pdp = TRUE,
+  pdp.col = "red2",
+  pdp.lwd = 2,
+  pdp.lty = 1,
+  smooth = FALSE,
+  rug = FALSE,
+  chull = FALSE,
+  levelplot = TRUE,
+  contour = FALSE,
+  contour.color = "white",
+  col.regions = NULL,
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  alpha = 1,
+  number = 4,
+  overlap = 0.1,
+  train = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{An object that inherits from the \code{"partial"} class.}

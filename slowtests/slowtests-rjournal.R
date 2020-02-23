@@ -132,7 +132,7 @@ cl <- makeCluster(4)  # use 4 cores
 registerDoParallel(cl)
 partial(ozone.mars, pred.var = c("wind", "temp", "dpg"), plot = TRUE,
         chull = TRUE, parallel = TRUE, paropts = list(.packages = "earth"))  # Figure 6
-lattice::trellis.focus("legend", side = "right", clipp.off = TRUE, 
+lattice::trellis.focus("legend", side = "right", clipp.off = TRUE,
                        highlight = FALSE)
 grid::grid.text("ozone", 0.2, 1.05, hjust = 0.5, vjust = 1)
 lattice::trellis.unfocus()
@@ -195,7 +195,7 @@ grid.arrange(
 grid.arrange(
   partial(iris.svm, pred.var = "Petal.Width", prob = TRUE, plot = TRUE),
   partial(iris.svm, pred.var = "Petal.Length", prob = TRUE, plot = TRUE),
-  partial(iris.svm, pred.var = c("Petal.Width", "Petal.Length"), prob = TRUE, 
+  partial(iris.svm, pred.var = c("Petal.Width", "Petal.Length"), prob = TRUE,
           plot = TRUE),
   ncol = 3
 )
@@ -231,7 +231,7 @@ plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 # Post-process rm.ice to obtain c-ICE curves
 rm.ice <- rm.ice %>%
   dplyr::group_by(yhat.id) %>%
-  dplyr::mutate(yhat.centered = yhat - first(yhat))
+  dplyr::mutate(yhat.centered = yhat - dplyr::first(yhat))
 
 # ICE curves with PDP
 p1 <- ggplot(rm.ice, aes(rm, yhat)) +
@@ -254,7 +254,7 @@ grid.arrange(p1, p2, ncol = 2)
 # p3 <- autoplot(pd.ice, alpha = 0.3)      # ICE curves: ggplot2 version
 # p4 <- autoplot(pd.cice, alpha = 0.3)     # c-ICE curves: ggplot2 version
 # grid.arrange(p1, p2, p3, p4, ncol = 2)
-# 
+#
 # # Try some other things
 # grid.arrange(
 #   autoplot(pd.ice, center = TRUE, alpha = 0.3),
@@ -308,7 +308,7 @@ grid.arrange(pdp.lstat, pdp.rm, pdp.lstat.rm, ncol = 3)
 # Use use xgboost function directly
 set.seed(203)
 boston.xgb <- xgboost(data = data.matrix(subset(boston, select = -cmedv)),
-                      label = boston$cmedv, objective = "reg:linear",
+                      label = boston$cmedv, objective = "reg:squarederror",
                       nrounds = 100, max_depth = 5, eta = 0.3, gamma = 0,
                       colsample_bytree = 0.8, min_child_weight = 1,
                       subsample = 0.9444444, save_period = NULL)

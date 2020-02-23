@@ -1,6 +1,94 @@
 #' @keywords internal
+get_feature_effects <- function(
+  object,
+  pred.var,
+  pred.grid,
+  pred.fun,
+  inv.link,
+  ice,
+  task,
+  which.class,
+  logit,
+  train,
+  progress,
+  parallel,
+  paropts,
+  ...
+) {
+
+  # Compute feature effects
+  if (is.null(pred.fun)) {
+
+    # Get predictions
+    plyr::adply(
+      .data = pred.grid,
+      .margins = 1,
+      .progress = progress,
+      .parallel = parallel,
+      .paropts = paropts,
+      .id = NULL,
+      .fun = function(x) {
+        temp <- train
+        temp[, pred.var] <- x
+        pred <- if (task == "regression") {
+          get_predictions(object, newdata = temp, inv.link = inv.link, ...)
+        } else {
+          get_probs(object, newdata = temp, which.class = which.class,
+                    logit = logit, ...)
+        }
+        if (isTRUE(ice)) {
+          if (is.null(names(pred))) {
+            stats::setNames(pred, paste0("yhat.", 1L:length(pred)))
+          } else {
+            stats::setNames(pred, paste0("yhat.", names(pred)))
+          }
+        } else {  # average predictions
+          mean(pred, na.rm = TRUE)
+        }
+      }
+    )
+
+  } else {
+
+    # Get predictions (using user-supplied prediction wrapper)
+    plyr::adply(
+      .data = pred.grid,
+      .margins = 1,
+      .progress = progress,
+      .parallel = parallel,
+      .paropts = paropts,
+      .id = NULL,
+      .fun = function(x) {
+        temp <- train
+        temp[, pred.var] <- x
+        out <- pred.fun(object, newdata = temp)
+        if (length(out) == 1) {
+          stats::setNames(out, "yhat")
+        } else {
+          if (is.null(names(out))) {
+            stats::setNames(out, paste0("yhat.", 1L:length(out)))
+          } else {
+            stats::setNames(out, paste0("yhat.", names(out)))
+          }
+        }
+      }
+    )
+
+  }
+
+}
+
+
+#' @keywords internal
 #' @useDynLib pdp, .registration = TRUE
-getParDepGBM <- function(object, pred.var, pred.grid, which.class, prob, ...) {
+get_feature_effects_gbm <- function(
+  object,
+  pred.var,
+  pred.grid,
+  which.class,
+  prob,
+  ...
+) {
 
   # Extract number of trees
   dots <- list(...)

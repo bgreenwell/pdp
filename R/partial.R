@@ -414,7 +414,8 @@ partial.default <- function(
     # Stop and notify user that pred.fun cannot be used when recursive = TRUE
     # with "gbm" objects
     if (!is.null(pred.fun)) {
-      stop("Option `pred.fun` cannot currently be used when `recursive = TRUE`.")
+      stop("Option `pred.fun` cannot currently be used when ",
+           "`recursive = TRUE`.")
     }
 
     # Notify user that progress bars are not avaiable for "gbm" objects when
@@ -426,12 +427,19 @@ partial.default <- function(
     # Stop and notify user that parallel functionality is currently not
     # available for "gbm" objects when recursive = TRUE
     if (parallel) {
-      stop("Option `parallel` cannot currently be used when `recursive = TRUE`.")
+      stop("Option `parallel` cannot currently be used when ",
+           "`recursive = TRUE`.")
     }
 
     # Use Friedman's weighted tree traversal approach
-    pd.df <- getParDepGBM(object, pred.var = pred.var, pred.grid = pred.grid,
-                          which.class = which.class, prob = prob, ...)
+    pd.df <- get_feature_effects_gbm(
+      object = object,
+      pred.var = pred.var,
+      pred.grid = pred.grid,
+      which.class = which.class,
+      prob = prob,
+      ...
+    )
     class(pd.df) <- c("partial", "data.frame")  # assign class labels
     names(pd.df) <- c(pred.var, "yhat")  # rename columns
     rownames(pd.df) <- NULL  # remove row names
@@ -439,23 +447,27 @@ partial.default <- function(
   } else {
 
     # Use brute force approach
-    pd.df <- if (!is.null(pred.fun)) {  # user-supplied prediction function
-      getParDepMan(object, pred.var = pred.var, pred.grid = pred.grid,
-                   pred.fun = pred.fun, train = train, progress = progress,
-                   parallel = parallel, paropts = paropts, ...)
-    } else if (type == "regression") {
-      getParDepReg(object, pred.var = pred.var, pred.grid = pred.grid,
-                   inv.link = inv.link, ice = ice, train = train,
-                   progress = progress, parallel = parallel,
-                   paropts = paropts, ...)
-    } else if (type == "classification") {
-      getParDepCls(object, pred.var = pred.var, pred.grid = pred.grid,
-                   which.class = which.class, prob = prob, ice = ice,
-                   train = train, progress = progress, parallel = parallel,
-                   paropts = paropts, ...)
+    pd.df <- if (type %in% c("regression", "classification") ||
+                 !is.null(pred.fun)) {
+      get_feature_effects(
+        object = object,
+        pred.var = pred.var,
+        pred.grid = pred.grid,
+        pred.fun = pred.fun,
+        inv.link = inv.link,
+        ice = ice,
+        task = type,
+        which.class = which.class,
+        logit = !prob,
+        train = train,
+        progress = progress,
+        parallel = parallel,
+        paropts = paropts,
+        ...
+      )
     } else {
-      stop(paste("Partial dependence values are currently only available",
-                 "for classification and regression problems."))
+      stop("Partial dependence values are currently only available for ",
+           "classification and regression problems.", call. = FALSE)
     }
 
     # When train inherits from class "matrix" or "dgCMatrix", pd.df will only
@@ -469,11 +481,13 @@ partial.default <- function(
     }
 
     # Construct a "tidy" data frame from the results
-    if (ice || any(grepl("^yhat\\.", names(pd.df)))) {  # multiple curves
+    if (isTRUE(ice) || any(grepl("^yhat\\.", names(pd.df)))) {  # multiple curves
 
       # Convert from wide to long format
       pd.df <- stats::reshape(
-        pd.df, varying = (length(pred.var) + 1):ncol(pd.df), direction = "long"
+        data = pd.df,
+        varying = (length(pred.var) + 1):ncol(pd.df),
+        direction = "long"#, v.names = "yhat"
       )
       pd.df$id <- NULL  # remove id column
       pd.df <- pd.df[, c(pred.var, "yhat", "time")]  # rearrange columns

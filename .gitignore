@@ -1,6 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+.DS_Store
 slowtests/*.html
 src/*.o
 src/*.so

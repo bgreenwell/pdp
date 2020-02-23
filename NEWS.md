@@ -4,7 +4,7 @@
 
 * New (experimental) function `exemplar()` for constructing an "exemplar" record from a data frame or matrix-like object. See `?pdp::exemplar` for details [(#91)](https://github.com/bgreenwell/pdp/issues/91).
 
-* `partial()` gained a new (experimental) feature via the new `approx` argument. If `approx = TRUE`, then `partial()` will will compute predictions across the predictors specified in `pred.var` while holding the other predictors constant (a "poor man's partial dependence" function as Stephen Milborrow, the author of [plotmo](https://cran.r-project.org/package=plotmo), puts it). See `?pdp::partial` for details.
+* `partial()` gained a new (experimental) feature via the new `approx` argument. If `approx = TRUE`, then `partial()` will compute predictions across the predictors specified in `pred.var` while holding the other predictors constant (a "poor man's partial dependence" function as Stephen Milborrow, the author of [plotmo](https://cran.r-project.org/package=plotmo), puts it). See `?pdp::partial` for details.
 
 ## Breaking changes
 
@@ -12,11 +12,17 @@
 
 ## Minor changes
 
+* `"partial"` is now a proper subclass of `"data.frame"` [(#104)](https://github.com/bgreenwell/pdp/issues/104); thanks to @RoelVerbelen for pointing this out.
+
+* Fixed a bug where `rug = TRUE` would not work properly for **xgboost** models whenever calling `partial()` with `plot = TRUE`.
+
 * Fixed a bug in `partial()` where the `cats` argument was never actually passed to `pred_grid()` [(#86)](https://github.com/bgreenwell/pdp/issues/86).
 
 * Fixed a bug in `partial()` for `"gbm"` objects when `recursive = TRUE` that caused factors (including ordered factors) to be coerced to characters. 
 
 ## Miscellaneous
+
+* Refactored code for easier maintenance.
 
 * Switched to **tinytest** framework and increased test coverage [(#84)](https://github.com/bgreenwell/pdp/issues/84).
 
@@ -24,7 +30,7 @@
 
 * Minor bug fixes in plotting functions (i.e., `autoplot()` and `plotPartial()`). 
 
-* Training data that inherits from class `"tibble"` is still not fully officially, but shouldn't cause as many errors from this point on.
+* Training data that inherits from class `"tibble"` is still not officially supported, but shouldn't cause as many errors from this point on.
 
 * Using `autoplot()` with a factor followed by numeric in `pred.var` no longer seems to be an issue [(#79)](https://github.com/bgreenwell/pdp/issues/79).
 

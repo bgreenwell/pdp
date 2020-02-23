@@ -255,11 +255,11 @@ ggplot_ice_curves <- function(
     }
 
     # Add rug plot to x-axis
-    if (rug) {
+    if (isTRUE(rug)) {
       if (is.null(train)) {
         stop("The training data must be supplied for rug display.")
       } else {
-        x.name <- which(names(train) == names(object)[[1L]])
+        x.name <- which(colnames(train) == names(object)[[1L]])
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
@@ -311,11 +311,11 @@ ggplot_one_predictor_pdp <- function(
       geom_line(...)
 
     # Add rug plot to x-axis
-    if (rug) {
+    if (isTRUE(rug)) {
       if (is.null(train)) {
         stop("The training data must be supplied for rug display.")
       } else {
-        x.name <- which(names(train) == names(object)[[1L]])
+        x.name <- which(colnames(train) == names(object)[[1L]])
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
@@ -378,11 +378,11 @@ ggplot_two_predictor_pdp <- function(
       facet_wrap(~ object[[1L]])
 
     # Add rug plot to the x-axis
-    if (rug) {
+    if (isTRUE(rug)) {
       if (is.null(train)) {
         stop("The training data must be supplied for rug display.")
       } else {
-        x.name <- which(names(train) == names(object)[[2L]])
+        x.name <- which(colnames(train) == names(object)[[2L]])
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
@@ -407,11 +407,11 @@ ggplot_two_predictor_pdp <- function(
       facet_wrap(~ object[[2L]])
 
     # Add rug plot to x-axis
-    if (rug) {
+    if (isTRUE(rug)) {
       if (is.null(train)) {
         stop("The training data must be supplied for rug display.")
       } else {
-        x.name <- which(names(train) == names(object)[[1L]])
+        x.name <- which(colnames(train) == names(object)[[1L]])
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))

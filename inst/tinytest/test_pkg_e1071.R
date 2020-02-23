@@ -1,3 +1,13 @@
+# Exits
+if (!requireNamespace("e1071", quietly = TRUE)) {
+  exit_file("Package e1071 missing")
+}
+
+# # Load required packages
+# suppressMessages({
+#   library(e1071)
+# })
+
 # Load Friedman benchmark data
 friedman1 <- readRDS("friedman.rds")$friedman1
 friedman2 <- readRDS("friedman.rds")$friedman2

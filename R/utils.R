@@ -172,9 +172,40 @@ train_chull <- function(pred.var, pred.grid, train) {
     Y <- stats::na.omit(data.matrix(pred.grid[, 1L:2L]))
     hpts <- grDevices::chull(X)
     hpts <- c(hpts, hpts[1L])
-    keep <- mgcv::in.out(X[hpts, ], Y)
+    keep <- in.out(X[hpts, ], Y)  # moved from mgcv::in.out() to internal version
     pred.grid[keep, ]
   } else {
     pred.grid
   }
+}
+
+
+#' @keywords internal
+in.out <- function(bnd, x) {
+  #
+  # Taken from mgcv:::in.out
+  #
+  ## tests whether point defined by each row of x is inside
+  ## or outside boundary defined by bnd. bnd my be made up of multiple
+  ## nested loops.
+  if (!is.matrix(x)) x <- matrix(x, 1, 2)
+  if (is.list(bnd)) { ## convert list of lists to matrix form
+    b1 <- bnd[[1]][[1]]
+    b2 <- bnd[[1]][[2]]
+    if (length(bnd) > 1) for (i in 2:length(bnd)) {
+      b1 <- c(b1, NA, bnd[[i]][[1]])
+      b2 <- c(b2, NA, bnd[[i]][[2]])
+    }
+    bnd <- cbind(b1,b2)
+  }
+  ## replace NA segment separators with a numeric code
+  lowLim <- min(bnd, na.rm = TRUE) - mean(abs(bnd), na.rm = TRUE)
+  ind <- is.na(rowSums(bnd))
+  bnd[ind, ] <- lowLim
+  n <- nrow(bnd)
+  um <-.C(in_out, bx = as.double(bnd[, 1]), by = as.double(bnd[, 2]),
+          break.code = as.double(lowLim), x = as.double(x[, 1]),
+          y = as.double(x[, 2]), inside = as.integer(x[, 2] * 0),
+          nb = as.integer(n), n = as.integer(nrow(x)))
+  as.logical(um$inside)
 }

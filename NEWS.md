@@ -12,6 +12,8 @@
 
 ## Minor changes
 
+* Removed dependency on [mgcv](https://cran.r-project.org/package=mgcv) by switching to an internal C implementation of [mgcv](https://cran.r-project.org/package=mgcv)'s `in.out()` function [(#107)](https://github.com/bgreenwell/pdp/issues/107). (This is used behind the scenes whenever `partial()` is called with `chull = TRUE`.)
+
 * `"partial"` is now a proper subclass of `"data.frame"` [(#104)](https://github.com/bgreenwell/pdp/issues/104); thanks to @RoelVerbelen for pointing this out.
 
 * Fixed a bug where `rug = TRUE` would not work properly for **xgboost** models whenever calling `partial()` with `plot = TRUE`.

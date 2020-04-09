@@ -4,7 +4,8 @@
 \name{boston}
 \alias{boston}
 \title{Boston Housing Data}
-\format{A data frame with 506 rows and 16 variables.
+\format{
+A data frame with 506 rows and 16 variables.
 \itemize{
   \item \code{lon} Longitude of census tract.
   \item \code{lat} Latitude of census tract.
@@ -22,7 +23,8 @@
   \item \code{ptratio} Pupil-teacher ratio by town.
   \item \code{b} $1000(B - 0.63)^2$ where B is the proportion of blacks by town.
   \item \code{lstat} Percentage of lower status of the population.
-}}
+}
+}
 \usage{
 data(boston)
 }

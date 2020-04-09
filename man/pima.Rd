@@ -4,7 +4,8 @@
 \name{pima}
 \alias{pima}
 \title{Pima Indians Diabetes Data}
-\format{A data frame with 768 observations on 9 variables.
+\format{
+A data frame with 768 observations on 9 variables.
 \itemize{
   \item \code{pregnant} Number of times pregnant.
   \item \code{glucose} Plasma glucose concentration (glucose tolerance test).
@@ -15,7 +16,8 @@
   \item \code{pedigree} Diabetes pedigree function.
   \item \code{age} Age (years).
   \item \code{diabetes} Factor indicating the diabetes test result (\code{neg}/\code{pos}).
-}}
+}
+}
 \usage{
 data(pima)
 }

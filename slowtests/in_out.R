@@ -1,0 +1,12 @@
+set.seed(2008)
+X1 <- runif(100, min = 0, max = 1)
+X2 <- 1 + 2*X1 + rnorm(100, sd = 0.3)
+X <- cbind(X1, X2)
+plot(X)
+g <- expand.grid(X1 = X1, X2 = X2)
+hpts <- grDevices::chull(X)
+hpts <- c(hpts, hpts[1L])
+keep <- pdp:::in.out(X[hpts, ], data.matrix(g))
+
+plot(g)
+points(g[keep, ], pch = 19, col = "red")

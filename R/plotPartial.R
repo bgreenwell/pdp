@@ -44,12 +44,14 @@
 #'
 #' @param col.regions Color vector to be used for trivariate displays. If
 #' \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-#' 'viridis' color map provided by the \code{viridis} package. See
-#' \code{\link[viridis]{viridis}} for details.
+#' 'viridis' color map provided by the \code{viridisLite} package. See
+#' \code{\link[viridisLite]{viridis}} for details.
 #'
-#' @param palette Character string indicating the colormap option to use. Five
-#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
-#' and "cividis".
+#' @param palette Character string indicating the 'viridis' colormap option to
+#' use. Five options are available: \code{"magma"} (or \code{"A"}),
+#' \code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
+#' \code{"viridis"} (or \code{"D"}, the default option), and
+#' \code{"cividis"} (or \code{"E"}).
 #'
 #' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
 #' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
@@ -158,7 +160,8 @@ plotPartial.partial <- function(
   object, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
   pdp.lty = 1, smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white", col.regions = NULL,
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis",
+              "D",       "A",     "B",       "C",      "E"),
   alpha = 1, number = 4, overlap = 0.1, train = NULL, ...
 ) {
 
@@ -360,8 +363,9 @@ plot_two_predictor_pdp <- function(
 
       # Define color regions
       if (is.null(col.regions)) {
-        col.regions <- viridis::viridis_pal(option = palette,
-                                            alpha = alpha)(100)
+        col.regions <- viridisLite::viridis(100, alpha = alpha, option = palette)
+        # col.regions <- viridis::viridis_pal(option = palette,
+        #                                     alpha = alpha)(100)
       }
 
       # Draw a three-dimensional surface
@@ -491,8 +495,9 @@ plot_three_predictor_pdp <- function(
 
     # Define color regions
     if (is.null(col.regions)) {
-      col.regions <- viridis::viridis_pal(option = palette,
-                                          alpha = alpha)(100)
+      col.regions <- viridisLite::viridis(100, alpha = alpha, option = palette)
+      # col.regions <- viridis::viridis_pal(option = palette,
+      #                                     alpha = alpha)(100)
     }
 
     # Draw a three-dimensional surface

@@ -48,7 +48,8 @@ plotPartial(object, ...)
   contour = FALSE,
   contour.color = "white",
   col.regions = NULL,
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis", "D", "A", "B", "C",
+    "E"),
   alpha = 1,
   number = 4,
   overlap = 0.1,
@@ -108,12 +109,14 @@ contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
 \item{col.regions}{Color vector to be used for trivariate displays. If
 \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-'viridis' color map provided by the \code{viridis} package. See
-\code{\link[viridis]{viridis}} for details.}
+'viridis' color map provided by the \code{viridisLite} package. See
+\code{\link[viridisLite]{viridis}} for details.}
 
-\item{palette}{Character string indicating the colormap option to use. Five
-options are available: "viridis" (the default), "magma", "inferno", "plasma",
-and "cividis".}
+\item{palette}{Character string indicating the 'viridis' colormap option to
+use. Five options are available: \code{"magma"} (or \code{"A"}),
+\code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
+\code{"viridis"} (or \code{"D"}, the default option), and
+\code{"cividis"} (or \code{"E"}).}
 
 \item{number}{Integer specifying the number of conditional intervals to use
 for the continuous panel variables. See \code{\link[graphics]{co.intervals}}

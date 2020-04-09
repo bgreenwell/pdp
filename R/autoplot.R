@@ -1,3 +1,5 @@
+.data <- NULL
+
 #' Plotting Partial Dependence Functions
 #'
 #' Plots partial dependence functions (i.e., marginal effects) using
@@ -48,9 +50,11 @@
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
-#' @param palette Character string indicating the colormap option to use. Five
-#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
-#' and "cividis".
+#' @param palette Character string indicating the 'viridis' colormap option to
+#' use. Five options are available: \code{"magma"} (or \code{"A"}),
+#' \code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
+#' \code{"viridis"} (or \code{"D"}, the default option), and
+#' \code{"cividis"} (or \code{"E"}).
 #'
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
@@ -73,7 +77,9 @@
 #'
 #' @importFrom ggplot2 geom_point geom_rug geom_smooth geom_tile ggplot ggtitle
 #'
-#' @importFrom ggplot2 scale_fill_distiller stat_summary theme_bw xlab ylab
+#' @importFrom ggplot2 scale_fill_distiller scale_fill_viridis_c stat_summary
+#'
+#' @importFrom ggplot2 theme_bw xlab ylab
 #'
 #' @rdname autoplot.partial
 #'
@@ -117,8 +123,9 @@ autoplot.partial <- function(
   pdp.linetype = 1, rug = FALSE, smooth = FALSE, smooth.method = "auto",
   smooth.formula = y ~ x, smooth.span = 0.75, smooth.method.args = list(),
   contour = FALSE, contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"), train = NULL,
-  xlab = NULL, ylab = NULL, main = NULL, legend.title = "yhat", ...
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis",
+              "D",       "A",     "B",       "C",      "E"),
+  train = NULL, xlab = NULL, ylab = NULL, main = NULL, legend.title = "yhat", ...
 ) {
 
   # Determine if object contains an ID column (i.e., multiple curves)
@@ -228,14 +235,14 @@ ggplot_ice_curves <- function(
 
     # Draw scatterplots
     p <- ggplot(object,
-                aes(x = object[[1L]], y = object[["yhat"]], group = 1)) +
-      geom_line(aes(group = object[["yhat.id"]]), ...) +
-      geom_point(aes(group = object[["yhat.id"]]), alpha = 1)
+                aes(.data[[names(object)[1L]]], .data[["yhat"]], group = 1)) +
+      geom_line(aes(group = .data[["yhat.id"]]), ...) +
+      geom_point(aes(group = .data[["yhat.id"]]), alpha = 1)
 
     # Should the PDP be displayed too?
     if (plot.pdp) {
       p <- p + stat_summary(
-        fun.y = mean, geom = "line", col = pdp.color, size = pdp.size,
+        fun = mean, geom = "line", col = pdp.color, size = pdp.size,
         linetype = pdp.linetype
       )
     }
@@ -243,13 +250,13 @@ ggplot_ice_curves <- function(
   } else {
 
     # Draw lineplots
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
-      geom_line(aes(group = object[["yhat.id"]]), ...)
+    p <- ggplot(object, aes(.data[[names(object)[1L]]], .data[["yhat"]])) +
+      geom_line(aes(group = .data[["yhat.id"]]), ...)
 
     # Should the PDP be displayed too?
     if (plot.pdp) {
       p <- p + stat_summary(
-        fun.y = mean, geom = "line", col = pdp.color, size = pdp.size,
+        fun = mean, geom = "line", col = pdp.color, size = pdp.size,
         linetype = pdp.linetype
       )
     }
@@ -263,8 +270,8 @@ ggplot_ice_curves <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
-                          inherit.aes = FALSE)
+        p <- p + geom_rug(data = x.rug, aes(.data[[names(x.rug)[1L]]]),
+                          sides = "b", inherit.aes = FALSE)
       }
     }
 
@@ -301,13 +308,13 @@ ggplot_one_predictor_pdp <- function(
   if (is.factor(object[[1L]])) {
 
     # Draw a scatterplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes(.data[[names(object)[1L]]], .data[["yhat"]])) +
       geom_point(...)
 
   } else {
 
     # Draw a lineplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes(.data[[names(object)[1L]]], .data[["yhat"]])) +
       geom_line(...)
 
     # Add rug plot to x-axis
@@ -319,8 +326,8 @@ ggplot_one_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
-                          inherit.aes = FALSE)
+        p <- p + geom_rug(data = x.rug, aes(.data[[names(x.rug)[1L]]]),
+                                            sides = "b", inherit.aes = FALSE)
       }
     }
 
@@ -366,16 +373,16 @@ ggplot_two_predictor_pdp <- function(
   if (is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Draw a faceted scatterplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes(.data[[names(object)[1L]]], .data[["yhat"]])) +
       geom_point(...) +
-      facet_wrap(~ object[[2L]])
+      facet_wrap(~ .data[[names(object)[2L]]])
 
   } else if (is.factor(object[[1L]]) && !is.factor(object[[2L]])) {
 
     # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[2L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes(.data[[names(object)[2L]]], .data[["yhat"]])) +
       geom_line(...) +
-      facet_wrap(~ object[[1L]])
+      facet_wrap(~ .data[[names(object)[1L]]])
 
     # Add rug plot to the x-axis
     if (isTRUE(rug)) {
@@ -386,8 +393,8 @@ ggplot_two_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
-                          inherit.aes = FALSE)
+        p <- p + geom_rug(data = x.rug, aes(.data[[names(x.rug)[1L]]]),
+                                            sides = "b", inherit.aes = FALSE)
       }
     }
 
@@ -402,9 +409,9 @@ ggplot_two_predictor_pdp <- function(
   } else if (!is.factor(object[[1L]]) && is.factor(object[[2L]])) {
 
     # Draw a faceted lineplot
-    p <- ggplot(object, aes(x = object[[1L]], y = object[["yhat"]])) +
+    p <- ggplot(object, aes(.data[[names(object)[1L]]], .data[["yhat"]])) +
       geom_line(...) +
-      facet_wrap(~ object[[2L]])
+      facet_wrap(~ .data[[names(object)[2L]]])
 
     # Add rug plot to x-axis
     if (isTRUE(rug)) {
@@ -415,8 +422,8 @@ ggplot_two_predictor_pdp <- function(
         x.rug <- data.frame(as.numeric(
           stats::quantile(train[, x.name, drop = TRUE], probs = 0:10/10,
                           na.rm = TRUE)))
-        p <- p + geom_rug(data = x.rug, aes(x = x.rug[[1L]]), sides = "b",
-                          inherit.aes = FALSE)
+        p <- p + geom_rug(data = x.rug, aes(.data[[names(x.rug)[1L]]]),
+                                            sides = "b", inherit.aes = FALSE)
       }
     }
 
@@ -431,11 +438,10 @@ ggplot_two_predictor_pdp <- function(
   } else {
 
     # Draw a false color level plot
-    p <- ggplot(
-      object, aes(x = object[[1L]], y = object[[2L]],
-                  z = object[["yhat"]], fill = object[["yhat"]])
-    ) +
-      geom_tile()
+    p <- ggplot(object,
+                aes(.data[[names(object)[1L]]], .data[[names(object)[2L]]],
+                    z = .data[["yhat"]], fill = .data[["yhat"]])
+    ) + geom_tile()
 
     # Add contour lines
     if (contour) {
@@ -445,7 +451,8 @@ ggplot_two_predictor_pdp <- function(
     # Add legend title and theme
     # palette <- match.arg(palette)
     p <- p +
-      viridis::scale_fill_viridis(name = legend.title, option = palette, ...) +
+      scale_fill_viridis_c(name = legend.title, option = palette, ...) +
+      # viridis::scale_fill_viridis(name = legend.title, option = palette, ...) +
       theme_bw()
 
   }

@@ -121,9 +121,11 @@
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
-#' @param palette Character string indicating the colormap option to use. Five
-#' options are available: "viridis" (the default), "magma", "inferno", "plasma",
-#' and "cividis".
+#' @param palette Character string indicating the 'viridis' colormap option to
+#' use. Five options are available: \code{"magma"} (or \code{"A"}),
+#' \code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
+#' \code{"viridis"} (or \code{"D"}, the default option), and
+#' \code{"cividis"} (or \code{"E"}).
 #'
 #' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
 #' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
@@ -290,9 +292,10 @@ partial.default <- function(
   plot = FALSE, plot.engine = c("lattice", "ggplot2"),
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"), alpha = 1,
-  train, cats = NULL, check.class = TRUE, progress = "none", parallel = FALSE,
-  paropts = NULL, ...
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis",
+              "D",       "A",     "B",       "C",      "E"),
+  alpha = 1, train, cats = NULL, check.class = TRUE, progress = "none",
+  parallel = FALSE, paropts = NULL, ...
 ) {
 
   # Check prediction function if given
@@ -529,7 +532,7 @@ partial.default <- function(
         )
       }
     } else {
-      # palette = match.arg(palette)
+      palette <- match.arg(palette)
       if (plot.engine == "ggplot2") {
         autoplot(
           object = pd.df, smooth = smooth, rug = rug, train = train,

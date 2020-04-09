@@ -285,3 +285,8 @@ pdp_lattice_num_cat <- partial(
 expect_true(inherits(pdp_lattice_cat_cat, what = "trellis"))
 expect_true(inherits(pdp_lattice_cat_num, what = "trellis"))
 expect_true(inherits(pdp_lattice_num_cat, what = "trellis"))
+
+# Display plots
+grid.arrange(pdp_ggplot2_cat_cat, pdp_ggplot2_cat_num, pdp_ggplot2_num_cat,
+             pdp_lattice_cat_cat, pdp_lattice_cat_num, pdp_lattice_num_cat,
+             nrow = 2)

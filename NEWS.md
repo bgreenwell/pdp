@@ -12,6 +12,8 @@
 
 ## Minor changes
 
+* Switched dependency on [viridis](https://cran.r-project.org/package=viridis) to [viridisLite](https://cran.r-project.org/package=viridisLite); consequently, to keep the 'viridis' color palettes in `autoplot()`, this required bumping the [ggplot2](https://cran.r-project.org/package=ggplot2) dependency to version 3.0.0, as well as some other code tweaks under the hood [(#106)](https://github.com/bgreenwell/pdp/issues/106). 
+
 * Removed dependency on [mgcv](https://cran.r-project.org/package=mgcv) by switching to an internal C implementation of [mgcv](https://cran.r-project.org/package=mgcv)'s `in.out()` function [(#107)](https://github.com/bgreenwell/pdp/issues/107). (This is used behind the scenes whenever `partial()` is called with `chull = TRUE`.)
 
 * `"partial"` is now a proper subclass of `"data.frame"` [(#104)](https://github.com/bgreenwell/pdp/issues/104); thanks to @RoelVerbelen for pointing this out.

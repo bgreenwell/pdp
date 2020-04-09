@@ -45,8 +45,7 @@ Suggests:
     tinytest,
     covr
 Imports:
-    data.table,
-    ggplot2 (>= 0.9.0), 
+    ggplot2 (>= 3.0.0), 
     grDevices, 
     gridExtra, 
     lattice, 
@@ -54,7 +53,7 @@ Imports:
     methods, 
     plyr, 
     stats, 
-    viridis, 
+    viridisLite, 
     utils
 LazyData: TRUE
 RoxygenNote: 7.1.0

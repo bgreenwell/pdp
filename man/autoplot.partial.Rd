@@ -21,7 +21,8 @@
   smooth.method.args = list(),
   contour = FALSE,
   contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis"),
+  palette = c("viridis", "magma", "inferno", "plasma", "cividis", "D", "A", "B", "C",
+    "E"),
   train = NULL,
   xlab = NULL,
   ylab = NULL,
@@ -105,9 +106,11 @@ level plot.}
 \item{contour.color}{Character string specifying the color to use for the
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
-\item{palette}{Character string indicating the colormap option to use. Five
-options are available: "viridis" (the default), "magma", "inferno", "plasma",
-and "cividis".}
+\item{palette}{Character string indicating the 'viridis' colormap option to
+use. Five options are available: \code{"magma"} (or \code{"A"}),
+\code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
+\code{"viridis"} (or \code{"D"}, the default option), and
+\code{"cividis"} (or \code{"E"}).}
 
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE} or \code{chull = TRUE}.}

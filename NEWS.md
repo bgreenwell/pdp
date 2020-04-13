@@ -1,4 +1,4 @@
-# pdp 0.7.0.9000
+# pdp 0.8.0
 
 ## New features
 
@@ -25,6 +25,10 @@
 * Fixed a bug in `partial()` for `"gbm"` objects when `recursive = TRUE` that caused factors (including ordered factors) to be coerced to characters. 
 
 ## Miscellaneous
+
+* Switched from Travis-CI to GitHub Actions for continuous integration.
+
+* Added [ICEbox](https://cran.r-project.org/package=ICEbox) and [mlbench](https://cran.r-project.org/package=mlbench) to the list of suggested packages.
 
 * Refactored code for easier maintenance.
 

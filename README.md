@@ -2,6 +2,8 @@ pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" /
 =================================================================================
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
+[![R build
+status](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Build
 Status](https://travis-ci.org/bgreenwell/pdp.svg?branch=master)](https://travis-ci.org/bgreenwell/pdp)
 [![AppVeyor Build

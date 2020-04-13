@@ -1,7 +1,7 @@
 Package: pdp
 Type: Package
 Title: Partial Dependence Plots
-Version: 0.7.0.9000
+Version: 0.8.0
 Authors@R: person("Brandon", "Greenwell", email =
         "greenwell.brandon@gmail.com", role = c("aut", "cre"), comment =
         c(ORCID = "0000-0002-8120-0084"))
@@ -24,11 +24,13 @@ Suggests:
     e1071,
     earth,
     gbm,
+    ICEbox,
     ipred,
     keras,
     kernlab,
     MASS,
     mda,
+    mlbench,
     nnet,
     party,
     partykit,

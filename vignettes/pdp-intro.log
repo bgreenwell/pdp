@@ -1,0 +1,477 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.4.16)  14 APR 2020 11:18
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**pdp-intro.tex
+(./pdp-intro.tex
+LaTeX2e <2018-04-01> patch level 2
+Babel <3.18> and hyphenation patterns for 84 language(s) loaded.
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/07/10 v1.1e Standard LaTeX Color (DPC)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 147.
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/framed/framed.sty
+Package: framed 2011/10/22 v 0.96: framed or shaded text with page breaks
+\OuterFrameSep=\skip43
+\fb@frw=\dimen105
+\fb@frh=\dimen106
+\FrameRule=\dimen107
+\FrameSep=\dimen108
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/alltt.sty
+Package: alltt 1997/06/16 v2.0g defines alltt environment
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2017/10/31 v0.5l Insert pages of external PDF documents (AM)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count88
+\calc@Bcount=\count89
+\calc@Adimen=\dimen109
+\calc@Bdimen=\dimen110
+\calc@Askip=\skip44
+\calc@Bskip=\skip45
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count90
+\calc@Cskip=\skip46
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2015/07/21 v2.0g eso-pic (RN)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/atbegshi.sty
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2017/03/15 v3.2 Provides the ifpdf switch
+)))
+\AM@pagewidth=\dimen111
+\AM@pageheight=\dimen112
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2017/10/31 v0.5l Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box26
+\AM@global@opts=\toks15
+\AM@toc@title=\toks16
+\c@AM@survey=\count91
+\AM@templatesizebox=\box27
+)
+(/usr/local/texlive/2018/texmf-dist/tex/latex/upquote/upquote.sty
+Package: upquote 2012/04/19 v1.3 upright-quote and grave-accent glyphs in verba
+tim
+)
+(./pdp-intro.aux)
+\openout1 = `pdp-intro.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+
+(/usr/local/texlive/2018/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count92
+\scratchdimen=\dimen113
+\scratchbox=\box28
+\nofMPsegments=\count93
+\nofMParguments=\count94
+\everyMPshowfont=\toks17
+\MPscratchCnt=\count95
+\MPscratchDim=\dimen114
+\MPnumerator=\count96
+\makeMPintoPDFobject=\count97
+\everyMPtoPDFconversion=\toks18
+) (/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+))
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+(/usr/local/texlive/2018/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2018/01/30 v0.27 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+\AtBeginShipoutBox=\box29
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/oberdiek/pdflscape.sty
+Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
+
+(/usr/local/texlive/2018/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+
+(/usr/local/texlive/2018/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+))
+<pdf/pdp-intro.pdf, id=1, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf>
+Package pdftex.def Info: pdf/pdp-intro.pdf  used on input line 59.
+(pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf>
+Package pdftex.def Info: pdf/pdp-intro.pdf  used on input line 59.
+(pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
+<pdf/pdp-intro.pdf, id=4, page=1, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 1>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page1 used on input line 59.
+(pdftex.def)             Requested size: 597.50682pt x 845.04504pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 1>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page1 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 1>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page1 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 1>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page1 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 1>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page1 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [1
+
+ <./pdf/pdp-intro.pdf{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap
+/pdftex.map}>]
+<pdf/pdp-intro.pdf, id=61, page=2, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 2>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page2 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 2>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page2 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 2>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page2 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [2 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=70, page=3, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 3>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page3 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 3>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page3 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 3>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page3 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [3 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=74, page=4, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 4>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page4 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 4>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page4 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 4>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page4 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [4 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=81, page=5, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 5>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page5 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 5>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page5 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 5>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page5 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [5 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=92, page=6, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 6>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page6 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 6>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page6 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 6>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page6 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [6 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=103, page=7, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 7>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page7 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 7>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page7 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 7>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page7 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [7 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=120, page=8, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 8>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page8 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 8>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page8 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 8>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page8 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [8 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=130, page=9, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 9>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page9 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 9>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page9 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 9>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page9 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [9 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=140, page=10, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 10>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page10 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 10>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page10 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 10>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page10 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [10 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=154, page=11, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 11>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page11 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 11>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page11 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 11>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page11 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [11 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=164, page=12, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 12>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page12 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 12>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page12 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 12>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page12 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [12 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=177, page=13, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 13>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page13 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 13>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page13 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 13>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page13 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [13 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=191, page=14, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 14>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page14 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 14>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page14 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 14>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page14 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [14 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=201, page=15, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 15>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page15 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 15>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page15 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 15>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page15 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [15 <./pdf/pdp-intro.pdf>]
+<pdf/pdp-intro.pdf, id=205, page=16, 597.50829pt x 845.0471pt>
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 16>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page16 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 16>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page16 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+File: pdf/pdp-intro.pdf Graphic file (type pdf)
+<use pdf/pdp-intro.pdf, page 16>
+Package pdftex.def Info: pdf/pdp-intro.pdf , page16 used on input line 59.
+(pdftex.def)             Requested size: 597.53416pt x 845.08372pt.
+ [16 <./pdf/pdp-intro.pdf>] (./pdp-intro.aux) ) 
+Here is how much of TeX's memory you used:
+ 2446 strings out of 492649
+ 38184 string characters out of 6129622
+ 100711 words of memory out of 5000000
+ 6300 multiletter control sequences out of 15000+600000
+ 3640 words of font info for 14 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 41i,18n,46p,290b,435s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2018/texmf-d
+ist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/texlive/201
+8/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2018
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2018/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2018/te
+xmf-dist/fonts/type1/public/mathpazo/fplmr.pfb></usr/local/texlive/2018/texmf-d
+ist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/2018/tex
+mf-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2018/texmf-dist
+/fonts/type1/urw/palatino/uplbi8a.pfb></usr/local/texlive/2018/texmf-dist/fonts
+/type1/urw/palatino/uplr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/
+urw/palatino/uplr8a.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/urw/pal
+atino/uplri8a.pfb>
+Output written on pdp-intro.pdf (16 pages, 834802 bytes).
+PDF statistics:
+ 223 PDF objects out of 1000 (max. 8388607)
+ 150 compressed objects within 2 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 96 words of extra memory for PDF output out of 10000 (max. 10000000)
+

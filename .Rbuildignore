@@ -11,7 +11,5 @@
 ^revdep$
 ^rjournal$
 ^slowtests$
-^tests/testthat/Rplots\.pdf$
 ^TODO\.md$
-^vignettes
 ^\.github$

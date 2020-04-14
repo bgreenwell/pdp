@@ -1,0 +1,10 @@
+\documentclass{article}
+\usepackage{pdfpages}
+%\VignetteIndexEntry{pdp-introduction}
+%\VignetteKeywords{R, partial dependence plots, PDPs, marginal effect plots, feature effect plots, machine learning}
+%\VignettePackage{pdp}
+%\VignetteEncoding{UTF-8}
+
+\begin{document}
+\includepdf[pages=-, fitpaper=true]{pdf/pdp-intro.pdf}
+\end{document}

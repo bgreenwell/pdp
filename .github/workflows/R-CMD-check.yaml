@@ -66,6 +66,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          tinytex::parse_install( text = "! LaTeX Error: File pdfpages.sty' not found.")
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}

@@ -8,11 +8,7 @@ df1 <- data.frame(
 )
 
 # Data frame that pdp::exemplar() should return
-df2 <- data.frame(
-  x = 3L,
-  y = factor("c", levels = letters[1L:3L]),
-  z = Sys.Date() + 2
-)
+df2 <- data.frame(x = 3L, y = "c", z = Sys.Date() + 2)
 
 # Expectation(s)
 df3 <- exemplar(df1)

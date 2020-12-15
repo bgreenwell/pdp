@@ -18,6 +18,7 @@ Suggests:
     AmesHousing,
     C50,
     caret,
+    covr,
     Cubist,
     doParallel,
     dplyr,
@@ -39,13 +40,11 @@ Suggests:
     ranger,
     reticulate,
     rpart,
-    testthat,
+    tinytest,
     xgboost (>= 0.6-0),
     knitr,
     rmarkdown,
-    vip,
-    tinytest,
-    covr
+    vip
 Imports:
     ggplot2 (>= 3.0.0), 
     grDevices, 
@@ -55,8 +54,8 @@ Imports:
     methods, 
     plyr, 
     stats, 
-    viridisLite, 
-    utils
+    utils,
+    viridisLite
 LazyData: TRUE
 RoxygenNote: 7.1.1
 Encoding: UTF-8

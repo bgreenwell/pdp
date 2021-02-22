@@ -34,7 +34,7 @@
 
 * Switched to **tinytest** framework and increased test coverage [(#84)](https://github.com/bgreenwell/pdp/issues/84).
 
-* The internal function `get_training_data()`, which is used to (attempt to) extract a fitted models training data whenever `train` is not specified, is (hopefully) a bit more flexible and robust in certain special cases[(#90)](https://github.com/bgreenwell/pdp/issues/90).
+* The internal function `get_training_data()`, which is used to (attempt to) extract a fitted model's training data whenever `train` is not specified, is (hopefully) a bit more flexible and robust in certain special cases[(#90)](https://github.com/bgreenwell/pdp/issues/90).
 
 * Minor bug fixes in plotting functions (i.e., `autoplot()` and `plotPartial()`). 
 

@@ -42,20 +42,10 @@
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
-#' @param col.regions Color vector to be used for trivariate displays. If
-#' \code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-#' 'viridis' color map provided by the \code{viridisLite} package. See
-#' \code{\link[viridisLite]{viridis}} for details.
-#'
-#' @param palette Character string indicating the 'viridis' colormap option to
-#' use. Five options are available: \code{"magma"} (or \code{"A"}),
-#' \code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
-#' \code{"viridis"} (or \code{"D"}, the default option), and
-#' \code{"cividis"} (or \code{"E"}).
-#'
-#' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
-#' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
-#' transparency).
+#' @param col.regions Vector of colors to be passed on to
+#' \code{\link[lattice]{levelplot}}'s \code{col.region} argument. Defaults to
+#' \code{grDevices::hcl.colors(100)} (which is the same viridis color palette
+#' used in the past).
 #'
 #' @param number Integer specifying the number of conditional intervals to use
 #' for the continuous panel variables. See \code{\link[graphics]{co.intervals}}
@@ -88,7 +78,8 @@
 #' #
 #'
 #' # Load required packages
-#' library(ggplot2)  # required to use autoplot
+#' library(gridExtra)  # for `grid.arrange()`
+#' library(magrittr)  # for forward pipe operator `%>%`
 #' library(randomForest)
 #'
 #' # Fit a random forest to the Boston housing data
@@ -108,8 +99,8 @@
 #'
 #' # ICE curves and c-ICE curves
 #' age.ice <- partial(boston.rf, pred.var = "lstat", ice = TRUE)
-#' p1 <- plotPartial(age.ice, alpha = 0.5)
-#' p2 <- plotPartial(age.ice, center = TRUE, alpha = 0.5)
+#' p1 <- plotPartial(age.ice, alpha = 0.1)
+#' p2 <- plotPartial(age.ice, center = TRUE, alpha = 0.1)
 #' grid.arrange(p1, p2, ncol = 2)
 #' }
 plotPartial <- function(object, ...) {
@@ -122,14 +113,13 @@ plotPartial <- function(object, ...) {
 #' @export
 plotPartial.ice <- function(
   object, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
-  pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...
+  pdp.lty = 1, rug = FALSE, train = NULL, ...
 ) {
 
   # Call workhorse function
   plot_ice_curves(
     object = object, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
-    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-    alpha = alpha, ...
+    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train, ...
   )
 
 }
@@ -140,14 +130,13 @@ plotPartial.ice <- function(
 #' @export
 plotPartial.cice <- function(
   object, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2, pdp.lty = 1,
-  rug = FALSE, train = NULL, alpha = 1, ...
+  rug = FALSE, train = NULL, ...
 ) {
 
   # Call workhorse function
   plot_ice_curves(
     object = object, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
-    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-    alpha = alpha, ...
+    pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train, ...
   )
 
 }
@@ -160,9 +149,7 @@ plotPartial.partial <- function(
   object, center = FALSE, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
   pdp.lty = 1, smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white", col.regions = NULL,
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis",
-              "D",       "A",     "B",       "C",      "E"),
-  alpha = 1, number = 4, overlap = 0.1, train = NULL, ...
+  number = 4, overlap = 0.1, train = NULL, ...
 ) {
 
   # Determine if object contains multiple curves
@@ -186,8 +173,7 @@ plotPartial.partial <- function(
     # Call workhorse function
     plot_ice_curves(  # curves from user-specified prediction function
       object = object, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
-      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-      alpha = alpha, ...
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train, ...
     )
 
   } else if (nx == 1L) {
@@ -200,23 +186,20 @@ plotPartial.partial <- function(
   } else if (nx == 2) {
 
     # Call workhorse function
-    palette <- match.arg(palette)  # match color palette
     plot_two_predictor_pdp(  # two predictors
       object = object, smooth = smooth, levelplot = levelplot, rug = rug,
       chull = chull, train = train, contour = contour,
-      contour.color = contour.color, col.regions = col.regions,
-      palette = palette, alpha = alpha, ...
+      contour.color = contour.color, col.regions = col.regions, ...
     )
 
   } else {
 
     # Call workhorse function
-    palette <- match.arg(palette)
     plot_three_predictor_pdp(  # three predictors (paneled)
       object = object, nx = nx, smooth = smooth, levelplot = levelplot,
       rug = rug, chull = chull, train = train, contour = contour,
       contour.color = contour.color, col.regions = col.regions,
-      palette = palette, alpha = alpha, number = number, overlap = overlap, ...
+      number = number, overlap = overlap, ...
     )
 
   }
@@ -225,10 +208,8 @@ plotPartial.partial <- function(
 
 
 #' @keywords internal
-plot_ice_curves <- function(
-  object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty, rug, train, alpha = 1,
-  ...
-) {
+plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
+                            rug, train, ...) {
 
   # Determine if ICE curves should be centered
   if (center) {
@@ -245,7 +226,7 @@ plot_ice_curves <- function(
   # Plot ICE curves
   xyplot(
     stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
-    groups = object$yhat.id, type = plot.type, alpha = alpha, ...,
+    groups = object$yhat.id, type = plot.type, ...,
     panel = function(xx, yy, ...) {
       panel.xyplot(xx, yy, col = "black", ...)
       if (plot.pdp) {
@@ -310,7 +291,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
 #' @keywords internal
 plot_two_predictor_pdp <- function(
   object, smooth, levelplot, rug, chull, train, contour, contour.color,
-  col.regions, palette, alpha, ...
+  col.regions, ...
 ) {
 
   # Use the first two columns to determine which type of plot to construct
@@ -363,9 +344,7 @@ plot_two_predictor_pdp <- function(
 
       # Define color regions
       if (is.null(col.regions)) {
-        col.regions <- viridisLite::viridis(100, alpha = alpha, option = palette)
-        # col.regions <- viridis::viridis_pal(option = palette,
-        #                                     alpha = alpha)(100)
+        col.regions <- grDevices::hcl.colors(100)
       }
 
       # Draw a three-dimensional surface
@@ -429,7 +408,7 @@ plot_two_predictor_pdp <- function(
 #' @keywords internal
 plot_three_predictor_pdp <- function(
   object, nx, smooth, levelplot, rug, chull, train, contour, contour.color,
-  col.regions, palette, alpha, number, overlap, ...
+  col.regions, number, overlap, ...
 ) {
 
   # Convert third predictor to a factor using the equal count algorithm
@@ -495,9 +474,7 @@ plot_three_predictor_pdp <- function(
 
     # Define color regions
     if (is.null(col.regions)) {
-      col.regions <- viridisLite::viridis(100, alpha = alpha, option = palette)
-      # col.regions <- viridis::viridis_pal(option = palette,
-      #                                     alpha = alpha)(100)
+      col.regions <- grDevices::hcl.colors(100)
     }
 
     # Draw a three-dimensional surface

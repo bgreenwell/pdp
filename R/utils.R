@@ -1,29 +1,3 @@
-#' Pipe operator
-#'
-#' See \code{\link[magrittr]{\%>\%}} for more details.
-#'
-#' @name %>%
-#' @rdname pipe
-#' @keywords internal
-#' @export
-#' @importFrom magrittr %>%
-#' @usage lhs \%>\% rhs
-NULL
-
-
-#' Arrange multiple grobs on a page
-#'
-#' See \code{\link[gridExtra]{grid.arrange}} for more details.
-#'
-#' @name grid.arrange
-#' @rdname grid.arrange
-#' @keywords internal
-#' @export
-#' @importFrom gridExtra grid.arrange
-#' @usage grid.arrange(..., newpage = TRUE)
-NULL
-
-
 #' Retrieve the last trellis object
 #'
 #' See \code{\link[lattice]{trellis.last.object}} for more details.
@@ -166,13 +140,13 @@ train_chull <- function(pred.var, pred.grid, train) {
   if (length(pred.var) >= 2 && is.numeric(pred.grid[, 1L]) &&
       is.numeric(pred.grid[, 2L])) {  # if the first two columns are numeric
     if (is.data.frame(train)) {
-      train <- data.matrix(train)  # `mgcv::in.out()` requires a matrix
+      train <- data.matrix(train)  # `in.out()` requires a matrix
     }
     X <- stats::na.omit(train[, pred.var[1L:2L]])
     Y <- stats::na.omit(data.matrix(pred.grid[, 1L:2L]))
     hpts <- grDevices::chull(X)
     hpts <- c(hpts, hpts[1L])
-    keep <- in.out(X[hpts, ], Y)  # moved from mgcv::in.out() to internal version
+    keep <- in.out(X[hpts, ], Y)
     pred.grid[keep, ]
   } else {
     pred.grid

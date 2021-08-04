@@ -50,12 +50,6 @@
 #' @param contour.color Character string specifying the color to use for the
 #' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
 #'
-#' @param palette Character string indicating the 'viridis' colormap option to
-#' use. Five options are available: \code{"magma"} (or \code{"A"}),
-#' \code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
-#' \code{"viridis"} (or \code{"D"}, the default option), and
-#' \code{"cividis"} (or \code{"E"}).
-#'
 #' @param train Data frame containing the original training data. Only required
 #' if \code{rug = TRUE} or \code{chull = TRUE}.
 #'
@@ -69,7 +63,9 @@
 #' @param legend.title Character string specifying the text for the legend title.
 #' Default is \code{"yhat"}.
 #'
-#' @param ... Additional optional arguments to be passed onto \code{geom_line}.
+#' @param ... Additional (optional) arguments to be passed onto
+#' \code{\link[ggplot2]{geom_line}}, \code{\link[ggplot2]{geom_point}}, or
+#' \code{\link[ggplot2]{scale_fill_viridis_c}}.
 #'
 #' @return A \code{"ggplot"} object.
 #'
@@ -92,7 +88,9 @@
 #' #
 #'
 #' # Load required packages
-#' library(ggplot2)  # required to use autoplot
+#' library(ggplot2)  # for autoplot() generic
+#' library(gridExtra)  # for `grid.arrange()`
+#' library(magrittr)  # for forward pipe operator `%>%`
 #' library(randomForest)
 #'
 #' # Fit a random forest to the Boston housing data
@@ -103,30 +101,30 @@
 #' # Partial dependence of cmedv on lstat
 #' boston.rf %>%
 #'   partial(pred.var = "lstat") %>%
-#'   autoplot(rug = TRUE, train = boston)
+#'   autoplot(rug = TRUE, train = boston) + theme_bw()
 #'
 #' # Partial dependence of cmedv on lstat and rm
 #' boston.rf %>%
 #'   partial(pred.var = c("lstat", "rm"), chull = TRUE, progress = "text") %>%
-#'   autoplot(contour = TRUE, legend.title = "rm")
+#'   autoplot(contour = TRUE, legend.title = "cmedv",
+#'            option = "B", direction = -1) + theme_bw()
 #'
 #' # ICE curves and c-ICE curves
 #' age.ice <- partial(boston.rf, pred.var = "lstat", ice = TRUE)
 #' grid.arrange(
-#'   autoplot(age.ice, alpha = 0.5),                 # ICE curves
-#'   autoplot(age.ice, center = TRUE, alpha = 0.5),  # c-ICE curves
+#'   autoplot(age.ice, alpha = 0.1),                 # ICE curves
+#'   autoplot(age.ice, center = TRUE, alpha = 0.1),  # c-ICE curves
 #'   ncol = 2
 #' )
 #' }
-autoplot.partial <- function(
-  object, center = FALSE, plot.pdp = TRUE, pdp.color = "red", pdp.size = 1,
-  pdp.linetype = 1, rug = FALSE, smooth = FALSE, smooth.method = "auto",
-  smooth.formula = y ~ x, smooth.span = 0.75, smooth.method.args = list(),
-  contour = FALSE, contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis",
-              "D",       "A",     "B",       "C",      "E"),
-  train = NULL, xlab = NULL, ylab = NULL, main = NULL, legend.title = "yhat", ...
-) {
+autoplot.partial <- function(object, center = FALSE, plot.pdp = TRUE,
+                             pdp.color = "red", pdp.size = 1, pdp.linetype = 1,
+                             rug = FALSE, smooth = FALSE,
+                             smooth.method = "auto", smooth.formula = y ~ x,
+                             smooth.span = 0.75, smooth.method.args = list(),
+                             contour = FALSE, contour.color = "white",
+                             train = NULL, xlab = NULL, ylab = NULL,
+                             main = NULL, legend.title = "yhat", ...) {
 
   # Determine if object contains an ID column (i.e., multiple curves)
   multi <- "yhat.id" %in% names(object)
@@ -161,12 +159,11 @@ autoplot.partial <- function(
   } else if (nx == 2L) {  # two predictors
 
     # Call workhorse function
-    palette <- match.arg(palette)  # match color palette
     ggplot_two_predictor_pdp(  # two predictor PDP
       object = object, rug = rug, smooth = smooth,
       smooth.method = smooth.method, smooth.formula = smooth.formula,
       smooth.span = smooth.span, smooth.method.args = smooth.method.args,
-      contour = contour, contour.color = contour.color, palette = palette,
+      contour = contour, contour.color = contour.color,
       train = train, xlab = xlab, ylab = ylab, main = main,
       legend.title = legend.title, ...
     )
@@ -237,7 +234,7 @@ ggplot_ice_curves <- function(
     p <- ggplot(object,
                 aes(.data[[names(object)[1L]]], .data[["yhat"]], group = 1)) +
       geom_line(aes(group = .data[["yhat.id"]]), ...) +
-      geom_point(aes(group = .data[["yhat.id"]]), alpha = 1)
+      geom_point(aes(group = .data[["yhat.id"]]))
 
     # Should the PDP be displayed too?
     if (plot.pdp) {
@@ -365,7 +362,7 @@ ggplot_one_predictor_pdp <- function(
 #' @keywords internal
 ggplot_two_predictor_pdp <- function(
   object, rug, smooth, smooth.method, smooth.formula, smooth.span,
-  smooth.method.args, contour, contour.color, palette, train, xlab, ylab, main,
+  smooth.method.args, contour, contour.color, train, xlab, ylab, main,
   legend.title, ...
 ) {
 
@@ -449,11 +446,7 @@ ggplot_two_predictor_pdp <- function(
     }
 
     # Add legend title and theme
-    # palette <- match.arg(palette)
-    p <- p +
-      scale_fill_viridis_c(name = legend.title, option = palette, ...) +
-      # viridis::scale_fill_viridis(name = legend.title, option = palette, ...) +
-      theme_bw()
+    p <- p + scale_fill_viridis_c(name = legend.title, ...)
 
   }
 

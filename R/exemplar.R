@@ -1,7 +1,7 @@
 #' Exemplar observation
 #'
-#' Construct an exemplar record from a data frame. For now, all numeric columns
-#' (including \code{"\link{Date}"} objects) are replaced with their
+#' Construct a single "exemplar" record from a data frame. For now, all numeric
+#' columns (including \code{"\link{Date}"} objects) are replaced with their
 #' corresponding median value and non-numeric columns are replaced with their
 #' most frequent value.
 #'

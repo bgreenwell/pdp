@@ -294,7 +294,7 @@ get_task.xgb.Booster <- function(object) {
   # following should suffice without having to check package version.
   if (object$params$objective %in%
       c("reg:gamma", "reg:linear", "reg:logistic", "reg:squarederror",
-        "count:poisson")) {
+        "reg:squaredlogerror", "count:poisson")) {
     "regression"
   } else if (object$params$objective %in%
              c("binary:logistic", "multi:softprob")) {

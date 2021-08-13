@@ -52,6 +52,7 @@ Imports:
     grDevices, 
     lattice, 
     methods, 
+    rlang (>= 0.3.0),
     stats, 
     utils
 LazyData: TRUE

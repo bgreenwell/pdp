@@ -228,7 +228,7 @@ plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
     stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
     groups = object$yhat.id, type = plot.type, ...,
     panel = function(xx, yy, ...) {
-      panel.xyplot(xx, yy, col = "black", ...)
+      panel.xyplot(xx, yy, col = 1, ...)
       if (plot.pdp) {
         pd <- average_ice_curves(object)
         panel.xyplot(
@@ -240,10 +240,9 @@ plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
         if (is.null(train)) {
           stop("The training data must be supplied for rug display.")
         } else {
-          panel.rug(
-            stats::quantile(train[, names(object)[1L], drop = TRUE],
-                            probs = 0:10/10, na.rm = TRUE)
-          )
+          panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
+                                    probs = 0:10/10, na.rm = TRUE),
+                    col = 1)
         }
       }
 })
@@ -261,7 +260,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
     xyplot(
       stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
       type = "l", ..., panel = function(xx, yy, ...) {
-        panel.xyplot(xx, yy, col = "black", ...)
+        panel.xyplot(xx, yy, col = 1, ...)
         if (smooth) {
           panel.loess(xx, yy, ...)
         }
@@ -269,10 +268,9 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
           if (is.null(train)) {
             stop("The training data must be supplied for rug display.")
           } else {
-            panel.rug(
-              stats::quantile(train[, names(object)[1L], drop = TRUE],
-                              probs = 0:10/10, na.rm = TRUE)
-            )
+            panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
+                                      probs = 0:10/10, na.rm = TRUE),
+                      col = 1)
           }
         }
     })
@@ -318,7 +316,7 @@ plot_two_predictor_pdp <- function(
     # Draw a paneled line plot
     xyplot(
       form, data = object, type = "l", ..., panel = function(xx, yy, ...) {
-        panel.xyplot(xx, yy, col = "black", ...)
+        panel.xyplot(xx, yy, col = 1, ...)
         if (smooth) {
           panel.loess(xx, yy, ...)
         }
@@ -326,11 +324,9 @@ plot_two_predictor_pdp <- function(
           if (is.null(train)) {
             stop("The training data must be supplied for rug display.")
            } else {
-             panel.rug(
-               stats::quantile(train[, names(object)[1L], drop = TRUE],
-                               probs = 0:10/10,
-                               na.rm = TRUE)
-             )
+             panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
+                                       probs = 0:10/10, na.rm = TRUE),
+                       col = 1)
            }
         }
     })
@@ -366,15 +362,11 @@ plot_two_predictor_pdp <- function(
             # Add a rug display
             if (isTRUE(rug)) {
               panel.rug(
-                x = stats::quantile(
-                  train[, names(object)[1L], drop = TRUE],
-                  probs = 0:10/10, na.rm = TRUE
-                ),
-                y = stats::quantile(
-                  train[, names(object)[2L], drop = TRUE],
-                  probs = 0:10/10, na.rm = TRUE
-                ),
-                col = "black"
+                x = stats::quantile(train[, names(object)[1L], drop = TRUE],
+                                    probs = 0:10/10, na.rm = TRUE),
+                y = stats::quantile(train[, names(object)[2L], drop = TRUE],
+                                    probs = 0:10/10, na.rm = TRUE),
+                col = 1
               )
             }
             # Plot the convex hull of the predictor space of interest
@@ -388,7 +380,7 @@ plot_two_predictor_pdp <- function(
                 stats::na.omit(train[names(object)[1L:2L]])
               )
               hpts <- c(hpts, hpts[1])
-              panel.lines(train[hpts, names(object)[1L:2L]], col = "black")
+              panel.lines(train[hpts, names(object)[1L:2L]], col = 1)
             }
         })
 
@@ -448,7 +440,7 @@ plot_three_predictor_pdp <- function(
     xyplot(
       form, data = object, type = "p", ...,
       panel = function(xx, yy, ...) {
-        panel.xyplot(xx, yy, col = "black", ...)
+        panel.xyplot(xx, yy, col = 1, ...)
         if (smooth) {
           panel.loess(xx, yy, ...)
         }
@@ -456,10 +448,9 @@ plot_three_predictor_pdp <- function(
           if (is.null(train)) {
             stop("The training data must be supplied for rug display.")
           } else {
-            panel.rug(
-              stats::quantile(train[, names(object)[1L], drop = TRUE],
-                              probs = 0:10/10, na.rm = TRUE)
-            )
+            panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
+                                      probs = 0:10/10, na.rm = TRUE),
+                      col = 1)
           }
         }
     })

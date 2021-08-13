@@ -238,12 +238,12 @@ rm.ice <- rm.ice %>%
 # ICE curves with PDP
 p1 <- ggplot(rm.ice, aes(rm, yhat)) +
   geom_line(aes(group = yhat.id), alpha = 0.2) +
-  stat_summary(fun.y = mean, geom = "line", col = "red", size = 1)
+  stat_summary(fun = mean, geom = "line", col = "red", size = 1)
 
 # c-ICE curves with centered PDP
 p2 <- ggplot(rm.ice, aes(rm, yhat.centered)) +
   geom_line(aes(group = yhat.id), alpha = 0.2) +
-  stat_summary(fun.y = mean, geom = "line", col = "red", size = 1)
+  stat_summary(fun = mean, geom = "line", col = "red", size = 1)
 
 # Figure 10
 grid.arrange(p1, p2, ncol = 2)

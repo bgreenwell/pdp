@@ -177,9 +177,9 @@ in.out <- function(bnd, x) {
   ind <- is.na(rowSums(bnd))
   bnd[ind, ] <- lowLim
   n <- nrow(bnd)
-  um <-.C(in_out, bx = as.double(bnd[, 1]), by = as.double(bnd[, 2]),
-          break.code = as.double(lowLim), x = as.double(x[, 1]),
-          y = as.double(x[, 2]), inside = as.integer(x[, 2] * 0),
-          nb = as.integer(n), n = as.integer(nrow(x)))
+  um <- .C(in_out, bx = as.double(bnd[, 1]), by = as.double(bnd[, 2]),
+           break.code = as.double(lowLim), x = as.double(x[, 1]),
+           y = as.double(x[, 2]), inside = as.integer(x[, 2] * 0),
+           nb = as.integer(n), n = as.integer(nrow(x)))
   as.logical(um$inside)
 }

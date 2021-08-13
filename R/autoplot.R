@@ -1,5 +1,3 @@
-.data <- NULL
-
 #' Plotting Partial Dependence Functions
 #'
 #' Plots partial dependence functions (i.e., marginal effects) using
@@ -76,6 +74,8 @@
 #' @importFrom ggplot2 scale_fill_distiller scale_fill_viridis_c stat_summary
 #'
 #' @importFrom ggplot2 theme_bw xlab ylab
+#'
+#' @importFrom rlang .data
 #'
 #' @rdname autoplot.partial
 #'

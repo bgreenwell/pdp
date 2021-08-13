@@ -23,8 +23,8 @@ A data frame with the same number of columns as \code{object} and a
 single row.
 }
 \description{
-Construct an exemplar record from a data frame. For now, all numeric columns
-(including \code{"\link{Date}"} objects) are replaced with their
+Construct a single "exemplar" record from a data frame. For now, all numeric
+columns (including \code{"\link{Date}"} objects) are replaced with their
 corresponding median value and non-numeric columns are replaced with their
 most frequent value.
 }

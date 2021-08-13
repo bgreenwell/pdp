@@ -6,10 +6,9 @@ trim_outliers <- function(x) {
 
 
 #' @keywords internal
-pred_grid <- function(
-  train, pred.var, grid.resolution = NULL, quantiles = FALSE, probs = 1:9/10,
-  trim.outliers = FALSE, cats = NULL
-) {
+pred_grid <- function(train, pred.var, grid.resolution = NULL,
+                      quantiles = FALSE, probs = 1:9/10, trim.outliers = FALSE,
+                      cats = NULL) {
 
   # train must inherit from one "data.frame", "matrix", or "dgCMatrix"
   if (!inherits(train, c("data.frame", "matrix", "dgCMatrix"))) {

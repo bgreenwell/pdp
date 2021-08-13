@@ -27,18 +27,6 @@ get_training_data <- function(object) {
 get_training_data.default <- function(object, env = parent.frame(),
                                       arg = "data") {
 
-  # FIXME: This function does not work on objects fit using the :: operator.
-  # For example,
-  #
-  # > fit <- randomForest::randomForest(cmedv ~ ., data = boston)
-  # > pdp:::get_training_data.default(fit)
-  #
-  #  Error in eval(mcall[[1L]], envir = env) : object 'randomForest' not found
-  #
-  #   3. eval(mcall[[1L]], envir = env)
-  #   2. eval(mcall[[1L]], envir = env) at get_training_data.R#35
-  #   1. pdp:::get_training_data.default(fit)
-
   # Throw error message for S4 objects (for now)
   if (isS4(object)) {
     stop(msg, call. = FALSE)

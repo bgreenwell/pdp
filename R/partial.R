@@ -424,25 +424,20 @@ partial.default <- function(
     # Notify user that progress bars are not avaiable for "gbm" objects when
     # recursive = TRUE
     if (progress != "none") {
-      message("Progress bars are not availble when `recursive = TRUE`.")
+      message("progress bars are not availble when `recursive = TRUE`.",
+              call. = FALSE)
     }
 
     # Stop and notify user that parallel functionality is currently not
     # available for "gbm" objects when recursive = TRUE
     if (parallel) {
-      stop("Option `parallel` cannot currently be used when ",
-           "`recursive = TRUE`.")
+      stop("parallel processing cannot be used when `recursive = TRUE`.",
+           call. = FALSE)
     }
 
     # Use Friedman's weighted tree traversal approach
-    pd.df <- get_feature_effects_gbm(
-      object = object,
-      pred.var = pred.var,
-      pred.grid = pred.grid,
-      which.class = which.class,
-      prob = prob,
-      ...
-    )
+    pd.df <- pardep_gbm(object, pred.var = pred.var, pred.grid = pred.grid,
+                        which.class = which.class, prob = prob, ...)
     class(pd.df) <- c("partial", "data.frame")  # assign class labels
     names(pd.df) <- c(pred.var, "yhat")  # rename columns
     rownames(pd.df) <- NULL  # remove row names
@@ -452,55 +447,32 @@ partial.default <- function(
     # Use brute force approach
     pd.df <- if (type %in% c("regression", "classification") ||
                  !is.null(pred.fun)) {
-      get_feature_effects(
-        object = object,
-        pred.var = pred.var,
-        pred.grid = pred.grid,
-        pred.fun = pred.fun,
-        inv.link = inv.link,
-        ice = ice,
-        task = type,
-        which.class = which.class,
-        logit = !prob,
-        train = train,
-        progress = progress,
-        parallel = parallel,
-        paropts = paropts,
-        ...
-      )
+      pardep(object, pred.var = pred.var, pred.grid = pred.grid,
+             pred.fun = pred.fun, inv.link = inv.link, ice = ice, task = type,
+             which.class = which.class, logit = !prob, train = train,
+             progress = progress, parallel = parallel, paropts = paropts, ...)
     } else {
-      stop("Partial dependence values are currently only available for ",
+      stop("partial dependence and ICE are currently only available for ",
            "classification and regression problems.", call. = FALSE)
     }
 
-    # When train inherits from class "matrix" or "dgCMatrix", pd.df will only
-    # contain yhat (and possibly yhat.id); hence, pred.grid must be prepended.
-    if (!(all(pred.var %in% colnames(pd.df)))) {
-      pd.df <- if (inherits(pred.grid, "dgCMatrix")) {
-        cbind(as.matrix(pred.grid), pd.df)
-      } else {
-        cbind(pred.grid, pd.df)
-      }
+    # Coerce to a data frame, if needed, and apply finishing touches
+    if (is.matrix(pd.df)) {
+      pd.df <- as.data.frame(pd.df)
     }
-
-    # Construct a "tidy" data frame from the results
-    if (isTRUE(ice) || any(grepl("^yhat\\.", names(pd.df)))) {  # multiple curves
-
-      # Convert from wide to long format
-      pd.df <- stats::reshape(
-        data = pd.df,
-        varying = (length(pred.var) + 1):ncol(pd.df),
-        direction = "long"#, v.names = "yhat"
-      )
-      pd.df$id <- NULL  # remove id column
-      pd.df <- pd.df[, c(pred.var, "yhat", "time")]  # rearrange columns
-      names(pd.df)[ncol(pd.df)] <- "yhat.id"  # rename "time" column
+    if (inherits(pd.df, what = "dgCMatrix")) {  # xgboost
+      pd.df <- as.data.frame(as.matrix(pd.df))
+    }
+    if (isTRUE(ice) || ("yhat.id" %in% names(pd.df))) {  # multiple curves
 
       # Assign class labels
       class(pd.df) <- c("ice", "data.frame")
 
+      # Make sure data are ordered by `yhat.id`
+      pd.df <- pd.df[order(pd.df$yhat.id), ]
+
       # c-ICE curves
-      if (center) {
+      if (isTRUE(center)) {
         pd.df <- center_ice_curves(pd.df)
         if (type == "classification" && prob) {
           warning("Centering may result in probabilities outside of [0, 1].")
@@ -509,7 +481,6 @@ partial.default <- function(
       }
 
     } else {  # single curve
-      names(pd.df) <- c(pred.var, "yhat")  # rename columns
       class(pd.df) <- c("partial", "data.frame")  # assign class labels
     }
     rownames(pd.df) <- NULL  # remove row names
@@ -534,19 +505,14 @@ partial.default <- function(
     } else {
       palette <- match.arg(palette)
       if (plot.engine == "ggplot2") {
-        autoplot(
-          object = pd.df, smooth = smooth, rug = rug, train = train,
-          contour = contour, contour.color = contour.color, palette = palette,
-          alpha = alpha
-        )
+        autoplot(pd.df, smooth = smooth, rug = rug, train = train,
+                 contour = contour, contour.color = contour.color,
+                 palette = palette, alpha = alpha)
       } else {
-        plotPartial(
-          object = pd.df, smooth = smooth, rug = rug, train = train,
-          levelplot = levelplot, contour = contour,
-          contour.color = contour.color,
-          screen = list(z = -30, x = -60),  # sensible default?
-          palette = palette, alpha = alpha
-        )
+        plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
+                    levelplot = levelplot, contour = contour,
+                    contour.color = contour.color,
+                    screen = list(z = -30, x = -60))  # sensible default?
       }
     }
     attr(res, "partial.data") <- pd.df  # attach PDP data as an attribute

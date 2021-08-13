@@ -18,7 +18,6 @@ plotPartial(object, ...)
   pdp.lty = 1,
   rug = FALSE,
   train = NULL,
-  alpha = 1,
   ...
 )
 
@@ -30,7 +29,6 @@ plotPartial(object, ...)
   pdp.lty = 1,
   rug = FALSE,
   train = NULL,
-  alpha = 1,
   ...
 )
 
@@ -48,9 +46,6 @@ plotPartial(object, ...)
   contour = FALSE,
   contour.color = "white",
   col.regions = NULL,
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis", "D", "A", "B", "C",
-    "E"),
-  alpha = 1,
   number = 4,
   overlap = 0.1,
   train = NULL,
@@ -87,10 +82,6 @@ predictor axes. Default is \code{FALSE}.}
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE} or \code{chull = TRUE}.}
 
-\item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha (
-most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
-transparency).}
-
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
 
@@ -107,16 +98,10 @@ level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
 \item{contour.color}{Character string specifying the color to use for the
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
-\item{col.regions}{Color vector to be used for trivariate displays. If
-\code{levelplot} is \code{TRUE}, defaults to the wonderful Matplotlib
-'viridis' color map provided by the \code{viridisLite} package. See
-\code{\link[viridisLite]{viridis}} for details.}
-
-\item{palette}{Character string indicating the 'viridis' colormap option to
-use. Five options are available: \code{"magma"} (or \code{"A"}),
-\code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
-\code{"viridis"} (or \code{"D"}, the default option), and
-\code{"cividis"} (or \code{"E"}).}
+\item{col.regions}{Vector of colors to be passed on to
+\code{\link[lattice]{levelplot}}'s \code{col.region} argument. Defaults to
+\code{grDevices::hcl.colors(100)} (which is the same viridis color palette
+used in the past).}
 
 \item{number}{Integer specifying the number of conditional intervals to use
 for the continuous panel variables. See \code{\link[graphics]{co.intervals}}
@@ -137,7 +122,8 @@ Plots partial dependence functions (i.e., marginal effects) using
 #
 
 # Load required packages
-library(ggplot2)  # required to use autoplot
+library(gridExtra)  # for `grid.arrange()`
+library(magrittr)  # for forward pipe operator `\%>\%`
 library(randomForest)
 
 # Fit a random forest to the Boston housing data
@@ -157,8 +143,8 @@ boston.rf \%>\%
 
 # ICE curves and c-ICE curves
 age.ice <- partial(boston.rf, pred.var = "lstat", ice = TRUE)
-p1 <- plotPartial(age.ice, alpha = 0.5)
-p2 <- plotPartial(age.ice, center = TRUE, alpha = 0.5)
+p1 <- plotPartial(age.ice, alpha = 0.1)
+p2 <- plotPartial(age.ice, center = TRUE, alpha = 0.1)
 grid.arrange(p1, p2, ncol = 2)
 }
 }

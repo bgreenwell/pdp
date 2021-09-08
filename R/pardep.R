@@ -129,7 +129,11 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
       res <- cbind(pred.grid, "yhat" = yhat)
     } else {  # multiple predictions per call to `pred.fun()`
       grid.id <- rep(seq_len(nrow(pred.grid)), each = len)
-      yhat.id <- rep(seq_len(len), times = nrow(pred.grid))
+      yhat.id <- if (is.null(names(yhat))) {
+        rep(seq_len(len), times = nrow(pred.grid))
+      } else {
+        names(yhat)
+      }
       res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
       names(res) <- c(names(pred.grid), "yhat", "yhat.id")
     }

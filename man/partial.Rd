@@ -33,8 +33,6 @@ partial(object, ...)
   levelplot = TRUE,
   contour = FALSE,
   contour.color = "white",
-  palette = c("viridis", "magma", "inferno", "plasma", "cividis", "D", "A", "B", "C",
-    "E"),
   alpha = 1,
   train,
   cats = NULL,
@@ -172,12 +170,6 @@ level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
 
 \item{contour.color}{Character string specifying the color to use for the
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
-
-\item{palette}{Character string indicating the 'viridis' colormap option to
-use. Five options are available: \code{"magma"} (or \code{"A"}),
-\code{"inferno"} (or \code{"B"}), \code{"plasma"} (or \code{"C"}),
-\code{"viridis"} (or \code{"D"}, the default option), and
-\code{"cividis"} (or \code{"E"}).}
 
 \item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha (
 most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no

@@ -80,7 +80,7 @@ get_task.earth <- function(object) {
 
 
 #' @keywords internal
-get_task.fda<- function(object) {
+get_task.fda <- function(object) {
   "classification"
 }
 
@@ -88,7 +88,7 @@ get_task.fda<- function(object) {
 #' @keywords internal
 get_task.gbm <- function(object) {
   if (object$distribution %in%
-      c("gaussian", "laplace", "tdist", "gamma", "poisson", "tweedie")) {
+      c("coxph", "gaussian", "laplace", "tdist", "gamma", "poisson", "tweedie")) {
     "regression"
   } else if (object$distribution %in%
              c("bernoulli", "huberized", "multinomial", "adaboost")) {

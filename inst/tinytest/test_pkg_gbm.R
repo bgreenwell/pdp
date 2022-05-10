@@ -14,6 +14,7 @@ if (require(gbm, quietly = TRUE)) {
   fit1 <- gbm(
     formula = y ~ .,
     data = friedman1,
+    distribution = "gaussian",
     shrinkage = 0.01,
     n.trees = 500,
     interaction.depth = 2
@@ -34,9 +35,9 @@ if (require(gbm, quietly = TRUE)) {
     n.trees = 500,
     interaction.depth = 2
   )
-  iter1 <- gbm.perf(fit1, plot.it = FALSE, method = "OOB")
-  iter2 <- gbm.perf(fit2, plot.it = FALSE, method = "OOB")
-  iter3 <- gbm.perf(fit3, plot.it = FALSE, method = "OOB")
+  iter1 <- suppressMessages(gbm.perf(fit1, plot.it = FALSE, method = "OOB"))
+  iter2 <- suppressMessages(gbm.perf(fit2, plot.it = FALSE, method = "OOB"))
+  iter3 <- suppressMessages(gbm.perf(fit3, plot.it = FALSE, method = "OOB"))
 
   # Compute partial dependence, ICE, etc. for x.3
   pd1 <- partial(fit1, pred.var = "x.3", n.trees = iter1)

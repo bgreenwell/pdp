@@ -1,7 +1,7 @@
 citHeader("To cite pdp in publications use:")
 
 citEntry(entry = "Article",
-  title        = "pdp: An R Package for Constructing Partial Dependence Plots",
+  title        = "pdp: An {R} Package for Constructing Partial Dependence Plots",
   author       = personList(as.person("Brandon M. Greenwell")),
   journal      = "The R Journal",
   year         = "2017",

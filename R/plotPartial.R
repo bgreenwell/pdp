@@ -436,7 +436,7 @@ plot_three_predictor_pdp <- function(
       )
     }
 
-    # Produce a paneled lineplot
+    # Produce a paneled line plot
     xyplot(
       form, data = object, type = "p", ...,
       panel = function(xx, yy, ...) {

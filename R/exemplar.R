@@ -5,7 +5,9 @@
 #' corresponding median value and non-numeric columns are replaced with their
 #' most frequent value.
 #'
-#' @param object A data frame.
+#' @param object A data frame, matrix, or
+#' \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} (the latter two are
+#' supported by \code{\link[xgboost]{xgboost}}).
 #'
 #' @return A data frame with the same number of columns as \code{object} and a
 #' single row.
@@ -50,6 +52,7 @@ exemplar.matrix <- function(object) {
   res <- ceiling(apply(object, MARGIN = 2, FUN = stats::median))
   data.matrix(t(res))
 }
+
 
 #' @rdname exemplar
 #'

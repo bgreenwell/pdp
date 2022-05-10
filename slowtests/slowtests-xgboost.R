@@ -60,8 +60,8 @@ parDepPlot <- function(object, train, ...) {
     theme_light()
 }
 
-# Try all nine combnations (should all look exactly the same!)
-grid.arrange(
+# Try all nine combinations (should all look exactly the same!)
+gridExtra::grid.arrange(
   parDepPlot(bst.matrix, train = X),
   parDepPlot(bst.matrix, train = X.matrix),
   parDepPlot(bst.matrix, train = X.dgCMatrix),

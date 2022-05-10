@@ -1,0 +1,122 @@
+---
+title: "Approximate partial dependence plots"
+
+author: Brandon M. Greenwell
+
+date: January 14, 2022
+
+output:
+  pdf_document:
+    citation_package: natbib
+    highlight: kate
+    fig_caption: yes
+    
+bibliography: pdp 
+---
+
+```{r setup, include=FALSE}
+library(pdp)
+
+# Set global chunk options
+knitr::opts_chunk$set(
+  cache = TRUE,
+  comment = "#>",
+  error = FALSE, 
+  fig.path = "figure/", 
+  cache.path = "cache/", 
+  dpi = 300,
+  fig.align = "center", 
+  fig.asp = 0.618,
+  fig.pos = "!htb",
+  fig.width = 6, 
+  fig.show = "hold",
+  message = FALSE,
+  out.width = "100%",
+  par = TRUE,  # defined below
+  size = "small",
+  # size = "tiny",
+  tidy = FALSE,
+  warning = FALSE
+)
+
+# Set general hooks
+knitr::knit_hooks$set(
+  par = function(before, options, envir) {
+    if (before && options$fig.show != "none") {
+      par(
+        mar = c(4, 4, 0.1, 0.1), 
+        cex.lab = 0.95, 
+        cex.axis = 0.8,  # was 0.9
+        mgp = c(2, 0.7, 0), 
+        tcl = -0.3, 
+        las = 1
+      )
+      if (is.list(options$par)) {
+        do.call(par, options$par)
+      }
+    }
+  }
+)
+```
+
+## Introduction 
+
+The partial dependence (PD) of the response on a set of predictors is essentially computed by averaging predictions over the observed values of all the other features; see @RJ-2017-016 for details. Constructing PD plots can be time consuming and computationally infeasible in practice, especially when dealing with complex models or large data sets. A less accurate, but faster alternative is to fix the other predictors at a "typical" value (e.g., the mean/median for continuous features and the most frequent value for categorical features). This is essentially what's accomplished by default with the `plotmo()` function from the **plotmo** package [@plotmo-pkg]\footnote{As of version 3.3.0, **plotmo** includes support for ordinary PD plots as well.}; Steven Millborrow, the author of **plotmo**, even refers to them as "a poor man's partial dependence plot" in the package documentation (see `?plotmo::plotmo`).
+
+To this end, I've added a new `exemplar()` function to the package. This function essentially flattens a data frame by summarizing each column by a "typical" value (i.e., the median for numeric columns and the most frequent value for categoricals and factors) into an "exemplar" record. To illustrate, the code chunk below constructs an exemplar record from the Boston housing data frame that's built into **pdp** (see `?pdp::boston` for details):
+
+```{r exemplar}
+library(pdp)
+
+(boston.ex <- exemplar(boston))  # construct exemplar record
+```
+
+Notice that the numeric feature `nox` has been replaced by its median `r median(boston$nox)`. Same goes for the rest of the columns. SO, how can we use this to compute faster, but approximate PD plots? Well, a simple trick is to pass the "exemplar" record into the `train` argument in the call to `partial()`, but you'd also have to provide a grid of plotting values via the `pred.grid` argument; see `?pdp::partial` for details on `pred.grid`. This is demonstrated below for a simple random forest fit to the Boston housing data via the awesome **ranger** package [@ranger-pkg]; the results are displayed in Figure \ref{fig:approx-pdp-lstat}.
+
+```{r approx-pdp-lstat, fig.cap="Marginal effect of \\texttt{lstat} on median home value."}
+library(ranger)
+
+# Fit a default random forest to the Boston housing data
+set.seed(1228)  # for reproducibility
+(rfo <- ranger(cmedv ~ ., data = boston))
+
+# Construct plotting grid; evenly spaced grid of 51 values
+lstat.grid <- data.frame("lstat" = seq(
+  from = min(boston$lstat), to = max(boston$lstat), length = 51
+))
+
+# Approximate PD plot (Figure 1)
+partial(rfo, pred.var = "lstat", pred.grid = lstat.grid, 
+        train = boston.ex, plot = TRUE)
+```
+
+To simplify the construction, you can just set `approx = TRUE` in the call to `partial()`, as demonstrated below (see Figure \ref{fig:approx-pdp-lstat-ggplot2}):
+
+```{r approx-pdp-lstat-ggplot2, fig.cap="Marginal effect of \\texttt{lstat} on median home value using the new \\texttt{approx = TRUE} argument."}
+partial(rfo, pred.var = "lstat", approx = TRUE, plot = TRUE,
+        plot.engine = "ggplot2")  # Figure 2
+```
+
+```{r timeit}
+system.time({  # standard PD
+  pd1 <- partial(rfo, pred.var = "lstat", grid.resolution = 100)
+})
+
+system.time({  # approximate PD
+  pd2 <- partial(rfo, pred.var = "lstat", approx = TRUE, grid.resolution = 100)
+})
+```
+
+The code chunk below displays the resulting plots in a single display; see Figure \ref{fig:plots}. Notice how the two curves are nearly parallel, but the approximate method is much faster to compute.
+
+```{r compare-plots, fig.cap="Partial dependence of median home value on \\texttt{lstat} using the original method (black curve) and approximate method (yellow curve)"}
+ylim <- range(c(pd1$yhat, pd2$yhat))
+palette("Okabe-Ito")
+plot(pd1, type = "l", ylim = ylim)
+lines(pd2, col = 2)
+legend("topright", legend = c("Original PD plot", "Approximate PD plot"), 
+       inset = 0.01, lty = 1, col = 1:2, bty = "n")
+palette("default")
+```
+
+As mentioned in the **plotmo** vignette, an approximate PD plot will differ from the original PD plot in the presence of interaction effects. If there are no substantial interaction effects, the two plots will have a similar shape, but may differ slightly in scale.

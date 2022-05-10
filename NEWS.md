@@ -18,7 +18,7 @@
 
 ## Minor changes
 
-* Added support for gradient boosted proportional hazards models in [gbm](https://cran.r-project.org/package=gbm).
+* Added support for gradient boosted Cox proportional hazards models in [gbm](https://cran.r-project.org/package=gbm).
 
 * Removed dependency on the retired [plyr](https://cran.r-project.org/package=plyr) package by relying directly on the [foreach](https://cran.r-project.org/package=foreach) package. Consequently, ICE curves (`ice = TRUE`) are now slightly faster to compute (since the code refactoring avoids having to post-process ICE data from wide to long format) and the corresponding progress bar (`progress = "text"`) is more honest.
 

@@ -1,0 +1,124 @@
+---
+title: "Transforming the prediction scale"
+
+author: Brandon M. Greenwell
+
+date: January 14, 2022
+
+output:
+  pdf_document:
+    citation_package: natbib
+    highlight: kate
+    fig_caption: yes
+    
+bibliography: pdp 
+---
+
+```{r setup, include=FALSE}
+library(pdp)
+
+# Set global chunk options
+knitr::opts_chunk$set(
+  cache = TRUE,
+  comment = "#>",
+  error = FALSE, 
+  fig.path = "figure/", 
+  cache.path = "cache/", 
+  dpi = 300,
+  fig.align = "center", 
+  fig.asp = 0.618,
+  fig.pos = "!htb",
+  fig.width = 6, 
+  fig.show = "hold",
+  message = FALSE,
+  out.width = "100%",
+  par = TRUE,  # defined below
+  size = "small",
+  # size = "tiny",
+  tidy = FALSE,
+  warning = FALSE
+)
+
+# Set general hooks
+knitr::knit_hooks$set(
+  par = function(before, options, envir) {
+    if (before && options$fig.show != "none") {
+      par(
+        mar = c(4, 4, 0.1, 0.1), 
+        cex.lab = 0.95, 
+        cex.axis = 0.8,  # was 0.9
+        mgp = c(2, 0.7, 0), 
+        tcl = -0.3, 
+        las = 1
+      )
+      if (is.list(options$par)) {
+        do.call(par, options$par)
+      }
+    }
+  }
+)
+```
+
+## Introduction 
+
+As of version 0.6.0, **pdp**'s `partial()` function supports the ability to transform the predictions to a different scale via the `inv.link` argument. This (optional) argument takes a function specifying the transformation to be applied to the predictions before the partial dependence function is computed (experimental)l the default is `NULL` (i.e., no transformation). This option is intended to be used for models that allow for non-Gaussian response variables (e.g., counts). For these models, predictions are not typically returned on the original response scale by default. For example, Poisson GBMs typically return predictions on the log scale. In this case setting `inv.link = exp` will return the partial dependence function on the response (i.e., raw count) scale.
+
+
+```{r xgboost}
+library(ggplot2)
+library (magrittr)
+library(pdp)
+library(xgboost)
+
+# Set ggplot2 theme
+theme_set(theme_bw())
+
+# Fit a simple XGBoost model
+set.seed(101)
+bst <- xgboost(data = as.matrix(mtcars[, -11]), label = mtcars[, 11],
+               objective = "count:poisson", nrounds = 50, verbose = 0)
+```
+
+The default...
+
+```{r default, fig.cap="Partial dependence plot of MPG on the log number of carburetors (i.e., the link scale). By default, the $y$-axis is on the link scale (the log scale, in this case)."}
+bst %>%  # figure 1
+  partial(pred.var = "mpg", train = mtcars[, -11]) %>%
+  autoplot() +
+  labs(x = "Miles per hour (MPG)", y = "Number of carburetors")
+```
+
+If you'd like the $y$-axis to reflect the original (i.e., count or "inverse link") scale, then you have two options:
+
+* construct a prediction wrapper that computes the average predicted probability on the scale of interest;
+
+* pass a suitable function to the `inv.link` argument.
+
+Both of these approaches are illustrated in the code chunk below. Note that you can also pass in a string to `inv.link` (e.g., `inv.link = "exp"`). 
+
+```{r pfun-inv-link, fig.asp=0.5, fig.cap="Partial dependence plot of MPG on the number of carburetors (i.e., original or inverse link scale). Left: using a user-supplied prediction wrapper. Right: passing a suitable inverse link function via the `inv.link` argument."}
+
+# Prediction function that returns the (average) prediction on the original
+# response scale
+pfun <- function(object, newdata) {  
+  mean(exp(predict(object, newdata = as.matrix(newdata))))
+}
+
+# Passing a user-supplied prediction wrapper
+p1 <- bst %>%
+  partial(pred.var = "mpg", pred.fun = pfun, train = mtcars[, -11]) %>%
+  autoplot() +
+  labs(x = "Miles per hour (MPG)", y = "Number of carburetors")
+
+# Using `inv.link` argument
+p2 <- bst %>%
+  partial(pred.var = "mpg", inv.link = exp, train = mtcars[, -11]) %>%
+  autoplot() +
+  labs(x = "Miles per hour (MPG)", y = "Number of carburetors")
+
+# Display PDPs side by side
+gridExtra::grid.arrange(p1, p2, nrow = 1)  # figure 2
+```
+
+A related example involving logistic regression can be found here: https://github.com/bgreenwell/pdp/issues/125. In this example, it's shown how to produce PDPs for a logistic regression model on the usual logit scale (as opposed to the default class-centered logit described in @RJ-2017-016) and then using the `inv.link` argument to produce a PDP on the probability scale; as of version 0.5.0, **pdp** can generate PDPs for any supported classification model on the probability scale by just setting `prob = TRUE` in the call to `partial()`.
+

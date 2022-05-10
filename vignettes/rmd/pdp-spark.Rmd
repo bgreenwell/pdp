@@ -1,0 +1,66 @@
+---
+title: "Partial dependence plots in Spark"
+
+author: Brandon M. Greenwell
+
+date: January 14, 2022
+
+output:
+  pdf_document:
+    citation_package: natbib
+    highlight: kate
+    fig_caption: yes
+    
+bibliography: pdp 
+---
+
+```{r setup, include=FALSE}
+library(pdp)
+
+# Set global chunk options
+knitr::opts_chunk$set(
+  cache = TRUE,
+  comment = "#>",
+  error = FALSE, 
+  fig.path = "figure/", 
+  cache.path = "cache/", 
+  dpi = 300,
+  fig.align = "center", 
+  fig.asp = 0.618,
+  fig.pos = "!htb",
+  fig.width = 6, 
+  fig.show = "hold",
+  message = FALSE,
+  out.width = "100%",
+  par = TRUE,  # defined below
+  size = "small",
+  # size = "tiny",
+  tidy = FALSE,
+  warning = FALSE
+)
+
+# Set general hooks
+knitr::knit_hooks$set(
+  par = function(before, options, envir) {
+    if (before && options$fig.show != "none") {
+      par(
+        mar = c(4, 4, 0.1, 0.1), 
+        cex.lab = 0.95, 
+        cex.axis = 0.8,  # was 0.9
+        mgp = c(2, 0.7, 0), 
+        tcl = -0.3, 
+        las = 1
+      )
+      if (is.list(options$par)) {
+        do.call(par, options$par)
+      }
+    }
+  }
+)
+```
+
+## Introduction 
+
+Partial dependence (PD) plots are rather straightforward to construct in practice, as discussed in @RJ-2017-016. However, is is difficult to apply the brute force algorithm as is to situations where the data are stored in a Spark data frame; such is the case when fitting models using Spark's MLlib library [@meng-2015-mllib]. Fortunately, the same computations can be done using a couple of simple Spark operations; in particular, a *cross-join*, followed by a group-by and aggregation step.
+
+To illustrate...

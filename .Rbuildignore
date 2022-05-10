@@ -1,16 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.travis\.yml$
-^_pkgdown\.yml$
-^appveyor\.yml$
 ^codecov\.yml$
 ^data-raw$
-^docs$
 ^README\.Rmd$
 ^README\.html$
 ^revdep$
 ^rjournal$
 ^slowtests$
-^TODO\.md$
 ^\.github$
 ^\.o$

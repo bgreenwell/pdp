@@ -7,3 +7,4 @@ src/*.o
 src/*.so
 inst/doc
 /revdep/.cache.rds
+docs

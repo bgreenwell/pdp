@@ -71,7 +71,7 @@
 #'
 #' @importFrom ggplot2 geom_point geom_rug geom_smooth geom_tile ggplot ggtitle
 #'
-#' @importFrom ggplot2 scale_fill_distiller scale_fill_viridis_c stat_summary
+#' @importFrom ggplot2 scale_fill_viridis_c stat_summary
 #'
 #' @importFrom ggplot2 theme_bw xlab ylab
 #'

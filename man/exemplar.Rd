@@ -16,7 +16,9 @@ exemplar(object)
 \method{exemplar}{dgCMatrix}(object)
 }
 \arguments{
-\item{object}{A data frame.}
+\item{object}{A data frame, matrix, or
+\code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} (the latter two are
+supported by \code{\link[xgboost]{xgboost}}).}
 }
 \value{
 A data frame with the same number of columns as \code{object} and a

@@ -1,17 +1,17 @@
-pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" />
-=================================================================================
+# pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" />
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/pdp)](https://cran.r-project.org/package=pdp)
-[![R build
-status](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/investr)](https://CRAN.R-project.org/package=investr)
+[![R-CMD-check](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://codecov.io/gh/bgreenwell/pdp?branch=master)
+coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=master)
 [![Total
-Downloads](http://cranlogs.r-pkg.org/badges/grand-total/pdp)](http://cranlogs.r-pkg.org/badges/grand-total/pdp)
-[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/pdp)](https://cranlogs.r-pkg.org/badges/grand-total/pdp)
+<!-- badges: end -->
 
-Overview
---------
+## Overview
 
 [pdp](https://cran.r-project.org/package=pdp) is an R package for
 constructing ***p**artial **d**ependence **p**lots* (PDPs) and
@@ -23,18 +23,16 @@ the R package [vip](https://koalaverse.github.io/vip/index.html)) help
 visualize feature impact (either locally or globally), PDPs and ICE
 curves help visualize feature effects. An in-progress, but
 comprehensive, overview of IML can be found at the following URL:
-<a href="https://github.com/christophM/interpretable-ml-book" class="uri">https://github.com/christophM/interpretable-ml-book</a>.
+<https://github.com/christophM/interpretable-ml-book>.
 
 A detailed introduction to [pdp](https://cran.r-project.org/package=pdp)
 has been published in The R Journal: “pdp: An R Package for Constructing
 Partial Dependence Plots”,
-<a href="https://journal.r-project.org/archive/2017/RJ-2017-016/index.html" class="uri">https://journal.r-project.org/archive/2017/RJ-2017-016/index.html</a>.
-You can track development at
-<a href="https://github.com/bgreenwell/pdp" class="uri">https://github.com/bgreenwell/pdp</a>.
-To report bugs or issues, contact the main author directly or submit
-them to
-<a href="https://github.com/bgreenwell/pdp/issues" class="uri">https://github.com/bgreenwell/pdp/issues</a>.
-For additional documentation and examples, visit the [package
+<https://journal.r-project.org/archive/2017/RJ-2017-016/index.html>. You
+can track development at <https://github.com/bgreenwell/pdp>. To report
+bugs or issues, contact the main author directly or submit them to
+<https://github.com/bgreenwell/pdp/issues>. For additional documentation
+and examples, visit the [package
 website](https://bgreenwell.github.io/pdp/index.html).
 
 As of right now, `pdp` exports the following functions:
@@ -56,8 +54,7 @@ As of right now, `pdp` exports the following functions:
     (**experimental** feature that may be useful for constructing fast,
     approximate feature effect plots.)
 
-Installation
-------------
+## Installation
 
 ``` r
 # The easiest way to get pdp is to install it from CRAN:

@@ -1,4 +1,4 @@
-# pdp 0.7.0.9000
+# pdp 0.8.0
 
 ## New features
 

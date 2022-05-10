@@ -1,11 +1,13 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^codecov\.yml$
+^distill$
+^docs$
 ^data-raw$
 ^README\.Rmd$
 ^README\.html$
-^revdep$
 ^rjournal$
 ^slowtests$
 ^\.github$
 ^\.o$
+^\.nojekyll$

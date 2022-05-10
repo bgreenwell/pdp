@@ -2,7 +2,7 @@ name: "distill"
 title: "pdp package"
 description: |
   pdp package
-output_dir: "docs"
+output_dir: "../docs"
 navbar:
   right:
     - text: "Home"

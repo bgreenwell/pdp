@@ -83,7 +83,7 @@ approximate, marginal effect plot (similar in spirit to the
 \strong{plotmo} package). If \code{TRUE}, then \code{partial()} will compute
 predictions across the predictors specified in \code{pred.var} while holding
 the other predictors constant (a "poor man's partial dependence" function as
-Stephen Milborrow, the author of \code{\link[plotmo]{plotmo}}, puts it).
+Stephen Milborrow, the author of \strong{plotmo} package), puts it).
 Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
 WARNING: This option is currently experimental. Use at your own risk. It is
 possible (and arguably safer) to do this manually by passing a specific

@@ -29,7 +29,7 @@
 # Load required packages
 library(caret)
 library(doParallel)
-# library(dplyr)  # use dplyr:: instead to avoid conflictions with plyr!
+# library(dplyr)  # use dplyr:: instead to avoid conflicts with plyr!
 library(e1071)
 library(earth)
 library(ggplot2)
@@ -163,7 +163,7 @@ iris.svm <- svm(Species ~ ., data = iris, kernel = "radial", gamma = 0.75,
 pd <- NULL
 for (i in 1:3) {
   tmp <- partial(iris.svm, pred.var = c("Petal.Width", "Petal.Length"),
-                 which.class = i, progress = "text",
+                 which.class = i, progress = TRUE,
                  grid.resolution = 101)
   pd <- rbind(pd, cbind(tmp, Species = levels(iris$Species)[i]))
 }

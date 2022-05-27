@@ -1,7 +1,7 @@
 Package: pdp
 Type: Package
 Title: Partial Dependence Plots
-Version: 0.8.0
+Version: 0.8.1
 Authors@R: person(c("Brandon", "M."), family = "Greenwell", 
     email = "greenwell.brandon@gmail.com", role = c("aut", "cre"), 
     comment = c(ORCID = "0000-0002-8120-0084"))

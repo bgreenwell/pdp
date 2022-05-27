@@ -3,7 +3,7 @@ title: "Transforming the prediction scale"
 
 author: Brandon M. Greenwell
 
-date: January 14, 2022
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 
 output:
   pdf_document:

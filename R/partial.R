@@ -35,15 +35,15 @@
 #' \code{FALSE}. See Goldstein et al. (2014) for details.
 #'
 #' @param approx Logical indicating whether or not to compute a faster, but
-#' approximate, marginal effect plot (similar in spirit to
-#' \code{\link[plotmo]{plotmo}}). If \code{TRUE}, then `partial()` will compute
+#' approximate, marginal effect plot (similar in spirit to the
+#' \strong{plotmo} package). If \code{TRUE}, then \code{partial()} will compute
 #' predictions across the predictors specified in \code{pred.var} while holding
 #' the other predictors constant (a "poor man's partial dependence" function as
 #' Stephen Milborrow, the author of \code{\link[plotmo]{plotmo}}, puts it).
 #' Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
 #' WARNING: This option is currently experimental. Use at your own risk. It is
 #' possible (and arguably safer) to do this manually by passing a specific
-#' "exemplar" observation to the train argument and specifying `pred.grid`
+#' "exemplar" observation to the train argument and specifying \code{pred.grid}
 #' manually.
 #'
 #' @param quantiles Logical indicating whether or not to use the sample
@@ -146,10 +146,8 @@
 #' in \code{pred.grid} has the correct class, levels, etc. Default is
 #' \code{TRUE}.
 #'
-#' @param progress Character string giving the name of the progress bar to use
-#' while constructing the partial dependence function. See
-#' \code{\link[plyr]{create_progress_bar}} for details. Default is
-#' \code{"none"}.
+#' @param progress Logical indicating whether or not to display a text-based
+#' progress bar. Default is \code{FALSE}.
 #'
 #' @param parallel Logical indicating whether or not to run \code{partial} in
 #' parallel using a backend provided by the \code{foreach} package. Default is
@@ -233,7 +231,7 @@
 #'
 #' # The partial function allows for multiple predictors
 #' partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
-#'         plot = TRUE, chull = TRUE, progress = "text")
+#'         plot = TRUE, chull = TRUE, progress = TRUE)
 #'
 #' # The plotPartial function offers more flexible plotting
 #' pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
@@ -264,11 +262,11 @@
 #'
 #' # Partial dependence of positive test result on glucose (default logit scale)
 #' partial(pima.rf, pred.var = "glucose", plot = TRUE, chull = TRUE,
-#'         progress = "text")
+#'         progress = TRUE)
 #'
 #' # Partial dependence of positive test result on glucose (probability scale)
 #' partial(pima.rf, pred.var = "glucose", prob = TRUE, plot = TRUE,
-#'         chull = TRUE, progress = "text")
+#'         chull = TRUE, progress = TRUE)
 #' }
 partial <- function(object, ...) {
   UseMethod("partial")
@@ -286,7 +284,7 @@ partial.default <- function(
   plot = FALSE, plot.engine = c("lattice", "ggplot2"),
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
-  alpha = 1, train, cats = NULL, check.class = TRUE, progress = "none",
+  alpha = 1, train, cats = NULL, check.class = TRUE, progress = FALSE,
   parallel = FALSE, paropts = NULL, ...
 ) {
 
@@ -415,7 +413,7 @@ partial.default <- function(
 
     # Notify user that progress bars are not avaiable for "gbm" objects when
     # recursive = TRUE
-    if (progress != "none") {
+    if (isTRUE(progress)) {
       message("progress bars are not availble when `recursive = TRUE`.",
               call. = FALSE)
     }

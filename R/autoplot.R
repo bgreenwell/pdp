@@ -105,7 +105,7 @@
 #'
 #' # Partial dependence of cmedv on lstat and rm
 #' boston.rf %>%
-#'   partial(pred.var = c("lstat", "rm"), chull = TRUE, progress = "text") %>%
+#'   partial(pred.var = c("lstat", "rm"), chull = TRUE, progress = TRUE) %>%
 #'   autoplot(contour = TRUE, legend.title = "cmedv",
 #'            option = "B", direction = -1) + theme_bw()
 #'

@@ -7,8 +7,8 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
                    which.class, logit, train, progress, parallel, paropts, ...) {
 
   # Disable progress bar for parallel execution
-  if (progress != "none" && isTRUE(parallel)) {
-    progress <- "none"
+  if (isTRUE(progress) && isTRUE(parallel)) {
+    progress <- FALSE
     warning("progress bars are disabled whenever `parallel = TRUE`.",
             call. = FALSE, immediate. = TRUE)
   }
@@ -25,7 +25,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
 
     # Partial dependence: regression case
     if (task == "regression" && isFALSE(ice)) {
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
       }
       yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
@@ -34,7 +34,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
         temp[, pred.var] <- pred.grid[i, pred.var]
         preds <- mean(get_predictions(object, newdata = temp,
                                       inv.link = inv.link, ...), na.rm = TRUE)
-        if (progress != "none") {
+        if (isTRUE(progress)) {
           utils::setTxtProgressBar(pb, value = i)
         }
         preds
@@ -44,7 +44,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
 
     # Partial dependence: classification case
     if (task == "classification" && isFALSE(ice)) {
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
       }
       yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
@@ -54,7 +54,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
         preds <- mean(get_probs(object, newdata = temp,
                                 which.class = which.class, logit = logit, ...),
                       na.rm = TRUE)
-        if (progress != "none") {
+        if (isTRUE(progress)) {
           utils::setTxtProgressBar(pb, value = i)
         }
        preds
@@ -64,7 +64,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
 
     # ICE curves: regression case
     if (task == "regression" && isTRUE(ice)) {
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
       }
       yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
@@ -72,7 +72,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
         temp <- train
         temp[, pred.var] <- pred.grid[i, pred.var]
         preds <- get_predictions(object, newdata = temp, inv.link = inv.link, ...)
-        if (progress != "none") {
+        if (isTRUE(progress)) {
           utils::setTxtProgressBar(pb, value = i)
         }
         preds
@@ -85,7 +85,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
 
     # ICE curves: classification case
     if (task == "classification" && isTRUE(ice)) {
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
       }
       yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
@@ -94,12 +94,12 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
         temp[, pred.var] <- pred.grid[i, pred.var]
         preds <- get_probs(object, newdata = temp, which.class = which.class,
                            logit = logit, ...)
-        if (progress != "none") {
+        if (isTRUE(progress)) {
           utils::setTxtProgressBar(pb, value = i)
         }
         preds
       }
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         utils::setTxtProgressBar(pb, value = i)
       }
       grid.id <- rep(seq_len(nrow(pred.grid)), each = nrow(train))
@@ -111,7 +111,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
   } else {
 
     # Partial dependence/ICE curves: user-supplied prediction wrapper
-    if (progress != "none") {
+    if (isTRUE(progress)) {
       pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
     }
     yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
@@ -119,7 +119,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
       temp <- train
       temp[, pred.var] <- pred.grid[i, pred.var]
       preds <- pred.fun(object, newdata = temp)
-      if (progress != "none") {
+      if (isTRUE(progress)) {
         utils::setTxtProgressBar(pb, value = i)
       }
       preds
@@ -141,7 +141,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
   }
 
   # Close progress bar
-  if (progress != "none") {
+  if (isTRUE(progress)) {
     close(pb)
   }
 

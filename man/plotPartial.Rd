@@ -138,7 +138,7 @@ boston.rf \%>\%
 
 # Partial dependence of cmedv on lstat and rm
 boston.rf \%>\%
-  partial(pred.var = c("lstat", "rm"), chull = TRUE, progress = "text") \%>\%
+  partial(pred.var = c("lstat", "rm"), chull = TRUE, progress = TRUE) \%>\%
   plotPartial(contour = TRUE, legend.title = "rm")
 
 # ICE curves and c-ICE curves

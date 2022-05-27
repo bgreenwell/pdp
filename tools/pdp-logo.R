@@ -27,7 +27,7 @@ rescale <- function(x, a, b) {
 
 # Partial dependence of cmedv on lstat and rm
 pd <- partial(rfo, pred.var = c("lstat", "rm"), chull = FALSE,
-              progress = "text", grid.resolution = 100)
+              progress = TRUE, grid.resolution = 100)
 
 # Boundaries of the hexagon
 hex <- data.frame(x = 1.35 * 1 * c(-sqrt(3) / 2, 0, rep(sqrt(3) / 2, 2), 0,

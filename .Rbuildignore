@@ -6,8 +6,8 @@
 ^data-raw$
 ^README\.Rmd$
 ^README\.html$
-^rjournal$
 ^slowtests$
+^tools$
 ^\.github$
 ^\.o$
 ^\.nojekyll$

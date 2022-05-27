@@ -3,7 +3,7 @@ title: "Approximate partial dependence plots"
 
 author: Brandon M. Greenwell
 
-date: January 14, 2022
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 
 output:
   pdf_document:
@@ -63,7 +63,7 @@ knitr::knit_hooks$set(
 
 The partial dependence (PD) of the response on a set of predictors is essentially computed by averaging predictions over the observed values of all the other features; see @RJ-2017-016 for details. Constructing PD plots can be time consuming and computationally infeasible in practice, especially when dealing with complex models or large data sets. A less accurate, but faster alternative is to fix the other predictors at a "typical" value (e.g., the mean/median for continuous features and the most frequent value for categorical features). This is essentially what's accomplished by default with the `plotmo()` function from the **plotmo** package [@plotmo-pkg]\footnote{As of version 3.3.0, **plotmo** includes support for ordinary PD plots as well.}; Steven Millborrow, the author of **plotmo**, even refers to them as "a poor man's partial dependence plot" in the package documentation (see `?plotmo::plotmo`).
 
-To this end, I've added a new `exemplar()` function to the package. This function essentially flattens a data frame by summarizing each column by a "typical" value (i.e., the median for numeric columns and the most frequent value for categoricals and factors) into an "exemplar" record. To illustrate, the code chunk below constructs an exemplar record from the Boston housing data frame that's built into **pdp** (see `?pdp::boston` for details):
+To this end, I've added a new `exemplar()` function to the package. This function essentially flattens a data frame by summarizing each column with a "typical" value (i.e., the median for numeric columns and the most frequent value for categoricals and factors) into an "exemplar" record. To illustrate, the code chunk below constructs an exemplar record from the Boston housing data frame that's built into **pdp** (see `?pdp::boston` for details):
 
 ```{r exemplar}
 library(pdp)

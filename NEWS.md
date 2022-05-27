@@ -1,3 +1,14 @@
+# pdp 0.8.1
+
+## Minor changes
+
+* Fixed a couple of URLs in the package documentation.
+
+## Breaking changes
+
+* `partial()`'s progress argument now only accepts a logical and defaults to `FALSE`.
+
+
 # pdp 0.8.0
 
 ## New features

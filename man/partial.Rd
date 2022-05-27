@@ -37,7 +37,7 @@ partial(object, ...)
   train,
   cats = NULL,
   check.class = TRUE,
-  progress = "none",
+  progress = FALSE,
   parallel = FALSE,
   paropts = NULL,
   ...
@@ -79,15 +79,15 @@ curves (c-ICE curves). Only used when \code{ice = TRUE}. Default is
 \code{FALSE}. See Goldstein et al. (2014) for details.}
 
 \item{approx}{Logical indicating whether or not to compute a faster, but
-approximate, marginal effect plot (similar in spirit to
-\code{\link[plotmo]{plotmo}}). If \code{TRUE}, then `partial()` will compute
+approximate, marginal effect plot (similar in spirit to the
+\strong{plotmo} package). If \code{TRUE}, then \code{partial()} will compute
 predictions across the predictors specified in \code{pred.var} while holding
 the other predictors constant (a "poor man's partial dependence" function as
 Stephen Milborrow, the author of \code{\link[plotmo]{plotmo}}, puts it).
 Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
 WARNING: This option is currently experimental. Use at your own risk. It is
 possible (and arguably safer) to do this manually by passing a specific
-"exemplar" observation to the train argument and specifying `pred.grid`
+"exemplar" observation to the train argument and specifying \code{pred.grid}
 manually.}
 
 \item{quantiles}{Logical indicating whether or not to use the sample
@@ -190,10 +190,8 @@ from class \code{"matrix"} or \code{"dgCMatrix"}.}
 in \code{pred.grid} has the correct class, levels, etc. Default is
 \code{TRUE}.}
 
-\item{progress}{Character string giving the name of the progress bar to use
-while constructing the partial dependence function. See
-\code{\link[plyr]{create_progress_bar}} for details. Default is
-\code{"none"}.}
+\item{progress}{Logical indicating whether or not to display a text-based
+progress bar. Default is \code{FALSE}.}
 
 \item{parallel}{Logical indicating whether or not to run \code{partial} in
 parallel using a backend provided by the \code{foreach} package. Default is
@@ -266,7 +264,7 @@ partial(boston.rf, pred.var = "lstat", plot = TRUE, rug = TRUE)
 
 # The partial function allows for multiple predictors
 partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
-        plot = TRUE, chull = TRUE, progress = "text")
+        plot = TRUE, chull = TRUE, progress = TRUE)
 
 # The plotPartial function offers more flexible plotting
 pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
@@ -297,11 +295,11 @@ pima.rf <- randomForest(diabetes ~ ., data = pima, na.action = na.omit)
 
 # Partial dependence of positive test result on glucose (default logit scale)
 partial(pima.rf, pred.var = "glucose", plot = TRUE, chull = TRUE,
-        progress = "text")
+        progress = TRUE)
 
 # Partial dependence of positive test result on glucose (probability scale)
 partial(pima.rf, pred.var = "glucose", prob = TRUE, plot = TRUE,
-        chull = TRUE, progress = "text")
+        chull = TRUE, progress = TRUE)
 }
 }
 \references{

@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  29 APR 2022 10:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  11 MAY 2022 09:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**/private/var/folders/n4/p3v_wxsn7sv24f1bprr0sx_h0000gn/T/RtmpSoVbHi/preview-2
-95c4a6cf04f.dir/pdp-approximate.tex
+**/private/var/folders/n4/p3v_wxsn7sv24f1bprr0sx_h0000gn/T/RtmpdxM73n/preview-e
+7fe6c8efbeb.dir/pdp-approximate.tex
 
-(/private/var/folders/n4/p3v_wxsn7sv24f1bprr0sx_h0000gn/T/RtmpSoVbHi/preview-29
-5c4a6cf04f.dir/pdp-approximate.tex
+(/private/var/folders/n4/p3v_wxsn7sv24f1bprr0sx_h0000gn/T/RtmpdxM73n/preview-e7
+fe6c8efbeb.dir/pdp-approximate.tex
 LaTeX2e <2017-04-15>
 Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
 (/usr/local/texlive/2017/texmf-dist/tex/latex/base/article.cls
@@ -993,29 +993,29 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 [1
 
 {/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] <figure
-/approx-pdp-lstat-1.pdf, id=33, 400.49625pt x 222.8325pt>
-File: figure/approx-pdp-lstat-1.pdf Graphic file (type pdf)
-<use figure/approx-pdp-lstat-1.pdf>
-Package pdftex.def Info: figure/approx-pdp-lstat-1.pdf used on input line 210.
-(pdftex.def)             Requested size: 400.50137pt x 222.83534pt.
-<figure/approx-pdp-lstat-ggplot2-1.pdf, id=35, 423.5825pt x 255.95625pt>
-File: figure/approx-pdp-lstat-ggplot2-1.pdf Graphic file (type pdf)
-<use figure/approx-pdp-lstat-ggplot2-1.pdf>
-Package pdftex.def Info: figure/approx-pdp-lstat-ggplot2-1.pdf used on input li
+/approx-pdp-lstat-1.png, id=33, 433.62pt x 267.8808pt>
+File: figure/approx-pdp-lstat-1.png Graphic file (type png)
+<use figure/approx-pdp-lstat-1.png>
+Package pdftex.def Info: figure/approx-pdp-lstat-1.png used on input line 210.
+(pdftex.def)             Requested size: 433.62555pt x 267.88422pt.
+<figure/approx-pdp-lstat-ggplot2-1.png, id=36, 433.62pt x 267.8808pt>
+File: figure/approx-pdp-lstat-ggplot2-1.png Graphic file (type png)
+<use figure/approx-pdp-lstat-ggplot2-1.png>
+Package pdftex.def Info: figure/approx-pdp-lstat-ggplot2-1.png used on input li
 ne 230.
-(pdftex.def)             Requested size: 423.58147pt x 255.95561pt.
-[2 <./figure/approx-pdp-lstat-1.pdf>]
+(pdftex.def)             Requested size: 433.62555pt x 267.88422pt.
+[2 <./figure/approx-pdp-lstat-1.png>]
 
 LaTeX Warning: Reference `fig:plots' on page 3 undefined on input line 264.
 
-<figure/compare-plots-1.pdf, id=48, 415.5525pt x 249.93375pt>
-File: figure/compare-plots-1.pdf Graphic file (type pdf)
-<use figure/compare-plots-1.pdf>
-Package pdftex.def Info: figure/compare-plots-1.pdf used on input line 281.
-(pdftex.def)             Requested size: 415.56416pt x 249.94075pt.
-(./pdp-approximate.bbl [3 <./figure/approx-pdp-lstat-ggplot2-1.pdf>])
+<figure/compare-plots-1.png, id=43, 433.62pt x 267.8808pt>
+File: figure/compare-plots-1.png Graphic file (type png)
+<use figure/compare-plots-1.png>
+Package pdftex.def Info: figure/compare-plots-1.png used on input line 281.
+(pdftex.def)             Requested size: 433.62555pt x 267.88422pt.
+(./pdp-approximate.bbl [3 <./figure/approx-pdp-lstat-ggplot2-1.png>])
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 295.
-[4 <./figure/compare-plots-1.pdf>]
+[4 <./figure/compare-plots-1.png>]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 295.
 (./pdp-approximate.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 295.
@@ -1026,13 +1026,13 @@ LaTeX Warning: There were undefined references.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 295.
  ) 
 Here is how much of TeX's memory you used:
- 13776 strings out of 492995
- 198745 string characters out of 6132704
- 309741 words of memory out of 5000000
+ 13774 strings out of 492995
+ 198725 string characters out of 6132704
+ 309737 words of memory out of 5000000
  17052 multiletter control sequences out of 15000+600000
- 65646 words of font info for 85 fonts, out of 8000000 for 9000
+ 65563 words of font info for 84 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 34i,8n,38p,391b,454s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 34i,8n,38p,391b,455s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/local/
 texlive/2017/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/local/texlive/20
 17/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/2017/texmf-d
@@ -1043,10 +1043,10 @@ b></usr/local/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr7.pfb></usr/loca
 l/texlive/2017/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/20
 17/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2017/texmf-d
 ist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on pdp-approximate.pdf (4 pages, 256280 bytes).
+Output written on pdp-approximate.pdf (4 pages, 544819 bytes).
 PDF statistics:
- 121 PDF objects out of 1000 (max. 8388607)
- 95 compressed objects within 1 object stream
+ 104 PDF objects out of 1000 (max. 8388607)
+ 81 compressed objects within 1 object stream
  15 named destinations out of 1000 (max. 500000)
  14360 words of extra memory for PDF output out of 14400 (max. 10000000)
 

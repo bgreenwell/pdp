@@ -40,9 +40,9 @@ best_iter <- gbm::gbm.perf(fit, method = "cv")
 
 # Partial dependence w/wo setting approx = TRUE
 pd1 <- partial(fit, pred.var = "Gr_Liv_Area", n.trees = best_iter,
-               recursive = FALSE, progress = "progress")
+               recursive = FALSE, progress = TRUE)
 pd2 <- partial(fit, pred.var = "Gr_Liv_Area", approx = TRUE,
-               recursive = FALSE, progress = "progress",
+               recursive = FALSE, progress = TRUE,
                n.trees = best_iter)
 
 # Basic expectation(s)
@@ -92,7 +92,7 @@ expect_error(partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid2,
 
 # No progress bars or parallel processing for GBMs when `recursive = TRUE`
 expect_message(partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1,
-                       n.trees = best_iter, progress = "text"))
+                       n.trees = best_iter, progress = TRUE))
 expect_error(partial(fit, pred.var = "Gr_Liv_Area", pred.grid = grid1,
                      n.trees = best_iter, parallel = TRUE))
 

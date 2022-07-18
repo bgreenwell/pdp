@@ -4,11 +4,12 @@ df1 <- data.frame(
   y = sample(letters[1L:3L], size = 100, replace = TRUE,
              prob = c(0.1, 0.1, 0.8)),
   z = sample(c(Sys.Date(), Sys.Date() + 1, Sys.Date() + 2), size = 100,
-             replace = TRUE, prob = c(0.1, 0.1, 0.8))
+             replace = TRUE, prob = c(0.1, 0.1, 0.8)),
+  stringsAsFactors = FALSE
 )
 
 # Data frame that pdp::exemplar() should return
-df2 <- data.frame(x = 3L, y = "c", z = Sys.Date() + 2)
+df2 <- data.frame(x = 3L, y = "c", z = Sys.Date() + 2, stringsAsFactors = FALSE)
 
 # Expectation(s)
 df3 <- exemplar(df1)

@@ -2,6 +2,7 @@
 // License: GNU GPL (version 2 or later)
 // Modified by Brandon Greenwell on 11-Mar-2017
 
+#define R_NO_REMAP
 #include "PartialGBM.h"
 
 extern "C" {
@@ -55,7 +56,7 @@ SEXP PartialGBM(SEXP radX, SEXP rcRows, SEXP rcCols, SEXP rcNumClasses,
   int iPredVar = 0;
 
   // allocate the predictions to return
-  PROTECT(radPredF = allocVector(REALSXP, cRows*cNumClasses));
+  PROTECT(radPredF = Rf_allocVector(REALSXP, cRows*cNumClasses));
   if(radPredF == NULL)
   {
     hr = GBM_OUTOFMEMORY;

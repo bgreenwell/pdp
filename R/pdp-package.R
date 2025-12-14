@@ -15,7 +15,9 @@
 #'   \item{\code{autoplot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[ggplot2]{ggplot2}} graphics;
 #'   \item{\code{topPredictors}} - extract most "important" predictors from various types of fitted models.
 #' }
-#'
-#' @docType package
-#' @name pdp
+#' @keywords internal
+"_PACKAGE"
+
+## usethis namespace: start
+## usethis namespace: end
 NULL

@@ -1,4 +1,13 @@
-# Tests for package party (S4 methods)
+if (!requireNamespace("gridExtra", quietly = TRUE)) {
+  exit_file("Package gridExtra missing")
+}
+
+# Load required packages
+suppressMessages({
+  library(gridExtra)
+})
+
+# Tests for package MASS
 if (require(MASS, quietly = TRUE)) {
 
   # Load Friedman benchmark data

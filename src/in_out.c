@@ -21,6 +21,7 @@ USA. */
 
 /* inside polygon tester.... */
 
+#define R_NO_REMAP
 #include <R.h>
 #include <Rinternals.h>
 
@@ -28,7 +29,7 @@ void in_out(double *bx, double *by, double *break_code, double *x, double *y, in
   /* finds out whether points in arrays x,y are inside boundary or outside, by counting boundary
   crossings. The boundaries nodes are defined by bx, by.  bx[i] and by[i] less than or equal to
   break_code signals a break in the boundary (e.g. between island and external boundary.) Each
-  section of boundary is assumed to be a closed loop. nb is dimenion of bx and by; n is dimension
+  section of boundary is assumed to be a closed loop. nb is dimension of bx and by; n is dimension
   of x and y. `in' will contain a 1 for an interior point and a 0 otherwise, on exit.
   Both bx[i] and by[i] or neither must be less than the break_code. */
   double xx, yy, dum, x0, x1, y0, y1;

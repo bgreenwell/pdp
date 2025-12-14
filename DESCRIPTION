@@ -1,7 +1,7 @@
 Package: pdp
 Type: Package
 Title: Partial Dependence Plots
-Version: 0.8.1
+Version: 0.8.2
 Authors@R: person(c("Brandon", "M."), family = "Greenwell", 
     email = "greenwell.brandon@gmail.com", role = c("aut", "cre"), 
     comment = c(ORCID = "0000-0002-8120-0084"))
@@ -57,6 +57,6 @@ Imports:
     stats, 
     utils
 LazyData: TRUE
-RoxygenNote: 7.1.2
+RoxygenNote: 7.3.2
 Encoding: UTF-8
 VignetteBuilder: knitr

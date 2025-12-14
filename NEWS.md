@@ -1,4 +1,21 @@
+# pdp 0.8.2
+
+## Minor changes
+
+* Set `R_NO_REMAP` per changes in CRAN policies.
+
+* Updated package documentation since `@docType "package"` is deprecated.
+
+* Removed unnecessary `get_training_data.Rd` file and cleaned up arguments.
+
+* Update citation file to use `c()` instead of `personList()` and `bibentry()` instead of `citEntry()`.
+
+
 # pdp 0.8.1
+
+## Bug fixes
+
+* Fixed an ICE plot issue for XGBoost models caused by switching to the [foreach](https://cran.r-project.org/package=foreach) package.
 
 ## Minor changes
 

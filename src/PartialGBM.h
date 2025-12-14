@@ -5,6 +5,7 @@
 //#ifndef BUILDINFO_H
 //#define BUILDINFO_H
 
+#define R_NO_REMAP
 #ifndef PARTIALGBM_H
 #define PARTIALGBM_H
 

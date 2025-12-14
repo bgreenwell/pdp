@@ -5,27 +5,15 @@ msg <- paste0(
 )
 
 
-#' #' @keywords internal
-#' where <- function(name, env = parent.frame()) {
-#'   if (identical(env, emptyenv())) {
-#'     stop("Can't find ", name, ".", call. = FALSE)
-#'   } else if (exists(name, envir = env, inherits = FALSE)) {
-#'     env
-#'   } else {
-#'     where(name, parent.env(env))
-#'   }
-#' }
-
-
 #' @keywords internal
-get_training_data <- function(object) {
+get_training_data <- function(object, ...) {
   UseMethod("get_training_data")
 }
 
 
 #' @keywords internal
 get_training_data.default <- function(object, env = parent.frame(),
-                                      arg = "data") {
+                                      arg = "data", ...) {
 
   # Throw error message for S4 objects (for now)
   if (isS4(object)) {
@@ -83,7 +71,7 @@ get_training_data.default <- function(object, env = parent.frame(),
 # Package: caret ---------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.train <- function(object) {
+get_training_data.train <- function(object, ...) {
   # By default, "train" object have a copy of the training data stored in
   # a component called "trainingData". Note that the returned data frame only
   # includes the feature columns
@@ -99,7 +87,7 @@ get_training_data.train <- function(object) {
 # Package: C50 -----------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.C5.0 <- function(object) {
+get_training_data.C5.0 <- function(object, ...) {
   tryCatch(
     expr = get_training_data.default(object, arg = "data"),
     error = function(e) {
@@ -112,7 +100,7 @@ get_training_data.C5.0 <- function(object) {
 # Package: Cubist --------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.cubist <- function(object) {
+get_training_data.cubist <- function(object, ...) {
   get_training_data.default(object, arg = "x")
 }
 
@@ -120,7 +108,7 @@ get_training_data.cubist <- function(object) {
 # Package: e1071 ---------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.svm <- function(object) {
+get_training_data.svm <- function(object, ...) {
   tryCatch(
     expr = get_training_data.default(object, arg = "data"),
     error = function(e) {
@@ -133,7 +121,7 @@ get_training_data.svm <- function(object) {
 # Package: earth ---------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.earth <- function(object) {
+get_training_data.earth <- function(object, ...) {
   tryCatch(
     expr = get_training_data.default(object, arg = "data"),
     error = function(e) {
@@ -146,7 +134,7 @@ get_training_data.earth <- function(object) {
 # Package: party ---------------------------------------------------------------
 
 #' @keywords internal
-get_training_data.BinaryTree <- function(object) {
+get_training_data.BinaryTree <- function(object, ...) {
   # WARNING: Returns feature columns only in a data frame with some additional
   # attributes
   object@data@get("input")
@@ -154,7 +142,7 @@ get_training_data.BinaryTree <- function(object) {
 
 
 #' @keywords internal
-get_training_data.RandomForest <- function(object) {
+get_training_data.RandomForest <- function(object, ...) {
   # WARNING: Returns feature columns only in a data frame with some additional
   # attributes
   object@data@get("input")
@@ -164,7 +152,7 @@ get_training_data.RandomForest <- function(object) {
 # Package: randomForest --------------------------------------------------------
 
 #' @keywords internal
-get_training_data.randomForest <- function(object) {
+get_training_data.randomForest <- function(object, ...) {
   if (inherits(object, what = "randomForest.formula")) {
     get_training_data.default(object, env = parent.frame(), arg = "data")
   } else {

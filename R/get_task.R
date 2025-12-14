@@ -40,7 +40,7 @@ get_task.C5.0 <- function(object) {
   "classification"
 }
 
-
+#' @keywords internal
 get_task.cforest <- function(object) {
   if (is.factor(object$fitted[["(response)"]])) {
     "classification"
@@ -175,6 +175,7 @@ get_task.nnet <- function(object) {
 }
 
 
+#' @keywords internal
 get_task.party <- function(object) {
   if (is.factor(object$fitted[["(response)"]])) {
     "classification"

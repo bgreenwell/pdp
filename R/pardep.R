@@ -80,7 +80,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
       grid.id <- rep(seq_len(nrow(pred.grid)), each = nrow(train))
       yhat.id <- rep(seq_len(nrow(train)), times = nrow(pred.grid))
       res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      names(res) <- c(names(pred.grid), "yhat", "yhat.id")
+      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
     }
 
     # ICE curves: classification case
@@ -105,7 +105,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
       grid.id <- rep(seq_len(nrow(pred.grid)), each = nrow(train))
       yhat.id <- rep(seq_len(nrow(train)), times = nrow(pred.grid))
       res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      names(res) <- c(names(pred.grid), "yhat", "yhat.id")
+      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
     }
 
   } else {
@@ -135,7 +135,7 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
         names(yhat)
       }
       res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      names(res) <- c(names(pred.grid), "yhat", "yhat.id")
+      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
     }
 
   }

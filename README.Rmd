@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 # pdp <img src="man/figures/pdp-logo.png" align="right" width="130" height="150" />
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/investr)](https://CRAN.R-project.org/package=investr)
+[![CRAN status](https://www.r-pkg.org/badges/version/pdp)](https://CRAN.R-project.org/package=pdp)
 [![R-CMD-check](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Codecov test coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=master)
 [![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/pdp)](https://cranlogs.r-pkg.org/badges/grand-total/pdp)

@@ -73,3 +73,26 @@ gridExtra::grid.arrange(
   parDepPlot(bst.xgb.DMatrix, train = X.dgCMatrix),
   ncol = 3
 )
+
+# Function to construct ICE curves for glucose on the centered logit scale
+icePlot <- function(object, train, ...) {
+  pd <- partial(object, pred.var = "glucose", ice = TRUE, train = train)
+  label <- paste(deparse(substitute(object)), "with", deparse(substitute(train)))
+  autoplot(pd, main = label, alpha = 0.05) +
+    theme_light()
+}
+
+# Try all nine combinations (should all look exactly the same!)
+gridExtra::grid.arrange(
+  icePlot(bst.matrix, train = X),
+  icePlot(bst.matrix, train = X.matrix),
+  icePlot(bst.matrix, train = X.dgCMatrix),
+  icePlot(bst.dgCMatrix, train = X),
+  icePlot(bst.dgCMatrix, train = X.matrix),
+  icePlot(bst.dgCMatrix, train = X.dgCMatrix),
+  icePlot(bst.xgb.DMatrix, train = X),
+  icePlot(bst.xgb.DMatrix, train = X.matrix),
+  icePlot(bst.xgb.DMatrix, train = X.dgCMatrix),
+  ncol = 3
+)
+

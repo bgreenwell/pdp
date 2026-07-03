@@ -1,0 +1,11 @@
+pandoc: 3.8.3
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  faster-pdp: faster-pdp.html
+  ice-curves: ice-curves.html
+  pdp: pdp.html
+last_built: 2026-07-03T19:14Z
+urls:
+  reference: https://bgreenwell.github.io/pdp/reference
+  article: https://bgreenwell.github.io/pdp/articles

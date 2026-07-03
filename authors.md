@@ -1,0 +1,27 @@
+# Authors and Citation
+
+## Authors
+
+- **Brandon M. Greenwell**. Author, maintainer.
+  [](https://orcid.org/0000-0002-8120-0084)
+
+## Citation
+
+Source:
+[`inst/CITATION`](https://github.com/bgreenwell/pdp/blob/main/inst/CITATION)
+
+Brandon M. Greenwell (2017). pdp: An R Package for Constructing Partial
+Dependence Plots. The R Journal, 9(1), 421--436. URL
+https://journal.r-project.org/archive/2017/RJ-2017-016/index.html.
+
+    @Article{,
+      title = {pdp: An {R} Package for Constructing Partial Dependence Plots},
+      author = {Brandon M. Greenwell},
+      journal = {The R Journal},
+      year = {2017},
+      volume = {9},
+      number = {1},
+      pages = {421--436},
+      url = {https://doi.org/10.32614/RJ-2017-016},
+      doi = {10.32614/RJ-2017-016},
+    }

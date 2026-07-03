@@ -35,9 +35,10 @@ if (require(xgboost, quietly = TRUE)) {
   ice1 <- partial(fit1, pred.var = "x.3", ice = TRUE, train = X1)
 
   # Expectations
-  pdp1 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE)
-  pdp2 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE,
-                  plot.engine = "tinyplot")  # draws plot; returns data invisibly
+  pdp1 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE,
+                  plot.engine = "lattice")
+  pdp2 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE)
+  # Default engine (tinyplot) draws the plot and returns the data invisibly
   expect_true(inherits(pdp1, what = "trellis"))
   expect_true(inherits(pdp2, what = "partial"))
   expect_error(partial(fit1, pred.var = "x.3"))

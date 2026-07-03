@@ -80,7 +80,7 @@ plotPartial(pd, rug = TRUE, train = boston)
 ```
 
 You can also let `partial()` plot directly by setting `plot = TRUE` and
-choosing a `plot.engine` (`"lattice"`, the default, or `"tinyplot"`).
+choosing a `plot.engine` (`"tinyplot"`, the default, or `"lattice"`).
 
 ## Two predictors
 
@@ -113,7 +113,7 @@ pima.rf <- randomForest(diabetes ~ ., data = pima2, ntree = 250)
 
 # Partial dependence of the probability of testing positive on glucose
 partial(pima.rf, pred.var = "glucose", prob = TRUE, which.class = "pos",
-        plot = TRUE, plot.engine = "tinyplot", rug = TRUE, train = pima2)
+        plot = TRUE, rug = TRUE, train = pima2)
 ```
 
 ## Models with non-Gaussian responses
@@ -127,8 +127,7 @@ computed:
 fit <- glm(carb ~ ., data = mtcars, family = poisson)
 
 # Partial dependence of the number of carburetors on mpg (response scale)
-partial(fit, pred.var = "mpg", inv.link = exp, plot = TRUE,
-        plot.engine = "tinyplot", train = mtcars)
+partial(fit, pred.var = "mpg", inv.link = exp, plot = TRUE, train = mtcars)
 ```
 
 ## Controlling the grid
@@ -144,7 +143,7 @@ grid of (at most) 51 values spanning their range. This can be controlled via:
 
 ```{r grid}
 partial(boston.rf, pred.var = "lstat", quantiles = TRUE, probs = 1:19/20,
-        plot = TRUE, plot.engine = "tinyplot", train = boston)
+        plot = TRUE, train = boston)
 ```
 
 ## Learn more

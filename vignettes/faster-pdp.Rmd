@@ -52,6 +52,15 @@ system.time(  # batched: score up to one million rows per predict() call
 identical(pd1, pd2)
 ```
 
+Batching only changes *how* the predictions are computed, not the result. To
+see this, plot the classic curve and overlay the batched results as points ---
+they fall exactly on the curve:
+
+```{r batch-plot}
+plot(pd1)  # classic (line)
+tinyplot::tinyplot_add(yhat ~ lstat, data = pd2, type = "p", col = "red2")
+```
+
 The trade-off is memory: with `batch.size = 1e6`, up to a million rows are
 held in memory at once. Pick a batch size that comfortably fits your machine.
 Note that `batch.size` requires the prediction function to return one
@@ -102,9 +111,20 @@ system.time(
 )
 ```
 
-The two methods agree closely (they handle weights slightly differently), but
-note that the recursive method cannot be used with `ice = TRUE`, `pred.fun`,
-or `inv.link`.
+Overlaying the results shows that the two methods produce nearly the same
+curve:
+
+```{r gbm-plot}
+plot(pd.recursive)  # recursive (line)
+tinyplot::tinyplot_add(yhat ~ lstat, data = pd.brute, type = "p", col = "red2")
+```
+
+The small differences are expected: rather than averaging predictions over the
+training data, the recursive method weights each path through the tree by the
+proportion of training observations that followed it, which is not quite the
+same thing when the predictors are correlated (as they are here). Note that
+the recursive method cannot be used with `ice = TRUE`, `pred.fun`, or
+`inv.link`.
 
 ## Fast approximate PDPs (`approx = TRUE`)
 
@@ -117,7 +137,7 @@ first look at very large data sets:
 
 ```{r approx}
 partial(boston.rf, pred.var = "lstat", approx = TRUE, plot = TRUE,
-        plot.engine = "tinyplot", train = boston)
+        train = boston)
 ```
 
 The underlying `exemplar()` function is also exported; you can achieve the

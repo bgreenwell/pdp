@@ -189,14 +189,19 @@ tinyplot_ice_curves <- function(object, center, plot.pdp, pdp.col, pdp.lwd,
     object <- center_ice_curves(object)  # converts ICE curves to c-ICE curves
   }
 
-  # Draw one curve per observation (with points if the predictor is a factor)
+  # Draw one curve per observation (with points if the predictor is a factor);
+  # use do.call() so the call that tinyplot records for tinyplot_add() holds
+  # values rather than `...`, which cannot be re-evaluated in other contexts
   x.name <- names(object)[1L]
   plot.type <- if (is.factor(object[[1L]])) "b" else "l"
-  tinyplot::tinyplot(
-    stats::as.formula(paste("yhat ~", x.name, "| yhat.id")), data = object,
-    type = plot.type, col = grDevices::adjustcolor("black", alpha.f = alpha),
-    legend = FALSE, ...
-  )
+  do.call(tinyplot::tinyplot, args = c(
+    list(
+      stats::as.formula(paste("yhat ~", x.name, "| yhat.id")), data = object,
+      type = plot.type, col = grDevices::adjustcolor("black", alpha.f = alpha),
+      legend = FALSE
+    ),
+    list(...)
+  ))
 
   # Should the PDP (i.e., average curve) be displayed too?
   if (plot.pdp) {
@@ -218,13 +223,17 @@ tinyplot_ice_curves <- function(object, center, plot.pdp, pdp.col, pdp.lwd,
 #' @keywords internal
 tinyplot_one_predictor_pdp <- function(object, smooth, rug, train, ...) {
 
-  # Draw a line plot (or scatterplot whenever the predictor is a factor)
+  # Draw a line plot (or scatterplot whenever the predictor is a factor); see
+  # tinyplot_ice_curves() for why do.call() is used here
   x.name <- names(object)[1L]
   plot.type <- if (is.factor(object[[1L]])) "p" else "l"
-  tinyplot::tinyplot(
-    stats::as.formula(paste("yhat ~", x.name)), data = object,
-    type = plot.type, ...
-  )
+  do.call(tinyplot::tinyplot, args = c(
+    list(
+      stats::as.formula(paste("yhat ~", x.name)), data = object,
+      type = plot.type
+    ),
+    list(...)
+  ))
   if (plot.type == "l") {
     if (isTRUE(smooth)) {  # add a LOESS smooth
       tinyplot::tinyplot_add(type = "loess")
@@ -250,12 +259,16 @@ tinyplot_two_predictor_pdp <- function(object, smooth, rug, train, contour,
     axis.pos <- if (facet.pos == 1L) 2L else 1L
     plot.type <- if (is.factor(object[[axis.pos]])) "p" else "l"
 
-    # Draw a faceted line plot (or scatterplot)
-    tinyplot::tinyplot(
-      stats::as.formula(paste("yhat ~", x.names[axis.pos])),
-      facet = stats::as.formula(paste("~", x.names[facet.pos])),
-      data = object, type = plot.type, ...
-    )
+    # Draw a faceted line plot (or scatterplot); see tinyplot_ice_curves() for
+    # why do.call() is used here
+    do.call(tinyplot::tinyplot, args = c(
+      list(
+        stats::as.formula(paste("yhat ~", x.names[axis.pos])),
+        facet = stats::as.formula(paste("~", x.names[facet.pos])),
+        data = object, type = plot.type
+      ),
+      list(...)
+    ))
     if (plot.type == "l" && isTRUE(smooth)) {
       tinyplot::tinyplot_add(type = "loess")
     }

@@ -100,9 +100,10 @@
 #' \code{\link{plotPartial}} for plotting details.
 #'
 #' @param plot.engine Character string specifying which plotting engine to use
-#' whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
-#' \code{"tinyplot"} (lightweight base R graphics via the
-#' \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).
+#' whenever \code{plot = TRUE}. Options include \code{"tinyplot"} (default;
+#' lightweight base R graphics via the
+#' \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package) or
+#' \code{"lattice"}.
 #'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
 #' Default is \code{FALSE}.
@@ -180,15 +181,15 @@
 #' \code{center = FALSE} then an object of class \code{c("data.frame", "ice")}
 #' is returned. If \code{ice = TRUE} and \code{center = TRUE} then an object of
 #' class \code{c("data.frame", "cice")} is returned. These three classes
-#' determine the behavior of the \code{plotPartial} function which is
-#' automatically called whenever \code{plot = TRUE}. Specifically, when
-#' \code{plot = TRUE} and \code{plot.engine = "lattice"}, a \code{"trellis"}
-#' object is returned (see \code{\link[lattice]{lattice}} for details); the
-#' \code{"trellis"} object will also include an additional attribute,
-#' \code{"partial.data"}, containing the data displayed in the plot. When
-#' \code{plot = TRUE} and \code{plot.engine = "tinyplot"}, the plot is drawn
+#' determine the behavior of the plotting functions that are automatically
+#' called whenever \code{plot = TRUE}. Specifically, when \code{plot = TRUE}
+#' and \code{plot.engine = "tinyplot"} (the default), the plot is drawn
 #' directly (as a side effect) and the data frame of partial dependence values
-#' is returned invisibly.
+#' is returned invisibly. When \code{plot = TRUE} and
+#' \code{plot.engine = "lattice"}, a \code{"trellis"} object is returned (see
+#' \code{\link[lattice]{lattice}} for details); the \code{"trellis"} object
+#' will also include an additional attribute, \code{"partial.data"}, containing
+#' the data displayed in the plot.
 #'
 #' @note
 #' In some cases it is difficult for \code{partial} to extract the original
@@ -300,7 +301,7 @@ partial.default <- function(
   ice = FALSE, center = FALSE, approx = FALSE, quantiles = FALSE, probs = 1:9/10,
   trim.outliers = FALSE, type = c("auto", "regression", "classification"),
   inv.link = NULL, which.class = 1L, prob = FALSE, recursive = TRUE,
-  plot = FALSE, plot.engine = c("lattice", "tinyplot"),
+  plot = FALSE, plot.engine = c("tinyplot", "lattice"),
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
   alpha = 1, train, cats = NULL, check.class = TRUE, batch.size = NULL,

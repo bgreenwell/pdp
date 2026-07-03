@@ -26,7 +26,7 @@ partial(object, ...)
   prob = FALSE,
   recursive = TRUE,
   plot = FALSE,
-  plot.engine = c("lattice", "tinyplot"),
+  plot.engine = c("tinyplot", "lattice"),
   smooth = FALSE,
   rug = FALSE,
   chull = FALSE,
@@ -145,9 +145,10 @@ function directly (\code{TRUE}). Default is \code{FALSE}. See
 \code{\link{plotPartial}} for plotting details.}
 
 \item{plot.engine}{Character string specifying which plotting engine to use
-whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
-\code{"tinyplot"} (lightweight base R graphics via the
-\href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).}
+whenever \code{plot = TRUE}. Options include \code{"tinyplot"} (default;
+lightweight base R graphics via the
+\href{https://grantmcdermott.com/tinyplot/}{tinyplot} package) or
+\code{"lattice"}.}
 
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
@@ -223,15 +224,15 @@ By default, \code{partial} returns an object of class
 \code{center = FALSE} then an object of class \code{c("data.frame", "ice")}
 is returned. If \code{ice = TRUE} and \code{center = TRUE} then an object of
 class \code{c("data.frame", "cice")} is returned. These three classes
-determine the behavior of the \code{plotPartial} function which is
-automatically called whenever \code{plot = TRUE}. Specifically, when
-\code{plot = TRUE} and \code{plot.engine = "lattice"}, a \code{"trellis"}
-object is returned (see \code{\link[lattice]{lattice}} for details); the
-\code{"trellis"} object will also include an additional attribute,
-\code{"partial.data"}, containing the data displayed in the plot. When
-\code{plot = TRUE} and \code{plot.engine = "tinyplot"}, the plot is drawn
+determine the behavior of the plotting functions that are automatically
+called whenever \code{plot = TRUE}. Specifically, when \code{plot = TRUE}
+and \code{plot.engine = "tinyplot"} (the default), the plot is drawn
 directly (as a side effect) and the data frame of partial dependence values
-is returned invisibly.
+is returned invisibly. When \code{plot = TRUE} and
+\code{plot.engine = "lattice"}, a \code{"trellis"} object is returned (see
+\code{\link[lattice]{lattice}} for details); the \code{"trellis"} object
+will also include an additional attribute, \code{"partial.data"}, containing
+the data displayed in the plot.
 }
 \description{
 Compute partial dependence functions (i.e., marginal effects) for various
@@ -309,7 +310,7 @@ plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 #
 
 # Fit a random forest to the Pima Indians diabetes data
-data (pima)  # load the boston housing data
+data (pima)  # load the Pima Indians diabetes data
 set.seed(102)  # for reproducibility
 pima.rf <- randomForest(diabetes ~ ., data = pima, na.action = na.omit)
 

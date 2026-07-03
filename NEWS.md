@@ -8,6 +8,12 @@ lightweight base R `plot()` methods built on
 `partial()`'s `plot.engine` argument now accepts `"tinyplot"` in place of
 `"ggplot2"`, and **pdp** no longer depends on **ggplot2** or **rlang**.
 
+* `"tinyplot"` is now the default plotting engine for
+`partial(..., plot = TRUE)`; note that it draws the plot directly (as a side
+effect) and returns the data frame of partial dependence values invisibly.
+Use `plot.engine = "lattice"` for the previous behavior (i.e., a returned
+`"trellis"` object).
+
 ## Bug fixes
 
 * Fixed a serious bug in the recursive (i.e., weighted tree traversal) method

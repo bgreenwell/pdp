@@ -8,7 +8,6 @@
 ^docs$
 ^data-raw$
 ^README\.html$
-^slowtests$
 ^tools$
 ^\.github$
 \.o$

@@ -1,5 +1,12 @@
 # pdp (development version)
 
+* Removed the (long stale) `slowtests/` directory; its coverage is redundant
+with the `tinytest` suite and the new vignettes.
+
+* Pruned Suggests packages that were no longer used anywhere in the package
+(**adabag**, **AmesHousing**, **Cubist**, **ipred**, **mda**, **partykit**,
+and **vip**).
+
 
 # pdp 0.9.0
 

@@ -1,0 +1,43 @@
+url: https://bgreenwell.github.io/pdp/
+
+template:
+  bootstrap: 5
+
+home:
+  title: pdp — Partial Dependence Plots in R
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+articles:
+- title: Vignettes
+  navbar: ~
+  contents:
+  - pdp
+  - ice-curves
+  - faster-pdp
+
+reference:
+- title: Compute partial dependence
+  desc: >
+    Compute partial dependence functions and individual conditional
+    expectation (ICE) curves from various fitted model objects.
+  contents:
+  - partial
+  - exemplar
+- title: Plotting
+  desc: >
+    Display partial dependence functions and ICE curves using lightweight
+    base R graphics (via tinyplot) or lattice graphics.
+  contents:
+  - plot.partial
+  - plotPartial
+- title: Data sets
+  contents:
+  - boston
+  - pima
+- title: Deprecated
+  contents:
+  - topPredictors

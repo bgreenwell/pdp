@@ -3,6 +3,8 @@
 ^\.planning$
 ^AGENTS\.md$
 ^codecov\.yml$
+^_pkgdown\.yml$
+^pkgdown$
 ^docs$
 ^data-raw$
 ^README\.html$

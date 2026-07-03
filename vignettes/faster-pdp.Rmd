@@ -1,0 +1,125 @@
+---
+title: "Making pdp faster"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Making pdp faster}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 6,
+  fig.height = 4.5,
+  fig.align = "center",
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+Computing partial dependence is embarrassingly simple but potentially
+expensive: for each point in the grid of predictor values, the model has to
+score a modified copy of the entire training set. This vignette covers the
+options **pdp** provides for speeding that up.
+
+```{r boston-rf}
+library(pdp)
+library(randomForest)
+
+data(boston)
+set.seed(101)
+boston.rf <- randomForest(cmedv ~ ., data = boston, ntree = 250)
+```
+
+## Batched predictions (`batch.size`)
+
+By default, `partial()` calls `predict()` once per grid point. Most
+`predict()` methods have non-trivial per-call overhead, so it is often much
+faster to *stack* several grid points together and score them in a single
+call. The `batch.size` argument specifies the (approximate) maximum number of
+rows to score per call:
+
+```{r batch}
+system.time(  # classic: one predict() call per grid point
+  pd1 <- partial(boston.rf, pred.var = "lstat", train = boston)
+)
+system.time(  # batched: score up to one million rows per predict() call
+  pd2 <- partial(boston.rf, pred.var = "lstat", train = boston,
+                 batch.size = 1e6)
+)
+identical(pd1, pd2)
+```
+
+The trade-off is memory: with `batch.size = 1e6`, up to a million rows are
+held in memory at once. Pick a batch size that comfortably fits your machine.
+Note that `batch.size` requires the prediction function to return one
+prediction per row of `newdata`, so it cannot be combined with a `pred.fun`
+that aggregates its own predictions.
+
+## Parallel processing
+
+`partial()` can compute the grid points (or batches) in parallel via the
+[foreach](https://cran.r-project.org/package=foreach) package. Register a
+parallel backend (e.g., with **doParallel**) and set `parallel = TRUE`:
+
+```{r parallel, eval=FALSE}
+library(doParallel)
+
+cl <- makeCluster(4)  # use 4 workers
+registerDoParallel(cl)
+pd <- partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE,
+              train = boston, parallel = TRUE)
+stopCluster(cl)
+```
+
+If the model's `predict()` method lives in a package, pass it along via
+`paropts` (e.g., `paropts = list(.packages = "ranger")`) so the workers can
+find it.
+
+## The recursive method for gbm
+
+For **gbm** models, `partial()` defaults to `recursive = TRUE`, which uses
+Friedman's weighted tree traversal method (implemented in C++) instead of the
+brute force approach. It is *much* faster since it never has to touch the
+training data:
+
+```{r gbm}
+library(gbm)
+
+set.seed(103)
+boston.gbm <- gbm(cmedv ~ ., data = boston, distribution = "gaussian",
+                  n.trees = 500, interaction.depth = 3, shrinkage = 0.1)
+
+system.time(
+  pd.recursive <- partial(boston.gbm, pred.var = "lstat", n.trees = 500,
+                          train = boston)  # recursive = TRUE is the default
+)
+system.time(
+  pd.brute <- partial(boston.gbm, pred.var = "lstat", n.trees = 500,
+                      recursive = FALSE, train = boston, batch.size = 1e6)
+)
+```
+
+The two methods agree closely (they handle weights slightly differently), but
+note that the recursive method cannot be used with `ice = TRUE`, `pred.fun`,
+or `inv.link`.
+
+## Fast approximate PDPs (`approx = TRUE`)
+
+Finally, `approx = TRUE` computes a much cheaper *approximation* to partial
+dependence: rather than averaging over the training data, predictions are
+computed for a single "exemplar" observation (continuous predictors are fixed
+at their median; categorical predictors at their most frequent value). This is
+in the same spirit as the **plotmo** package and is most useful as a quick
+first look at very large data sets:
+
+```{r approx}
+partial(boston.rf, pred.var = "lstat", approx = TRUE, plot = TRUE,
+        plot.engine = "tinyplot", train = boston)
+```
+
+The underlying `exemplar()` function is also exported; you can achieve the
+same thing (with more control) by passing an exemplar record to `train` and,
+optionally, your own `pred.grid`.

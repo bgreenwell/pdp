@@ -8,4 +8,5 @@ slowtests/*.html
 src/*.o
 src/*.so
 inst/doc
+docs/
 /revdep/.cache.rds

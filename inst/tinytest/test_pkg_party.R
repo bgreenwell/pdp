@@ -1,3 +1,7 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 # Tests for package party (S4 methods)
 if (require(party, quietly = TRUE)) {
 

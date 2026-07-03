@@ -37,8 +37,7 @@ sorted at the names of the \code{n} highest scoring predictors are returned.
 # Regression example (requires randomForest package to run)
 #
 
-Load required packages
-library(ggplot2)
+# Load required packages
 library(randomForest)
 
 # Fit a random forest to the mtcars dataset
@@ -46,7 +45,7 @@ data(mtcars, package = "datasets")
 set.seed(101)
 mtcars.rf <- randomForest(mpg ~ ., data = mtcars, mtry = 5, importance = TRUE)
 
-# Topfour predictors
+# Top four predictors
 top4 <- topPredictors(mtcars.rf, n = 4)
 
 # Construct partial dependence functions for top four predictors
@@ -58,11 +57,8 @@ for (i in top4) {
 }
 
 # Display partial dependence functions
-ggplot(pd, aes(x, y)) +
-  geom_line() +
-  facet_wrap(~ predictor, scales = "free") +
-  theme_bw() +
-  ylab("mpg")
+tinyplot::tinyplot(y ~ x, facet = ~ predictor, data = pd, type = "l",
+                   facet.args = list(free = TRUE), ylab = "mpg")
 
 }
 }

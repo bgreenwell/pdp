@@ -164,7 +164,7 @@ plotPartial.partial <- function(
 
   # Throw error if too difficult to plot
   if ((!multi && !(nx %in% 1:3)) || (multi && (nx > 1))) {
-    stop("Too many variables to plot. Try using lattice or ggplot2 directly.")
+    stop("Too many variables to plot. Try using lattice directly.")
   }
 
   # Determine which type of plot to draw based on the number of predictors
@@ -207,6 +207,24 @@ plotPartial.partial <- function(
 }
 
 
+# Add a rug display (min/max and deciles) for one or two predictors to the
+# current lattice panel
+#' @keywords internal
+panel_rug_quantiles <- function(train, x.name, y.name = NULL) {
+  if (is.null(train)) {
+    stop("The training data must be supplied for rug display.")
+  }
+  deciles <- function(name) {
+    stats::quantile(train[, name, drop = TRUE], probs = 0:10/10, na.rm = TRUE)
+  }
+  if (is.null(y.name)) {
+    panel.rug(deciles(x.name), col = 1)
+  } else {
+    panel.rug(x = deciles(x.name), y = deciles(y.name), col = 1)
+  }
+}
+
+
 #' @keywords internal
 plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
                             rug, train, ...) {
@@ -237,13 +255,7 @@ plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
         )
       }
       if (rug && is.numeric(object[[1L]])) {
-        if (is.null(train)) {
-          stop("The training data must be supplied for rug display.")
-        } else {
-          panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
-                                    probs = 0:10/10, na.rm = TRUE),
-                    col = 1)
-        }
+        panel_rug_quantiles(train, x.name = names(object)[1L])
       }
 })
 
@@ -265,13 +277,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
           panel.loess(xx, yy, ...)
         }
         if (isTRUE(rug)) {
-          if (is.null(train)) {
-            stop("The training data must be supplied for rug display.")
-          } else {
-            panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
-                                      probs = 0:10/10, na.rm = TRUE),
-                      col = 1)
-          }
+          panel_rug_quantiles(train, x.name = names(object)[1L])
         }
     })
 
@@ -321,13 +327,7 @@ plot_two_predictor_pdp <- function(
           panel.loess(xx, yy, ...)
         }
         if (isTRUE(rug)) {
-          if (is.null(train)) {
-            stop("The training data must be supplied for rug display.")
-           } else {
-             panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
-                                       probs = 0:10/10, na.rm = TRUE),
-                       col = 1)
-           }
+          panel_rug_quantiles(train, x.name = names(object)[1L])
         }
     })
 
@@ -352,22 +352,10 @@ plot_two_predictor_pdp <- function(
           col = contour.color, ...,
           panel = function(xx, yy, ...) {
             panel.levelplot(xx, yy, ...)
-            if (rug || chull) {
-              if (is.null(train)) {
-                stop(
-                  "The training data must be supplied for convex hull display."
-                )
-              }
-            }
             # Add a rug display
             if (isTRUE(rug)) {
-              panel.rug(
-                x = stats::quantile(train[, names(object)[1L], drop = TRUE],
-                                    probs = 0:10/10, na.rm = TRUE),
-                y = stats::quantile(train[, names(object)[2L], drop = TRUE],
-                                    probs = 0:10/10, na.rm = TRUE),
-                col = 1
-              )
+              panel_rug_quantiles(train, x.name = names(object)[1L],
+                                  y.name = names(object)[2L])
             }
             # Plot the convex hull of the predictor space of interest
             if (chull) {
@@ -376,11 +364,10 @@ plot_two_predictor_pdp <- function(
                   "The training data must be supplied for convex hull display."
                 )
               }
-              hpts <- grDevices::chull(
-                stats::na.omit(train[names(object)[1L:2L]])
-              )
+              X <- stats::na.omit(train[names(object)[1L:2L]])
+              hpts <- grDevices::chull(X)
               hpts <- c(hpts, hpts[1])
-              panel.lines(train[hpts, names(object)[1L:2L]], col = 1)
+              panel.lines(X[hpts, ], col = 1)
             }
         })
 
@@ -445,13 +432,7 @@ plot_three_predictor_pdp <- function(
           panel.loess(xx, yy, ...)
         }
         if (isTRUE(rug)) {
-          if (is.null(train)) {
-            stop("The training data must be supplied for rug display.")
-          } else {
-            panel.rug(stats::quantile(train[, names(object)[1L], drop = TRUE],
-                                      probs = 0:10/10, na.rm = TRUE),
-                      col = 1)
-          }
+          panel_rug_quantiles(train, x.name = names(object)[1L])
         }
     })
 

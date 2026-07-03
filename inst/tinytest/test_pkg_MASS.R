@@ -1,3 +1,7 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 if (!requireNamespace("gridExtra", quietly = TRUE)) {
   exit_file("Package gridExtra missing")
 }

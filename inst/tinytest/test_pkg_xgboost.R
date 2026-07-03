@@ -1,3 +1,7 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 # Load required packages
 library(Matrix)
 
@@ -17,17 +21,13 @@ if (require(xgboost, quietly = TRUE)) {
 
   # Fit regression model
   fit1 <- xgboost(
-    data = X1,
-    label = friedman1$y,
-    params = list(
-      max_depth = 2,
-      eta = 0.1,
-      objective = "reg:squarederror",  # formerly "reg:linear"
-      eval_metric = "rmse"
-    ),
-    nrounds = 827,
-    verbose = 0,
-    save_period = NULL
+    x = X1,
+    y = friedman1$y,
+    max_depth = 2,
+    learning_rate = 0.1,
+    objective = "reg:squarederror",  # formerly "reg:linear"
+    eval_metric = "rmse",
+    nrounds = 827
   )
 
   # Compute partial dependence, ICE, etc. for x.3
@@ -37,15 +37,12 @@ if (require(xgboost, quietly = TRUE)) {
   # Expectations
   pdp1 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE)
   pdp2 <- partial(fit1, pred.var = "x.3", train = X1, plot = TRUE,
-                  plot.engine = "ggplot2")
+                  plot.engine = "tinyplot")  # draws plot; returns data invisibly
   expect_true(inherits(pdp1, what = "trellis"))
-  expect_true(inherits(pdp2, what = "ggplot"))
+  expect_true(inherits(pdp2, what = "partial"))
   expect_error(partial(fit1, pred.var = "x.3"))
   expect_true(inherits(pd1, what = "partial"))
   expect_true(inherits(ice1, what = "ice"))
-
-  # Display plots side by side
-  grid.arrange(pdp1, pdp2, nrow = 1)
 
 
   # Poisson model w/ log link --------------------------------------------------
@@ -53,13 +50,11 @@ if (require(xgboost, quietly = TRUE)) {
   # Fit Poisson regression model for number of carburetors in the mtcars data
   # set (here, the response is a count)
   fit2 <- xgboost(
-    data = data.matrix(mtcars[, -11L]),
-    label = mtcars[, 11],
+    x = data.matrix(mtcars[, -11L]),
+    y = mtcars[, 11],
     objective = "count:poisson",
-    eta = 0.1,
-    nrounds = 273,
-    verbose = 0,
-    save_period = NULL
+    learning_rate = 0.1,
+    nrounds = 273
   )
 
   # FIXME: `predict.xgb.Booster()` now returns predictions on the original
@@ -76,8 +71,10 @@ if (require(xgboost, quietly = TRUE)) {
                    train = mtcars[, -11L], outputmargin = TRUE)
   pd2.4 <- partial(fit2, pred.var = "mpg", inv.link = exp,
                    train = mtcars[, -11L], outputmargin = TRUE, ice = TRUE)
-  grid.arrange(autoplot(pd2.1), autoplot(pd2.2),
-               autoplot(pd2.3), autoplot(pd2.4), nrow = 2)
+  plot(pd2.1)
+  plot(pd2.2)
+  plot(pd2.3)
+  plot(pd2.4)
 
   # Expectations
   expect_true(inherits(pd2.1, what = "partial"))
@@ -89,17 +86,13 @@ if (require(xgboost, quietly = TRUE)) {
 
   # Fit classification model
   fit3 <- xgboost(
-    data = X2,
-    label = ifelse(friedman2$y == "class1", 1, 0),
-    params = list(
-      max_depth = 25,
-      eta = 0.1,
-      objective = "binary:logistic",
-      eval_metric = "auc"
-    ),
-    nrounds = 200,
-    verbose = 0,
-    save_period = NULL
+    x = X2,
+    y = friedman2$y,
+    max_depth = 25,
+    learning_rate = 0.1,
+    objective = "binary:logistic",
+    eval_metric = "auc",
+    nrounds = 200
   )
 
   # Compute partial dependence, ICE, etc. for x.3

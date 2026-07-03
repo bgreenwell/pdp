@@ -115,10 +115,10 @@ copy_classes <- function(x, y) {
     }
   }
   # Sanity check
-  stopifnot(all.equal(
+  stopifnot(isTRUE(all.equal(
     target = sapply(x[column.names], class),
     current = sapply(y[column.names], class))
-  )
+  ))
   x  # return x with copied classes
 }
 
@@ -130,8 +130,7 @@ multiclass_logit <- function(x, which.class = 1L) {
   }
   stopifnot(is.matrix(x))  # x should be a nclass by n probability matrix
   eps <- .Machine$double.eps
-  log(ifelse(x[, which.class] > 0, x[, which.class], eps)) -
-    rowMeans(log(ifelse(x > 0, x, eps)))
+  log(pmax(x[, which.class], eps)) - rowMeans(log(pmax(x, eps)))
 }
 
 

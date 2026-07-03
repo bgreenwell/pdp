@@ -1,3 +1,7 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 # Exits
 if (!requireNamespace("e1071", quietly = TRUE)) {
   exit_file("Package e1071 missing")

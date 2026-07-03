@@ -1,10 +1,28 @@
-i <- NULL
+# Apply `f()` to each element of `ind` and concatenate the results; uses
+# foreach (and whatever parallel backend the user registered) whenever
+# `parallel = TRUE`, so foreach only needs to be installed in that case
+#' @keywords internal
+par_loop <- function(ind, f, parallel, paropts) {
+  if (isTRUE(parallel)) {
+    if (!requireNamespace("foreach", quietly = TRUE)) {
+      stop("Package \"foreach\" (and a registered parallel backend) is ",
+           "required whenever `parallel = TRUE`. Please install it.",
+           call. = FALSE)
+    }
+    `%dopar%` <- foreach::`%dopar%`
+    i <- NULL  # to avoid R CMD check note about the foreach iterator
+    foreach::foreach(i = ind, .combine = "c", .packages = paropts$.packages,
+                     .export = paropts$export) %dopar% f(i)
+  } else {
+    unlist(lapply(ind, f))
+  }
+}
+
 
 #' @keywords internal
-#'
-#' @importFrom foreach foreach %do% %dopar%
 pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
-                   which.class, logit, train, progress, parallel, paropts, ...) {
+                   which.class, logit, train, progress, parallel, paropts,
+                   batch.size = NULL, ...) {
 
   # Disable progress bar for parallel execution
   if (isTRUE(progress) && isTRUE(parallel)) {
@@ -13,131 +31,104 @@ pardep <- function(object, pred.var, pred.grid, pred.fun, inv.link, ice, task,
             call. = FALSE, immediate. = TRUE)
   }
 
-  # Define "pardo" operator
-  `%pardo%` <- if (isTRUE(parallel)) {
-    `%dopar%`
+  # Wrap the appropriate prediction function; each returns one prediction per
+  # row of `newdata`
+  predfun <- if (!is.null(pred.fun)) {
+    function(newdata) pred.fun(object, newdata = newdata)
+  } else if (task == "regression") {
+    function(newdata) {
+      get_predictions(object, newdata = newdata, inv.link = inv.link, ...)
+    }
   } else {
-    `%do%`
+    function(newdata) {
+      get_probs(object, newdata = newdata, which.class = which.class,
+                logit = logit, ...)
+    }
   }
 
+  # Average the predictions for each grid point? (User-supplied prediction
+  # wrappers handle their own aggregation)
+  aggregate <- is.null(pred.fun) && isFALSE(ice)
+
+  k <- nrow(pred.grid)
+  n <- nrow(train)
+
   # Compute feature effects
-  if (is.null(pred.fun)) {
+  yhat <- if (is.null(batch.size)) {
 
-    # Partial dependence: regression case
-    if (task == "regression" && isFALSE(ice)) {
-      if (isTRUE(progress)) {
-        pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
-      }
-      yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
-                      .packages = paropts$.packages, .export = paropts$export) %pardo% {
-        temp <- train
-        temp[, pred.var] <- pred.grid[i, pred.var]
-        preds <- mean(get_predictions(object, newdata = temp,
-                                      inv.link = inv.link, ...), na.rm = TRUE)
-        if (isTRUE(progress)) {
-          utils::setTxtProgressBar(pb, value = i)
-        }
-        preds
-      }
-      res <- cbind(pred.grid, "yhat" = yhat)
-    }
-
-    # Partial dependence: classification case
-    if (task == "classification" && isFALSE(ice)) {
-      if (isTRUE(progress)) {
-        pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
-      }
-      yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
-                      .packages = paropts$.packages, .export = paropts$export) %pardo% {
-        temp <- train
-        temp[, pred.var] <- pred.grid[i, pred.var]
-        preds <- mean(get_probs(object, newdata = temp,
-                                which.class = which.class, logit = logit, ...),
-                      na.rm = TRUE)
-        if (isTRUE(progress)) {
-          utils::setTxtProgressBar(pb, value = i)
-        }
-       preds
-      }
-      res <- cbind(pred.grid, "yhat" = yhat)
-    }
-
-    # ICE curves: regression case
-    if (task == "regression" && isTRUE(ice)) {
-      if (isTRUE(progress)) {
-        pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
-      }
-      yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
-                      .packages = paropts$.packages, .export = paropts$export) %pardo% {
-        temp <- train
-        temp[, pred.var] <- pred.grid[i, pred.var]
-        preds <- get_predictions(object, newdata = temp, inv.link = inv.link, ...)
-        if (isTRUE(progress)) {
-          utils::setTxtProgressBar(pb, value = i)
-        }
-        preds
-      }
-      grid.id <- rep(seq_len(nrow(pred.grid)), each = nrow(train))
-      yhat.id <- rep(seq_len(nrow(train)), times = nrow(pred.grid))
-      res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
-    }
-
-    # ICE curves: classification case
-    if (task == "classification" && isTRUE(ice)) {
-      if (isTRUE(progress)) {
-        pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
-      }
-      yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
-                      .packages = paropts$.packages, .export = paropts$export) %pardo% {
-        temp <- train
-        temp[, pred.var] <- pred.grid[i, pred.var]
-        preds <- get_probs(object, newdata = temp, which.class = which.class,
-                           logit = logit, ...)
-        if (isTRUE(progress)) {
-          utils::setTxtProgressBar(pb, value = i)
-        }
-        preds
-      }
-      if (isTRUE(progress)) {
-        utils::setTxtProgressBar(pb, value = i)
-      }
-      grid.id <- rep(seq_len(nrow(pred.grid)), each = nrow(train))
-      yhat.id <- rep(seq_len(nrow(train)), times = nrow(pred.grid))
-      res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
-    }
-
-  } else {
-
-    # Partial dependence/ICE curves: user-supplied prediction wrapper
+    # Classic approach: one call to predict() per grid point
     if (isTRUE(progress)) {
-      pb <- utils::txtProgressBar(min = 0, max = nrow(pred.grid), style = 3)
+      pb <- utils::txtProgressBar(min = 0, max = k, style = 3)
     }
-    yhat <- foreach(i = seq_len(nrow(pred.grid)), .combine = "c",
-                    .packages = paropts$.packages, .export = paropts$export) %pardo% {
+    par_loop(seq_len(k), parallel = parallel, paropts = paropts, f = function(i) {
       temp <- train
       temp[, pred.var] <- pred.grid[i, pred.var]
-      preds <- pred.fun(object, newdata = temp)
+      preds <- predfun(temp)
+      if (aggregate) {
+        preds <- mean(preds, na.rm = TRUE)
+      }
       if (isTRUE(progress)) {
         utils::setTxtProgressBar(pb, value = i)
       }
       preds
-    }
-    len <- length(yhat) / nrow(pred.grid)  # FIXME: Is there a more robust way?
-    if (len == 1L) {  # no need for `yhat.id` when `pred.fun()` returns a singleton
-      res <- cbind(pred.grid, "yhat" = yhat)
-    } else {  # multiple predictions per call to `pred.fun()`
-      grid.id <- rep(seq_len(nrow(pred.grid)), each = len)
-      yhat.id <- if (is.null(names(yhat))) {
-        rep(seq_len(len), times = nrow(pred.grid))
-      } else {
-        names(yhat)
-      }
-      res <- data.frame(pred.grid[grid.id, ], "yhat" = yhat, "yhat.id" = yhat.id)
-      colnames(res) <- c(colnames(pred.grid), "yhat", "yhat.id")
-    }
+    })
 
+  } else {
+
+    # Batched approach: stack copies of `train` (one per grid point) so that
+    # each call to predict() scores at most (roughly) `batch.size` rows; this
+    # is typically much faster since it avoids the per-call overhead of most
+    # predict() methods
+    rows.per.chunk <- max(1, min(k, floor(batch.size / n)))
+    chunks <- split(seq_len(k), ceiling(seq_len(k) / rows.per.chunk))
+    if (isTRUE(progress)) {
+      pb <- utils::txtProgressBar(min = 0, max = length(chunks), style = 3)
+    }
+    par_loop(seq_along(chunks), parallel = parallel, paropts = paropts,
+             f = function(i) {
+      ids <- chunks[[i]]
+      temp <- train[rep(seq_len(n), times = length(ids)), , drop = FALSE]
+      temp[, pred.var] <- pred.grid[rep(ids, each = n), pred.var]
+      preds <- predfun(temp)
+      if (length(preds) != nrow(temp)) {
+        stop("`batch.size` requires a prediction function that returns one ",
+             "prediction per row of `newdata`. Received ", length(preds),
+             " prediction(s) for ", nrow(temp), " row(s). If `pred.fun` ",
+             "aggregates its predictions (e.g., averages them), use the ",
+             "default `batch.size = NULL` instead.", call. = FALSE)
+      }
+      # Drop prediction names; row names of the stacked data are meaningless
+      # (e.g., "1.1", "1.2", ...), so `yhat.id` falls back to integer IDs
+      preds <- unname(preds)
+      if (aggregate) {
+        preds <- as.numeric(tapply(
+          preds, INDEX = rep(seq_along(ids), each = n), FUN = mean,
+          na.rm = TRUE
+        ))
+      }
+      if (isTRUE(progress)) {
+        utils::setTxtProgressBar(pb, value = i)
+      }
+      preds
+    })
+
+  }
+
+  # Assemble results: a single (averaged) curve or one curve per observation
+  len <- length(yhat) / k  # predictions per grid point
+  res <- if (len == 1) {  # no need for `yhat.id` (e.g., averaged predictions)
+    cbind(pred.grid, "yhat" = as.numeric(yhat))
+  } else {  # multiple predictions per grid point (e.g., ICE curves)
+    grid.id <- rep(seq_len(k), each = len)
+    yhat.id <- if (!is.null(pred.fun) && !is.null(names(yhat))) {
+      names(yhat)  # keep prediction names when available
+    } else {
+      rep(seq_len(len), times = k)
+    }
+    out <- data.frame(pred.grid[grid.id, ], "yhat" = as.numeric(yhat),
+                      "yhat.id" = yhat.id)
+    colnames(out) <- c(colnames(pred.grid), "yhat", "yhat.id")
+    out
   }
 
   # Close progress bar
@@ -181,7 +172,7 @@ pardep_gbm <- function(object, pred.var, pred.grid, which.class, prob, ...) {
     # For `"gbm"` objects, possibilities are "numeric", "ordered", or "factor".
     # But ordered factors actually inherit from class `"factor"`, so only need
     # to check for that here.
-    if (inherits(pred.grid, "factor")) {
+    if (inherits(pred.grid[[i]], "factor")) {
 
       # Save original factor values (could possibly be "ordered")
       levs <- levels(pred.grid[[i]])

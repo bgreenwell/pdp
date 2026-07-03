@@ -1,5 +1,19 @@
 # Prediction wrappers
 
+# Helpers ----------------------------------------------------------------------
+
+# Return either the probability for the "focus" class or the corresponding
+# centered logit; every get_probs() method funnels through this
+#' @keywords internal
+finalize_probs <- function(pr, which.class, logit) {
+  if (isTRUE(logit)) {
+    multiclass_logit(pr, which.class = which.class)
+  } else {
+    pr[, which.class]
+  }
+}
+
+
 # Generics ---------------------------------------------------------------------
 
 # Regression
@@ -35,11 +49,7 @@ get_probs <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.default <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "prob", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
@@ -50,24 +60,11 @@ get_probs.default <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.bagging <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, ...)$prob
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
-
-# Classification
 
 #' @keywords internal
-get_probs.boosting <- function(object, newdata, which.class, logit, ...) {
-  pr <- stats::predict(object, newdata = newdata, ...)$prob
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
-}
+get_probs.boosting <- get_probs.bagging
 
 
 # Package: e1071 ---------------------------------------------------------------
@@ -77,11 +74,7 @@ get_probs.boosting <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.naiveBayes <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "raw", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 #' @keywords internal
@@ -92,11 +85,7 @@ get_probs.svm <- function(object, newdata, which.class, logit, ...) {
   }
   pr <- attr(stats::predict(object, newdata = newdata, probability = TRUE, ...),
              which = "probabilities")
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
@@ -107,23 +96,28 @@ get_probs.svm <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.earth <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "response", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(cbind(pr, 1 - pr), which.class = which.class)
-  } else {
-    cbind(pr, 1 - pr)[, which.class]
-  }
+  finalize_probs(cbind(pr, 1 - pr), which.class = which.class, logit = logit)
 }
 
 
 # Package: gbm -----------------------------------------------------------------
 
+# NOTE: predict.gbm() prints a message about the value of `n.trees` it decided
+# to use whenever `n.trees` is not specified, so only capture (and discard) the
+# output in that case
+
 # Regression
 
 #' @keywords internal
 get_predictions.gbm <- function(object, newdata, inv.link, ...) {
-  invisible(utils::capture.output(
-    pred <- stats::predict(object, newdata = newdata, ...)
-  ))
+  pred <- if ("n.trees" %in% names(list(...))) {
+    stats::predict(object, newdata = newdata, ...)
+  } else {
+    invisible(utils::capture.output(
+      res <- stats::predict(object, newdata = newdata, ...)
+    ))
+    res
+  }
   if (is.null(inv.link)) {
     pred
   } else {
@@ -135,14 +129,15 @@ get_predictions.gbm <- function(object, newdata, inv.link, ...) {
 
 #' @keywords internal
 get_probs.gbm <- function(object, newdata, which.class, logit, ...) {
-  invisible(utils::capture.output(
-    pr <- stats::predict(object, newdata = newdata, type = "response", ...)
-  ))
-  if (isTRUE(logit)) {
-    multiclass_logit(cbind(pr, 1 - pr), which.class = which.class)
+  pr <- if ("n.trees" %in% names(list(...))) {
+    stats::predict(object, newdata = newdata, type = "response", ...)
   } else {
-    cbind(pr, 1 - pr)[, which.class]
+    invisible(utils::capture.output(
+      res <- stats::predict(object, newdata = newdata, type = "response", ...)
+    ))
+    res
   }
+  finalize_probs(cbind(pr, 1 - pr), which.class = which.class, logit = logit)
 }
 
 
@@ -164,11 +159,7 @@ get_probs.ksvm <- function(object, newdata, which.class, logit, ...) {
                deparse(substitute(object))))
   }
   pr <- kernlab::predict(object, newdata = newdata, type = "probabilities", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
@@ -179,22 +170,11 @@ get_probs.ksvm <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.lda <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, ...)$posterior
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 #' @keywords internal
-get_probs.qda <- function(object, newdata, which.class, logit, ...) {
-  pr <- stats::predict(object, newdata = newdata, ...)$posterior
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
-}
+get_probs.qda <- get_probs.lda
 
 
 # Package: mda -----------------------------------------------------------------
@@ -211,11 +191,7 @@ get_predictions.mars <- function(object, newdata, ...) {
 #' @keywords internal
 get_probs.fda <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "posterior", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
@@ -235,47 +211,25 @@ get_probs.nnet <- function(object, newdata, which.class, logit, ...) {
   # the response is binary, a single-columned matrix with no column name is
   # returned. For multinomial models, a vector is returned when the response has
   # only two classes.
-  if (isTRUE(logit)) {
-    if (is.null(ncol(pr)) || ncol(pr) == 1) {
-      multiclass_logit(cbind(pr, 1 - pr), which.class = which.class)
-    } else {
-      multiclass_logit(pr, which.class = which.class)
-    }
-  } else {
-    if (is.null(ncol(pr)) || ncol(pr) == 1) {
-      cbind(pr, 1 - pr)[, which.class]
-    } else {
-      pr[, which.class]
-    }
+  if (is.null(ncol(pr)) || ncol(pr) == 1) {
+    pr <- cbind(pr, 1 - pr)
   }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
 # Package: party ---------------------------------------------------------------
 
-# Regression
+# Classification
 
 #' @keywords internal
 get_probs.BinaryTree <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "prob", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(do.call(rbind, pr), which.class = which.class)
-  } else {
-    do.call(rbind, pr)[, which.class]
-  }
+  finalize_probs(do.call(rbind, pr), which.class = which.class, logit = logit)
 }
-
-# Classification
 
 #' @keywords internal
-get_probs.RandomForest <- function(object, newdata, which.class, logit, ...) {
-  pr <- stats::predict(object, newdata = newdata, type = "prob", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(do.call(rbind, pr), which.class = which.class)
-  } else {
-    do.call(rbind, pr)[, which.class]
-  }
-}
+get_probs.RandomForest <- get_probs.BinaryTree
 
 
 # Package: ranger --------------------------------------------------------------
@@ -296,11 +250,7 @@ get_probs.ranger <- function(object, newdata, which.class, logit, ...) {
                deparse(substitute(object))))
   }
   pr <- stats::predict(object, data = newdata, ...)$predictions
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }
 
 
@@ -311,11 +261,7 @@ get_probs.ranger <- function(object, newdata, which.class, logit, ...) {
 #' @keywords internal
 get_probs.glm <- function(object, newdata, which.class, logit, ...) {
   pr <- stats::predict(object, newdata = newdata, type = "response", ...)
-  if (isTRUE(logit)) {
-    multiclass_logit(cbind(pr, 1 - pr), which.class = which.class)
-  } else {
-    cbind(pr, 1 - pr)[, which.class]
-  }
+  finalize_probs(cbind(pr, 1 - pr), which.class = which.class, logit = logit)
 }
 
 
@@ -324,7 +270,7 @@ get_probs.glm <- function(object, newdata, which.class, logit, ...) {
 # Regression
 
 #' @keywords internal
-get_predictions.xgb.Booster <- function(object, newdata, inv.link, ...) {
+get_predictions.xgboost <- function(object, newdata, inv.link, ...) {
   pred <- stats::predict(object, newdata = newdata, ...)
   if (is.null(inv.link)) {
     pred
@@ -336,14 +282,11 @@ get_predictions.xgb.Booster <- function(object, newdata, inv.link, ...) {
 # Classification
 
 #' @keywords internal
-get_probs.xgb.Booster <- function(object, newdata, which.class, logit, ...) {
-  pr <- stats::predict(object, newdata = newdata, reshape = TRUE, ...)
-  if (object$params$objective == "binary:logistic") {
+get_probs.xgboost <- function(object, newdata, which.class, logit, ...) {
+  pr <- stats::predict(object, newdata = newdata, type = "response", ...)
+  obj <- attr(object, "params")$objective
+  if (obj == "binary:logistic") {
     pr <- cbind(pr, 1 - pr)
   }
-  if (isTRUE(logit)) {
-    multiclass_logit(pr, which.class = which.class)
-  } else {
-    pr[, which.class]
-  }
+  finalize_probs(pr, which.class = which.class, logit = logit)
 }

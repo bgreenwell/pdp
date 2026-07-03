@@ -1,3 +1,7 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 # Load Friedman benchmark data
 friedman2 <- readRDS("friedman.rds")$friedman2
 

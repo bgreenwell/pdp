@@ -1,6 +1,9 @@
+if (!at_home()) {
+  exit_file("Skipping tests that run only at home.")
+}
+
 # Load Friedman benchmark data
 friedman1 <- readRDS("friedman.rds")$friedman1
-
 
 # Tests for package caret
 if (require(caret, quietly = TRUE)) {

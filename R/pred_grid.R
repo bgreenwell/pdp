@@ -16,6 +16,15 @@ pred_grid <- function(train, pred.var, grid.resolution = NULL,
                "or \"dgCMatrix\"."))
   }
 
+  # Check for conflicting grid options up front (rather than inside the loop
+  # below, which only runs these checks when a continuous predictor is present)
+  if (!is.null(grid.resolution) && quantiles) {
+    stop("Can only specify one of grid.resolution or quantiles, not both.")
+  }
+  if (quantiles && trim.outliers) {
+    stop("Can only specify one of quantiles or trim.outliers, not both.")
+  }
+
   # Create a list containing the values of interest for each of the predictor
   # variables listed in `pred.var`
   pred.val <- lapply(pred.var, function(x) {
@@ -23,14 +32,8 @@ pred_grid <- function(train, pred.var, grid.resolution = NULL,
       levels(train[, x, drop = TRUE])
     } else if (inherits(train[, x, drop = TRUE], what = "character") ||
                (x %in% cats)) {
-      sort(unique(train[, x, drop = TRUE]))  # martices cannot contain factors
+      sort(unique(train[, x, drop = TRUE]))  # matrices cannot contain factors
     } else {
-      if (!is.null(grid.resolution) && quantiles) {
-        stop("Can only specify one of grid.resolution or quantiles, not both.")
-      }
-      if (quantiles && trim.outliers) {
-        stop("Can only specify one of quantiles or trim.outliers, not both.")
-      }
       if (quantiles) {
         stats::quantile(
           train[, x, drop = TRUE], probs = probs, na.rm = TRUE, names = FALSE

@@ -87,10 +87,17 @@ get_task.fda <- function(object) {
 
 #' @keywords internal
 get_task.gbm <- function(object) {
-  if (object$distribution %in%
-      c("coxph", "gaussian", "laplace", "tdist", "gamma", "poisson", "tweedie")) {
+  # `object$distribution` is a list (e.g., `list(name = "quantile", alpha =
+  # 0.5)`), but allow for a plain character string just in case
+  dist.name <- if (is.list(object$distribution)) {
+    object$distribution$name
+  } else {
+    object$distribution
+  }
+  if (dist.name %in% c("coxph", "gaussian", "laplace", "tdist", "gamma",
+                       "poisson", "tweedie", "quantile")) {
     "regression"
-  } else if (object$distribution %in%
+  } else if (dist.name %in%
              c("bernoulli", "huberized", "multinomial", "adaboost")) {
     "classification"
   } else {
@@ -290,18 +297,16 @@ get_task.train <- function(object) {
 
 
 #' @keywords internal
-get_task.xgb.Booster <- function(object) {
+get_task.xgboost <- function(object) {
   # FIXME: "reg:linear" was changed to "reg:squarederror" in v0.90.0, but the
   # following should suffice without having to check package version.
-  if (object$params$objective %in%
-      c("reg:gamma", "reg:linear", "reg:logistic", "reg:squarederror",
-        "reg:squaredlogerror", "count:poisson")) {
+  obj <- attr(object, which = "params")$objective
+  if (obj %in% c("reg:gamma", "reg:linear", "reg:logistic", "reg:squarederror",
+                 "reg:squaredlogerror", "count:poisson")) {
     "regression"
-  } else if (object$params$objective %in%
-             c("binary:logistic", "multi:softprob")) {
+  } else if (obj %in% c("binary:logistic", "multi:softprob")) {
     "classification"
-  } else if (object$params$objective %in%
-             c("binary:logitraw", "multi:softmax")) {
+  } else if (obj %in% c("binary:logitraw", "multi:softmax")) {
     stop(paste("For classification, switch to an objective function",
                "that returns the predicted probabilities."))
   } else {

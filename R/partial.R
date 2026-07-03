@@ -101,7 +101,8 @@
 #'
 #' @param plot.engine Character string specifying which plotting engine to use
 #' whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
-#' \code{"ggplot2"}.
+#' \code{"tinyplot"} (lightweight base R graphics via the
+#' \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).
 #'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
 #' Default is \code{FALSE}.
@@ -146,6 +147,21 @@
 #' in \code{pred.grid} has the correct class, levels, etc. Default is
 #' \code{TRUE}.
 #'
+#' @param batch.size Optional positive integer specifying the (approximate)
+#' maximum number of rows to score per call to \code{\link[stats]{predict}}. By
+#' default (\code{batch.size = NULL}), \code{partial()} calls
+#' \code{\link[stats]{predict}} once per grid point (i.e., \code{nrow(train)}
+#' rows at a time). Specifying a larger batch size (e.g.,
+#' \code{batch.size = 1e6}) stacks multiple grid points into a single call to
+#' \code{\link[stats]{predict}}, which is often substantially faster since it
+#' avoids the per-call overhead of most prediction methods, at the cost of
+#' additional memory. Requires the prediction function to return one prediction
+#' per row of \code{newdata}, so it cannot be used with a \code{pred.fun} that
+#' aggregates its own predictions. Prediction names are also ignored when
+#' batching (i.e., \code{yhat.id} will always contain integer IDs). Ignored
+#' whenever the recursive method is used (i.e., for \code{"gbm"} objects with
+#' \code{recursive = TRUE}).
+#'
 #' @param progress Logical indicating whether or not to display a text-based
 #' progress bar. Default is \code{FALSE}.
 #'
@@ -166,10 +182,13 @@
 #' class \code{c("data.frame", "cice")} is returned. These three classes
 #' determine the behavior of the \code{plotPartial} function which is
 #' automatically called whenever \code{plot = TRUE}. Specifically, when
-#' \code{plot = TRUE}, a \code{"trellis"} object is returned (see
-#' \code{\link[lattice]{lattice}} for details); the \code{"trellis"} object will
-#' also include an additional attribute, \code{"partial.data"}, containing the
-#' data displayed in the plot.
+#' \code{plot = TRUE} and \code{plot.engine = "lattice"}, a \code{"trellis"}
+#' object is returned (see \code{\link[lattice]{lattice}} for details); the
+#' \code{"trellis"} object will also include an additional attribute,
+#' \code{"partial.data"}, containing the data displayed in the plot. When
+#' \code{plot = TRUE} and \code{plot.engine = "tinyplot"}, the plot is drawn
+#' directly (as a side effect) and the data frame of partial dependence values
+#' is returned invisibly.
 #'
 #' @note
 #' In some cases it is difficult for \code{partial} to extract the original
@@ -238,9 +257,9 @@
 #' plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
 #'             colorkey = FALSE, screen = list(z = -20, x = -60))
 #'
-#' # The autplot function can be used to produce graphics based on ggplot2
-#' library(ggplot2)
-#' autoplot(pd, contour = TRUE, legend.title = "Partial\ndependence")
+#' # The plot method can be used to produce lightweight base R graphics via
+#' # the tinyplot package
+#' plot(pd, contour = TRUE)
 #'
 #' #
 #' # Individual conditional expectation (ICE) curves
@@ -249,14 +268,14 @@
 #' # Use partial to obtain ICE/c-ICE curves
 #' rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
 #' plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
-#' autoplot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
+#' plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 #'
 #' #
 #' # Classification example (requires randomForest package to run)
 #' #
 #'
 #' # Fit a random forest to the Pima Indians diabetes data
-#' data (pima)  # load the boston housing data
+#' data (pima)  # load the Pima Indians diabetes data
 #' set.seed(102)  # for reproducibility
 #' pima.rf <- randomForest(diabetes ~ ., data = pima, na.action = na.omit)
 #'
@@ -281,12 +300,18 @@ partial.default <- function(
   ice = FALSE, center = FALSE, approx = FALSE, quantiles = FALSE, probs = 1:9/10,
   trim.outliers = FALSE, type = c("auto", "regression", "classification"),
   inv.link = NULL, which.class = 1L, prob = FALSE, recursive = TRUE,
-  plot = FALSE, plot.engine = c("lattice", "ggplot2"),
+  plot = FALSE, plot.engine = c("lattice", "tinyplot"),
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
-  alpha = 1, train, cats = NULL, check.class = TRUE, progress = FALSE,
-  parallel = FALSE, paropts = NULL, ...
+  alpha = 1, train, cats = NULL, check.class = TRUE, batch.size = NULL,
+  progress = FALSE, parallel = FALSE, paropts = NULL, ...
 ) {
+
+  # Check batch size if given
+  if (!is.null(batch.size) &&
+      (!is.numeric(batch.size) || length(batch.size) != 1 || batch.size < 1)) {
+    stop("`batch.size` should be a single positive number.")
+  }
 
   # Check prediction function if given
   if (!is.null(pred.fun)) {
@@ -324,7 +349,8 @@ partial.default <- function(
                      collapse = ", "), "not found in the training data."))
   }
 
-  # Throw an informative error if one of the predictor variables is call "yhat"
+  # Throw an informative error if one of the predictor variables is called
+  # "yhat"
   if ("yhat" %in% pred.var) {
     stop("\"yhat\" cannot be a predictor name.")
   }
@@ -344,7 +370,7 @@ partial.default <- function(
     )
   } else {
     if (!is.data.frame(pred.grid)) {
-      stop("`pred.grid` shoud be a data frame.")
+      stop("`pred.grid` should be a data frame.")
     } else {
       # Throw error if colnames(pred.grid) does not match pred.var
       if (!all(pred.var %in% colnames(pred.grid))) {
@@ -374,7 +400,7 @@ partial.default <- function(
     pred.grid <- methods::as(data.matrix(pred.grid), "dgCMatrix")
   }
 
-  # Restrict grid to covext hull of first two columns
+  # Restrict grid to convex hull of first two columns
   if (chull) {
     pred.grid <- train_chull(pred.var, pred.grid = pred.grid, train = train)
   }
@@ -411,11 +437,10 @@ partial.default <- function(
            "`recursive = TRUE`.")
     }
 
-    # Notify user that progress bars are not avaiable for "gbm" objects when
+    # Notify user that progress bars are not available for "gbm" objects when
     # recursive = TRUE
     if (isTRUE(progress)) {
-      message("progress bars are not availble when `recursive = TRUE`.",
-              call. = FALSE)
+      message("progress bars are not available when `recursive = TRUE`.")
     }
 
     # Stop and notify user that parallel functionality is currently not
@@ -440,7 +465,8 @@ partial.default <- function(
       pardep(object, pred.var = pred.var, pred.grid = pred.grid,
              pred.fun = pred.fun, inv.link = inv.link, ice = ice, task = type,
              which.class = which.class, logit = !prob, train = train,
-             progress = progress, parallel = parallel, paropts = paropts, ...)
+             progress = progress, parallel = parallel, paropts = paropts,
+             batch.size = batch.size, ...)
     } else {
       stop("partial dependence and ICE are currently only available for ",
            "classification and regression problems.", call. = FALSE)
@@ -478,31 +504,28 @@ partial.default <- function(
   }
 
   # Plot partial dependence function (if requested)
-  if (plot) {  # return a graph (i.e., a "trellis" or "ggplot" object)
+  if (plot) {
     plot.engine <- match.arg(plot.engine)
+    if (plot.engine == "tinyplot") {  # drawn as a side effect
+      if (inherits(pd.df, what = c("ice", "cice"))) {
+        plot(pd.df, plot.pdp = TRUE, rug = rug, train = train, alpha = alpha)
+      } else {
+        plot(pd.df, smooth = smooth, rug = rug, train = train,
+             contour = contour, contour.color = contour.color)
+      }
+      return(invisible(pd.df))
+    }
+    # Return a graph (i.e., a "trellis" object)
     res <- if (inherits(pd.df, what = c("ice", "cice"))) {
-      if (plot.engine == "ggplot2") {
-        autoplot(
-          object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
-          alpha = alpha
-        )
-      } else {
-        plotPartial(
-          object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
-          alpha = alpha,
-        )
-      }
+      plotPartial(
+        object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
+        alpha = alpha
+      )
     } else {
-      if (plot.engine == "ggplot2") {
-        autoplot(pd.df, smooth = smooth, rug = rug, train = train,
-                 contour = contour, contour.color = contour.color,
-                 alpha = alpha)
-      } else {
-        plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
-                    levelplot = levelplot, contour = contour,
-                    contour.color = contour.color,
-                    screen = list(z = -30, x = -60))  # sensible default?
-      }
+      plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
+                  levelplot = levelplot, contour = contour,
+                  contour.color = contour.color,
+                  screen = list(z = -30, x = -60))  # sensible default?
     }
     attr(res, "partial.data") <- pd.df  # attach PDP data as an attribute
   } else {  # return a data frame (i.e., a "data.frame" and "partial" object)

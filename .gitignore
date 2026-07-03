@@ -1,7 +1,9 @@
 .Rproj.user
+*.Rproj
 .Rhistory
 .RData
 .DS_Store
+.planning/
 slowtests/*.html
 src/*.o
 src/*.so

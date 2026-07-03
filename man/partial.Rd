@@ -26,7 +26,7 @@ partial(object, ...)
   prob = FALSE,
   recursive = TRUE,
   plot = FALSE,
-  plot.engine = c("lattice", "ggplot2"),
+  plot.engine = c("lattice", "tinyplot"),
   smooth = FALSE,
   rug = FALSE,
   chull = FALSE,
@@ -37,6 +37,7 @@ partial(object, ...)
   train,
   cats = NULL,
   check.class = TRUE,
+  batch.size = NULL,
   progress = FALSE,
   parallel = FALSE,
   paropts = NULL,
@@ -145,7 +146,8 @@ function directly (\code{TRUE}). Default is \code{FALSE}. See
 
 \item{plot.engine}{Character string specifying which plotting engine to use
 whenever \code{plot = TRUE}. Options include \code{"lattice"} (default) or
-\code{"ggplot2"}.}
+\code{"tinyplot"} (lightweight base R graphics via the
+\href{https://grantmcdermott.com/tinyplot/}{tinyplot} package).}
 
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
@@ -190,6 +192,21 @@ from class \code{"matrix"} or \code{"dgCMatrix"}.}
 in \code{pred.grid} has the correct class, levels, etc. Default is
 \code{TRUE}.}
 
+\item{batch.size}{Optional positive integer specifying the (approximate)
+maximum number of rows to score per call to \code{\link[stats]{predict}}. By
+default (\code{batch.size = NULL}), \code{partial()} calls
+\code{\link[stats]{predict}} once per grid point (i.e., \code{nrow(train)}
+rows at a time). Specifying a larger batch size (e.g.,
+\code{batch.size = 1e6}) stacks multiple grid points into a single call to
+\code{\link[stats]{predict}}, which is often substantially faster since it
+avoids the per-call overhead of most prediction methods, at the cost of
+additional memory. Requires the prediction function to return one prediction
+per row of \code{newdata}, so it cannot be used with a \code{pred.fun} that
+aggregates its own predictions. Prediction names are also ignored when
+batching (i.e., \code{yhat.id} will always contain integer IDs). Ignored
+whenever the recursive method is used (i.e., for \code{"gbm"} objects with
+\code{recursive = TRUE}).}
+
 \item{progress}{Logical indicating whether or not to display a text-based
 progress bar. Default is \code{FALSE}.}
 
@@ -208,10 +225,13 @@ is returned. If \code{ice = TRUE} and \code{center = TRUE} then an object of
 class \code{c("data.frame", "cice")} is returned. These three classes
 determine the behavior of the \code{plotPartial} function which is
 automatically called whenever \code{plot = TRUE}. Specifically, when
-\code{plot = TRUE}, a \code{"trellis"} object is returned (see
-\code{\link[lattice]{lattice}} for details); the \code{"trellis"} object will
-also include an additional attribute, \code{"partial.data"}, containing the
-data displayed in the plot.
+\code{plot = TRUE} and \code{plot.engine = "lattice"}, a \code{"trellis"}
+object is returned (see \code{\link[lattice]{lattice}} for details); the
+\code{"trellis"} object will also include an additional attribute,
+\code{"partial.data"}, containing the data displayed in the plot. When
+\code{plot = TRUE} and \code{plot.engine = "tinyplot"}, the plot is drawn
+directly (as a side effect) and the data frame of partial dependence values
+is returned invisibly.
 }
 \description{
 Compute partial dependence functions (i.e., marginal effects) for various
@@ -271,9 +291,9 @@ pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
 plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
             colorkey = FALSE, screen = list(z = -20, x = -60))
 
-# The autplot function can be used to produce graphics based on ggplot2
-library(ggplot2)
-autoplot(pd, contour = TRUE, legend.title = "Partial\ndependence")
+# The plot method can be used to produce lightweight base R graphics via
+# the tinyplot package
+plot(pd, contour = TRUE)
 
 #
 # Individual conditional expectation (ICE) curves
@@ -282,7 +302,7 @@ autoplot(pd, contour = TRUE, legend.title = "Partial\ndependence")
 # Use partial to obtain ICE/c-ICE curves
 rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
 plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
-autoplot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
+plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 
 #
 # Classification example (requires randomForest package to run)

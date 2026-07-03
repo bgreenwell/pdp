@@ -25,8 +25,7 @@
 #' # Regression example (requires randomForest package to run)
 #' #
 #'
-#' Load required packages
-#' library(ggplot2)
+#' # Load required packages
 #' library(randomForest)
 #'
 #' # Fit a random forest to the mtcars dataset
@@ -34,7 +33,7 @@
 #' set.seed(101)
 #' mtcars.rf <- randomForest(mpg ~ ., data = mtcars, mtry = 5, importance = TRUE)
 #'
-#' # Topfour predictors
+#' # Top four predictors
 #' top4 <- topPredictors(mtcars.rf, n = 4)
 #'
 #' # Construct partial dependence functions for top four predictors
@@ -46,11 +45,8 @@
 #' }
 #'
 #' # Display partial dependence functions
-#' ggplot(pd, aes(x, y)) +
-#'   geom_line() +
-#'   facet_wrap(~ predictor, scales = "free") +
-#'   theme_bw() +
-#'   ylab("mpg")
+#' tinyplot::tinyplot(y ~ x, facet = ~ predictor, data = pd, type = "l",
+#'                    facet.args = list(free = TRUE), ylab = "mpg")
 #'
 #' }
 topPredictors <- function(object, n = 1L, ...) {
@@ -59,6 +55,10 @@ topPredictors <- function(object, n = 1L, ...) {
                 "the next version. For a more general replacement, check out",
                 "the vip package: https://github.com/koalaverse/vip.")
   )
+  if (!requireNamespace("caret", quietly = TRUE)) {
+    stop("Package \"caret\" is needed for this function to work. Please ",
+         "install it.", call. = FALSE)
+  }
   UseMethod("topPredictors")
 }
 

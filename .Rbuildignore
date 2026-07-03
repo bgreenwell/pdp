@@ -1,13 +1,14 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.planning$
+^AGENTS\.md$
 ^codecov\.yml$
-^distill$
 ^docs$
 ^data-raw$
-^README\.Rmd$
 ^README\.html$
 ^slowtests$
 ^tools$
 ^\.github$
-^\.o$
+\.o$
+\.so$
 ^\.nojekyll$

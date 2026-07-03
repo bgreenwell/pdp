@@ -1,3 +1,63 @@
+# pdp 0.9.0
+
+## Breaking changes
+
+* The ggplot2-based `autoplot()` methods have been removed in favor of new,
+lightweight base R `plot()` methods built on
+[tinyplot](https://grantmcdermott.com/tinyplot/). Consequently,
+`partial()`'s `plot.engine` argument now accepts `"tinyplot"` in place of
+`"ggplot2"`, and **pdp** no longer depends on **ggplot2** or **rlang**.
+
+## Bug fixes
+
+* Fixed a serious bug in the recursive (i.e., weighted tree traversal) method
+for `"gbm"` objects that produced incorrect partial dependence values for
+factor predictors; the factor levels were passed to the underlying C++ routine
+using 1-based (rather than 0-based) integer codes, shifting each level's value
+and reading out of bounds for the last level.
+
+* `partial()` no longer errors for `"gbm"` objects fit with list-valued
+distributions (e.g., `distribution = list(name = "quantile", alpha = 0.5)`).
+
+* The convex hull displayed by `plotPartial(chull = TRUE)` is now correct
+whenever the training data contain missing values.
+
+* Conflicting grid options (e.g., specifying both `grid.resolution` and
+`quantiles`) now always throw an error, even when all of the predictors listed
+in `pred.var` are factors.
+
+* Removed a stray `"FALSE"` that was appended to the message displayed when
+requesting a progress bar with the recursive method.
+
+## New features
+
+* New tinyplot-based `plot()` methods for `"partial"`, `"ice"`, and `"cice"`
+objects; see `?plot.partial` for details and examples.
+
+* New `batch.size` argument in `partial()` for scoring multiple grid points
+per call to `predict()` (i.e., batching); this is often substantially faster
+than the default one-call-per-grid-point approach at the cost of additional
+memory. For example, try `batch.size = 1e6` to score (roughly) one million
+rows per call.
+
+## Miscellaneous
+
+* **foreach** was moved from Imports to Suggests; it is now only required for
+parallel execution (i.e., whenever `parallel = TRUE`).
+
+* Removed unused packages from Suggests (**keras**, **reticulate**, and
+**dplyr**).
+
+* `topPredictors()` (which is deprecated) now throws an informative error when
+**caret** is not installed.
+
+* Internal cleanup: the brute force method (`pardep()`) was consolidated from
+four nearly identical loops into one, and the prediction wrappers in
+`get_predictions.R` now share a common helper.
+
+* Fixed failing tests due to changes in the `xgboost` package.
+
+
 # pdp 0.8.2
 
 ## Minor changes

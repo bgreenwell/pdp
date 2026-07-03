@@ -15,19 +15,20 @@ vector machines.
 }
 \details{
 The development version can be found on GitHub: https://github.com/bgreenwell/pdp.
-As of right now, \code{pdp} exports four functions:
+As of right now, \code{pdp} exports the following functions:
 \itemize{
   \item{\code{partial}} - construct partial dependence functions (i.e., objects of class \code{"partial"}) from various fitted model objects;
   \item{\code{plotPartial}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[lattice]{lattice}} graphics;
-  \item{\code{autoplot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[ggplot2]{ggplot2}} graphics;
-  \item{\code{topPredictors}} - extract most "important" predictors from various types of fitted models.
+  \item{\code{plot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using lightweight base R graphics via \code{\link[tinyplot]{tinyplot}};
+  \item{\code{exemplar}} - construct a single "exemplar" record from a data frame.
 }
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/bgreenwell/pdp}
-  \item \url{http://bgreenwell.github.io/pdp/}
+  \item \url{https://bgreenwell.github.io/pdp/}
+  \item \url{https://bgreenwell.r-universe.dev/pdp}
   \item Report bugs at \url{https://github.com/bgreenwell/pdp/issues}
 }
 

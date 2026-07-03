@@ -229,6 +229,15 @@ panel_rug_quantiles <- function(train, x.name, y.name = NULL) {
 plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
                             rug, train, ...) {
 
+  # Each curve should vary over a single predictor; anything else cannot be
+  # displayed sensibly and is better plotted manually
+  if (ncol(object) - 2L > 1L) {
+    stop("Cannot automatically plot individual curves for multiple ",
+         "predictors; each curve would vary over a multi-dimensional grid. ",
+         "Try plotting the returned data manually (e.g., by filtering or ",
+         "faceting on the additional predictors).", call. = FALSE)
+  }
+
   # Determine if ICE curves should be centered
   if (center) {
     object <- center_ice_curves(object)  # converts ICE curves to c-ICE curves
@@ -243,7 +252,7 @@ plot_ice_curves <- function(object, plot.pdp, center, pdp.col, pdp.lwd, pdp.lty,
 
   # Plot ICE curves
   xyplot(
-    stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
+    stats::as.formula(paste("yhat ~", backtick(names(object)[1L]))), data = object,
     groups = object$yhat.id, type = plot.type, ...,
     panel = function(xx, yy, ...) {
       panel.xyplot(xx, yy, col = 1, ...)
@@ -270,7 +279,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
 
     # Draw a line plot
     xyplot(
-      stats::as.formula(paste("yhat ~", names(object)[1L])), data = object,
+      stats::as.formula(paste("yhat ~", backtick(names(object)[1L]))), data = object,
       type = "l", ..., panel = function(xx, yy, ...) {
         panel.xyplot(xx, yy, col = 1, ...)
         if (smooth) {
@@ -285,7 +294,7 @@ plot_one_predictor_pdp <- function(object, smooth, rug, train = NULL, ...) {
 
     # Draw a Cleveland dot plot
     dotplot(
-      stats::as.formula(paste("yhat ~", names(object)[1L])), data = object, ...
+      stats::as.formula(paste("yhat ~", backtick(names(object)[1L]))), data = object, ...
     )
 
   }
@@ -303,7 +312,7 @@ plot_two_predictor_pdp <- function(
 
     # Draw a Cleveland dot plot
     dotplot(stats::as.formula(
-      paste("yhat ~", paste(names(object)[1L:2L], collapse = "|"))
+      paste("yhat ~", paste(backtick(names(object)[1L:2L]), collapse = "|"))
     ), data = object, ...)
 
   } else if (is.factor(object[[1L]]) || is.factor(object[[2L]])) {
@@ -311,11 +320,11 @@ plot_two_predictor_pdp <- function(
     # Lattice plot formula
     form <- if (is.factor(object[[1L]])) {
       stats::as.formula(
-        paste("yhat ~", paste(names(object)[2L:1L], collapse = "|"))
+        paste("yhat ~", paste(backtick(names(object)[2L:1L]), collapse = "|"))
       )
     } else {
       stats::as.formula(
-        paste("yhat ~", paste(names(object)[1L:2L], collapse = "|"))
+        paste("yhat ~", paste(backtick(names(object)[1L:2L]), collapse = "|"))
       )
     }
 
@@ -335,7 +344,7 @@ plot_two_predictor_pdp <- function(
 
       # Lattice plot formula
       form <- stats::as.formula(
-        paste("yhat ~", paste(names(object)[1L:2L], collapse = "*"))
+        paste("yhat ~", paste(backtick(names(object)[1L:2L]), collapse = "*"))
       )
 
       # Define color regions
@@ -401,8 +410,8 @@ plot_three_predictor_pdp <- function(
 
     # Lattice plot formula
     form <- stats::as.formula(
-      paste("yhat ~", names(object)[1L], "|",
-            paste(names(object)[2L:nx], collapse = "*"))
+      paste("yhat ~", backtick(names(object)[1L]), "|",
+            paste(backtick(names(object)[2L:nx]), collapse = "*"))
     )
 
     # Produce a paneled dotplot
@@ -413,8 +422,8 @@ plot_three_predictor_pdp <- function(
     # Lattice plot formula
     form <- if (is.factor(object[[1L]])) {
       stats::as.formula(
-        paste("yhat ~", names(object)[2L], "|",
-              paste(names(object)[c(1L, 3L:nx)], collapse = "*"))
+        paste("yhat ~", backtick(names(object)[2L]), "|",
+              paste(backtick(names(object)[c(1L, 3L:nx)]), collapse = "*"))
       )
     } else {
       stats::as.formula(
@@ -440,8 +449,8 @@ plot_three_predictor_pdp <- function(
 
     # Lattice plot formula
     form <- stats::as.formula(
-      paste("yhat ~", paste(names(object)[1L:2L], collapse = "*"), "|",
-            paste(names(object)[3L:nx], collapse = "*"))
+      paste("yhat ~", paste(backtick(names(object)[1L:2L]), collapse = "*"),
+            "|", paste(backtick(names(object)[3L:nx]), collapse = "*"))
     )
 
     # Define color regions

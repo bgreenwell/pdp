@@ -41,6 +41,7 @@ partial(object, ...)
   progress = FALSE,
   parallel = FALSE,
   paropts = NULL,
+  frac = 1,
   ...
 )
 
@@ -55,7 +56,8 @@ partial(object, ...)
 
 \item{pred.var}{Character string giving the names of the predictor variables
 of interest. For reasons of computation/interpretation, this should include
-no more than three variables.}
+no more than three variables. Can be omitted whenever \code{pred.grid} is
+supplied, in which case it defaults to \code{colnames(pred.grid)}.}
 
 \item{pred.grid}{Data frame containing the joint values of interest for the
 variables listed in \code{pred.var}.}
@@ -217,6 +219,14 @@ parallel using a backend provided by the \code{foreach} package. Default is
 
 \item{paropts}{List containing additional options to be passed onto
 \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.}
+
+\item{frac}{Numeric value in (0, 1] specifying the fraction of the training
+data to randomly sample (without replacement) before computing the partial
+dependence function. Default is \code{1} (i.e., use all of the training
+data). Mostly useful for reducing the number of ICE curves and/or
+computation time; use \code{\link[base]{set.seed}} for reproducibility.
+Ignored whenever the recursive method is used (i.e., for \code{"gbm"}
+objects with \code{recursive = TRUE}).}
 }
 \value{
 By default, \code{partial} returns an object of class

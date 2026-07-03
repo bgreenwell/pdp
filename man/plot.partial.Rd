@@ -19,6 +19,8 @@
   contour.color = "white",
   train = NULL,
   alpha = 1,
+  color.by = NULL,
+  bars = FALSE,
   legend.title = "yhat",
   ...
 )
@@ -33,6 +35,7 @@
   rug = FALSE,
   train = NULL,
   alpha = 1,
+  color.by = NULL,
   ...
 )
 
@@ -45,6 +48,7 @@
   rug = FALSE,
   train = NULL,
   alpha = 1,
+  color.by = NULL,
   ...
 )
 }
@@ -91,6 +95,17 @@ if \code{rug = TRUE}.}
 \item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha;
 most useful when plotting ICE/c-ICE curves. Default is \code{1} (i.e., no
 transparency).}
+
+\item{color.by}{Optional character string specifying the name of a column in
+\code{train} used to color the individual ICE/c-ICE curves; continuous
+variables are binned into (at most) five groups. Requires \code{train} and
+assumes the curve IDs (i.e., the \code{yhat.id} column) correspond to the
+rows of \code{train} (which is the case whenever \code{ice = TRUE}).
+Default is \code{NULL}.}
+
+\item{bars}{Logical indicating whether or not to use a bar plot (rather than
+points) whenever the predictor of interest is a factor. Default is
+\code{FALSE}.}
 
 \item{legend.title}{Character string specifying the text for the legend
 title of the false color level plot used for two continuous predictors.

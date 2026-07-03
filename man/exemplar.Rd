@@ -7,18 +7,27 @@
 \alias{exemplar.dgCMatrix}
 \title{Exemplar observation}
 \usage{
-exemplar(object)
+exemplar(object, ...)
 
-\method{exemplar}{data.frame}(object)
+\method{exemplar}{data.frame}(object, ...)
 
-\method{exemplar}{matrix}(object)
+\method{exemplar}{matrix}(object, cats = NULL, ...)
 
-\method{exemplar}{dgCMatrix}(object)
+\method{exemplar}{dgCMatrix}(object, cats = NULL, ...)
 }
 \arguments{
 \item{object}{A data frame, matrix, or
 \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} (the latter two are
 supported by \code{\link[xgboost]{xgboost}}).}
+
+\item{...}{Additional optional arguments (currently ignored).}
+
+\item{cats}{Character string indicating which columns of \code{object}
+should be treated as categorical variables and summarized by their most
+frequent value (rather than a rounded median). Only used when \code{object}
+inherits from class \code{"matrix"} or \code{"dgCMatrix"}; data frames
+handle this automatically for factor and character columns. Default is
+\code{NULL}.}
 }
 \value{
 A data frame with the same number of columns as \code{object} and a

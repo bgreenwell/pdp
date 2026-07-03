@@ -10,7 +10,8 @@
 #'
 #' @param pred.var Character string giving the names of the predictor variables
 #' of interest. For reasons of computation/interpretation, this should include
-#' no more than three variables.
+#' no more than three variables. Can be omitted whenever \code{pred.grid} is
+#' supplied, in which case it defaults to \code{colnames(pred.grid)}.
 #'
 #' @param pred.grid Data frame containing the joint values of interest for the
 #' variables listed in \code{pred.var}.
@@ -173,6 +174,14 @@
 #' @param paropts List containing additional options to be passed onto
 #' \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.
 #'
+#' @param frac Numeric value in (0, 1] specifying the fraction of the training
+#' data to randomly sample (without replacement) before computing the partial
+#' dependence function. Default is \code{1} (i.e., use all of the training
+#' data). Mostly useful for reducing the number of ICE curves and/or
+#' computation time; use \code{\link[base]{set.seed}} for reproducibility.
+#' Ignored whenever the recursive method is used (i.e., for \code{"gbm"}
+#' objects with \code{recursive = TRUE}).
+#'
 #' @param ... Additional optional arguments to be passed onto
 #' \code{\link[stats]{predict}}.
 #'
@@ -305,13 +314,26 @@ partial.default <- function(
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
   alpha = 1, train, cats = NULL, check.class = TRUE, batch.size = NULL,
-  progress = FALSE, parallel = FALSE, paropts = NULL, ...
+  progress = FALSE, parallel = FALSE, paropts = NULL, frac = 1, ...
 ) {
 
   # Check batch size if given
   if (!is.null(batch.size) &&
       (!is.numeric(batch.size) || length(batch.size) != 1 || batch.size < 1)) {
     stop("`batch.size` should be a single positive number.")
+  }
+
+  # Check training data fraction
+  if (!is.numeric(frac) || length(frac) != 1 || frac <= 0 || frac > 1) {
+    stop("`frac` should be a single number in (0, 1].")
+  }
+
+  # Infer the predictors of interest whenever only `pred.grid` is supplied
+  if (missing(pred.var) && !missing(pred.grid)) {
+    if (!is.data.frame(pred.grid)) {
+      stop("`pred.grid` should be a data frame.")
+    }
+    pred.var <- colnames(pred.grid)
   }
 
   # Check prediction function if given
@@ -419,8 +441,16 @@ partial.default <- function(
   }
 
   # Compute "poor man's partial dependence"
-  if (isTRUE(approx)) {       # FIXME: What about when `rug/chull = TRUE`
-    train <- exemplar(train)  # FIXME: Better handling for matrix-like objects
+  if (isTRUE(approx)) {  # FIXME: What about when `rug/chull = TRUE`
+    train <- exemplar(train, cats = cats)
+  }
+
+  # Randomly sample a fraction of the training data (mostly useful for
+  # reducing the number of ICE curves and/or computation time); done after the
+  # grid is constructed so the grid still spans the full training data
+  if (frac < 1 && !isTRUE(approx)) {  # nothing to sample from an exemplar
+    train <- train[sample(nrow(train), size = max(1, floor(frac * nrow(train)))),
+                   , drop = FALSE]
   }
 
   # Calculate partial dependence values

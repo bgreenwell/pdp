@@ -32,7 +32,11 @@ get_training_data.default <- function(object, env = parent.frame(),
       stop(msg, call. = FALSE)
     })
     if (!is.primitive(f)) {
-      mcall <- match.call(f, call = mcall)
+      # Some objects (e.g., from recent versions of xgboost) store something
+      # other than a proper call, in which case match.call() errors cryptically
+      mcall <- tryCatch(match.call(f, call = mcall), error = function(e) {
+        stop(msg, call. = FALSE)
+      })
     }
   }
 

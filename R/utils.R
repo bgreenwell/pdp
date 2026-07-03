@@ -134,19 +134,29 @@ multiclass_logit <- function(x, which.class = 1L) {
 }
 
 
+# Surround a variable name with backticks so that formulas built via paste()
+# survive non-syntactic names (e.g., ones containing dashes or spaces)
+#' @keywords internal
+backtick <- function(x) {
+  paste0("`", x, "`")
+}
+
+
 #' @keywords internal
 train_chull <- function(pred.var, pred.grid, train) {
   if (length(pred.var) >= 2 && is.numeric(pred.grid[, 1L]) &&
       is.numeric(pred.grid[, 2L])) {  # if the first two columns are numeric
-    if (is.data.frame(train)) {
-      train <- data.matrix(train)  # `in.out()` requires a matrix
-    }
-    X <- stats::na.omit(train[, pred.var[1L:2L]])
-    Y <- stats::na.omit(data.matrix(pred.grid[, 1L:2L]))
+    # Only the two columns of interest are needed; extract them as a dense
+    # base matrix (`in.out()` and `chull()` require one, and things like
+    # na.omit() misbehave on sparse "dgCMatrix" objects)
+    X <- train[, pred.var[1L:2L], drop = FALSE]
+    X <- if (is.data.frame(X)) data.matrix(X) else as.matrix(X)
+    X <- stats::na.omit(X)
+    Y <- stats::na.omit(as.matrix(pred.grid[, 1L:2L, drop = FALSE]))
     hpts <- grDevices::chull(X)
     hpts <- c(hpts, hpts[1L])
     keep <- in.out(X[hpts, ], Y)
-    pred.grid[keep, ]
+    pred.grid[keep, , drop = FALSE]
   } else {
     pred.grid
   }

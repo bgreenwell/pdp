@@ -6,7 +6,7 @@
 [![r-universe version](https://bgreenwell.r-universe.dev/pdp/badges/version)](https://bgreenwell.r-universe.dev/pdp)
 [![R-CMD-check](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/bgreenwell/pdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=master)
+coverage](https://codecov.io/gh/bgreenwell/pdp/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=main)
 [![Total
 Downloads](https://cranlogs.r-pkg.org/badges/grand-total/pdp)](https://cranlogs.r-pkg.org/badges/grand-total/pdp)
 <!-- badges: end -->
@@ -62,12 +62,18 @@ policies. It is now hosted on [r-universe](https://bgreenwell.r-universe.dev/pdp
 which provides a reliable alternative for distributing R packages.
 
 ``` r
-# Install from r-universe (recommended):
+# Install the latest stable release from r-universe (recommended):
 install.packages("pdp", repos = c("https://bgreenwell.r-universe.dev", "https://cloud.r-project.org"))
 
-# Install the latest development version from GitHub:
-if (!requireNamespace("pak")) {
-  install.packages("pak")
-}
-pak::pak("bgreenwell/pdp")
+# Or install with pak (if needed: install.packages("pak")):
+pak::pak("bgreenwell/pdp@main")  # latest stable release
+pak::pak("bgreenwell/pdp")       # development version (devel branch)
 ```
+
+## Development
+
+Development happens on the [`devel`](https://github.com/bgreenwell/pdp/tree/devel)
+branch (the repository default); the `main` branch is reserved for stable
+releases, which is what [r-universe](https://bgreenwell.r-universe.dev/pdp)
+builds and the [package website](https://bgreenwell.github.io/pdp/) documents.
+Please open pull requests against `devel`.

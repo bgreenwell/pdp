@@ -2,8 +2,7 @@
 
 <!-- badges: start -->
 
-[![r-universe status](https://bgreenwell.r-universe.dev/badges/pdp)](https://bgreenwell.r-universe.dev/pdp)
-[![r-universe version](https://bgreenwell.r-universe.dev/pdp/badges/version)](https://bgreenwell.r-universe.dev/pdp)
+[![r-universe version](https://bgreenwell.r-universe.dev/badges/pdp)](https://bgreenwell.r-universe.dev/pdp)
 [![R-CMD-check](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/bgreenwell/pdp/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=main)

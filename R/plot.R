@@ -127,6 +127,7 @@
 #' rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
 #' plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 #' plot(rm.ice, center = TRUE, alpha = 0.2)
+#' }
 plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
                          pdp.lwd = 2, pdp.lty = 1, smooth = FALSE, rug = FALSE,
                          contour = FALSE, contour.color = "white", train = NULL,

@@ -159,3 +159,29 @@ The tinyplot-specific arguments \code{color.by}, \code{bars}, and
 \code{legend.title} are ignored when \code{lattice = TRUE}.
 }
 }
+\examples{
+\dontrun{
+#
+# Regression example (requires randomForest package to run)
+#
+
+# Fit a random forest to the Boston housing data
+library(randomForest)
+data (boston)  # load the boston housing data
+set.seed(101)  # for reproducibility
+boston.rf <- randomForest(cmedv ~ ., data = boston)
+
+# Partial dependence of cmedv on lstat
+pd <- partial(boston.rf, pred.var = "lstat")
+plot(pd, rug = TRUE, train = boston)
+
+# Partial dependence of cmedv on lstat and rm
+pd2 <- partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE)
+plot(pd2, contour = TRUE)
+
+# ICE and c-ICE curves
+rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
+plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
+plot(rm.ice, center = TRUE, alpha = 0.2)
+}
+}

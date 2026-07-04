@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\.planning$
 ^AGENTS\.md$
+^CLAUDE\.md$
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^pkgdown$

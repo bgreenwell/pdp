@@ -36,10 +36,10 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
-      # pkgdown renders every top-level .md file into a page; AGENTS.md is
-      # agent/contributor tooling and should not be published on the site
+      # pkgdown renders every top-level .md file into a page; AGENTS.md and
+      # CLAUDE.md are agent/contributor tooling and should not be published
       - name: Exclude agent instructions from the site
-        run: rm -f AGENTS.md
+        run: rm -f AGENTS.md CLAUDE.md
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

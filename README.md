@@ -4,7 +4,7 @@
 [![r-universe version](https://bgreenwell.r-universe.dev/badges/pdp)](https://bgreenwell.r-universe.dev/pdp)
 [![R-CMD-check](https://github.com/bgreenwell/pdp/workflows/R-CMD-check/badge.svg)](https://github.com/bgreenwell/pdp/actions)
 [![Codecov test coverage](https://codecov.io/gh/bgreenwell/pdp/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bgreenwell/pdp?branch=main)
-[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/pdp)](https://cranlogs.r-pkg.org/badges/grand-total/pdp)
+[![R Journal](https://img.shields.io/badge/The%20R%20Journal-10.32614%2FRJ--2017--016-brightgreen)](https://doi.org/10.32614/RJ-2017-016)
 <!-- badges: end -->
 
 Partial dependence plots (PDPs) and individual conditional expectation (ICE)

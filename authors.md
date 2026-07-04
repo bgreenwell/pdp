@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/bgreenwell/pdp/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/bgreenwell/pdp/blob/v0.9.1/inst/CITATION)
 
 Brandon M. Greenwell (2017). pdp: An R Package for Constructing Partial
 Dependence Plots. The R Journal, 9(1), 421--436. URL

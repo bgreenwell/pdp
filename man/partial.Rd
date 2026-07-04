@@ -52,7 +52,7 @@ partial(object, ...)
 \code{"lm"}, \code{"randomForest"}, \code{"train"}, etc.).}
 
 \item{...}{Additional optional arguments to be passed onto
-\code{\link[stats]{predict}}.}
+\code{\link[stats:predict]{stats::predict()}}.}
 
 \item{pred.var}{Character string giving the names of the predictor variables
 of interest. For reasons of computation/interpretation, this should include
@@ -99,7 +99,7 @@ quantiles of the continuous predictors listed in \code{pred.var}. If
 quantiles will be used to generate the grid of joint values for which the
 partial dependence is computed.}
 
-\item{probs}{Numeric vector of probabilities with values in [0,1]. (Values up
+\item{probs}{Numeric vector of probabilities with values in \verb{[0, 1]}. (Values up
 to 2e-14 outside that range are accepted and moved to the nearby endpoint.)
 Default is \code{1:9/10} which corresponds to the deciles of the predictor
 variables. These specify which quantiles to use for the continuous predictors
@@ -139,12 +139,12 @@ on a scale similar to the logit. Default is \code{FALSE}.}
 traversal method described in Friedman (2001). This only applies to objects
 that inherit from class \code{"gbm"}. Default is \code{TRUE} which is much
 faster than the exact brute force approach used for all other models. (Based
-on the C++ code behind \code{\link[gbm]{plot.gbm}}.)}
+on the C++ code behind \code{\link[gbm:plot.gbm]{gbm::plot.gbm()}}.)}
 
 \item{plot}{Logical indicating whether to return a data frame containing the
 partial dependence values (\code{FALSE}) or plot the partial dependence
 function directly (\code{TRUE}). Default is \code{FALSE}. See
-\code{\link{plotPartial}} for plotting details.}
+\code{\link[=plotPartial]{plotPartial()}} for plotting details.}
 
 \item{plot.engine}{Character string specifying which plotting engine to use
 whenever \code{plot = TRUE}. Options include \code{"tinyplot"} (default;
@@ -176,7 +176,7 @@ level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
 \item{contour.color}{Character string specifying the color to use for the
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
-\item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha (
+\item{alpha}{Numeric value in \verb{[0, 1]} specifying the opacity alpha (
 most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
 transparency). In fact, this option only affects ICE/c-ICE curves and level
 plots.}
@@ -196,12 +196,12 @@ in \code{pred.grid} has the correct class, levels, etc. Default is
 \code{TRUE}.}
 
 \item{batch.size}{Optional positive integer specifying the (approximate)
-maximum number of rows to score per call to \code{\link[stats]{predict}}. By
+maximum number of rows to score per call to \code{\link[stats:predict]{stats::predict()}}. By
 default (\code{batch.size = NULL}), \code{partial()} calls
-\code{\link[stats]{predict}} once per grid point (i.e., \code{nrow(train)}
+\code{\link[stats:predict]{stats::predict()}} once per grid point (i.e., \code{nrow(train)}
 rows at a time). Specifying a larger batch size (e.g.,
 \code{batch.size = 1e6}) stacks multiple grid points into a single call to
-\code{\link[stats]{predict}}, which is often substantially faster since it
+\code{\link[stats:predict]{stats::predict()}}, which is often substantially faster since it
 avoids the per-call overhead of most prediction methods, at the cost of
 additional memory. Requires the prediction function to return one prediction
 per row of \code{newdata}, so it cannot be used with a \code{pred.fun} that
@@ -218,13 +218,13 @@ parallel using a backend provided by the \code{foreach} package. Default is
 \code{FALSE}.}
 
 \item{paropts}{List containing additional options to be passed onto
-\code{\link[foreach]{foreach}} when \code{parallel = TRUE}.}
+\code{\link[foreach:foreach]{foreach::foreach()}} when \code{parallel = TRUE}.}
 
 \item{frac}{Numeric value in (0, 1] specifying the fraction of the training
 data to randomly sample (without replacement) before computing the partial
 dependence function. Default is \code{1} (i.e., use all of the training
 data). Mostly useful for reducing the number of ICE curves and/or
-computation time; use \code{\link[base]{set.seed}} for reproducibility.
+computation time; use \code{\link[base:Random]{base::set.seed()}} for reproducibility.
 Ignored whenever the recursive method is used (i.e., for \code{"gbm"}
 objects with \code{recursive = TRUE}).}
 }
@@ -240,7 +240,7 @@ and \code{plot.engine = "tinyplot"} (the default), the plot is drawn
 directly (as a side effect) and the data frame of partial dependence values
 is returned invisibly. When \code{plot = TRUE} and
 \code{plot.engine = "lattice"}, a \code{"trellis"} object is returned (see
-\code{\link[lattice]{lattice}} for details); the \code{"trellis"} object
+\strong{lattice} for details); the \code{"trellis"} object
 will also include an additional attribute, \code{"partial.data"}, containing
 the data displayed in the plot.
 }
@@ -272,7 +272,7 @@ If \code{ice = TRUE} or the prediction function given to \code{pred.fun}
 returns a prediction for each observation in \code{newdata}, then the result
 will be a curve for each observation. These are called individual conditional
 expectation (ICE) curves; see Goldstein et al. (2015) and
-\code{\link[ICEbox]{ice}} for details.
+\code{\link[ICEbox:ice]{ICEbox::ice()}} for details.
 }
 \examples{
 \dontrun{
@@ -334,10 +334,10 @@ partial(pima.rf, pred.var = "glucose", prob = TRUE, plot = TRUE,
 }
 \references{
 J. H. Friedman. Greedy function approximation: A gradient boosting machine.
-\emph{Annals of Statistics}, \bold{29}: 1189-1232, 2001.
+\emph{Annals of Statistics}, \strong{29}: 1189-1232, 2001.
 
 Goldstein, A., Kapelner, A., Bleich, J., and Pitkin, E., Peeking Inside the
 Black Box: Visualizing Statistical Learning With Plots of Individual
 Conditional Expectation. (2014) \emph{Journal of Computational and Graphical
-Statistics}, \bold{24}(1): 44-65, 2015.
+Statistics}, \strong{24}(1): 44-65, 2015.
 }

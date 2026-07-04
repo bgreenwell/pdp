@@ -1,6 +1,6 @@
 #' Retrieve the last trellis object
 #'
-#' See \code{\link[lattice]{trellis.last.object}} for more details.
+#' See [lattice::trellis.last.object()] for more details.
 #'
 #' @name trellis.last.object
 #' @rdname trellis.last.object

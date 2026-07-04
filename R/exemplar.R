@@ -1,24 +1,24 @@
 #' Exemplar observation
 #'
 #' Construct a single "exemplar" record from a data frame. For now, all numeric
-#' columns (including \code{"\link{Date}"} objects) are replaced with their
+#' columns (including [Date] objects) are replaced with their
 #' corresponding median value and non-numeric columns are replaced with their
 #' most frequent value.
 #'
 #' @param object A data frame, matrix, or
-#' \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} (the latter two are
-#' supported by \code{\link[xgboost]{xgboost}}).
+#' [`dgCMatrix`][Matrix::dgCMatrix-class] (the latter two are
+#' supported by [xgboost::xgboost()]).
 #'
-#' @param cats Character string indicating which columns of \code{object}
+#' @param cats Character string indicating which columns of `object`
 #' should be treated as categorical variables and summarized by their most
-#' frequent value (rather than a rounded median). Only used when \code{object}
-#' inherits from class \code{"matrix"} or \code{"dgCMatrix"}; data frames
+#' frequent value (rather than a rounded median). Only used when `object`
+#' inherits from class `"matrix"` or `"dgCMatrix"`; data frames
 #' handle this automatically for factor and character columns. Default is
-#' \code{NULL}.
+#' `NULL`.
 #'
 #' @param ... Additional optional arguments (currently ignored).
 #'
-#' @return A data frame with the same number of columns as \code{object} and a
+#' @return A data frame with the same number of columns as `object` and a
 #' single row.
 #'
 #' @rdname exemplar

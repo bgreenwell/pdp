@@ -57,11 +57,11 @@
 }
 \arguments{
 \item{x}{An object that inherits from class \code{"partial"}, \code{"ice"},
-or \code{"cice"}; typically the result of a call to \code{\link{partial}}.}
+or \code{"cice"}; typically the result of a call to \code{\link[=partial]{partial()}}.}
 
 \item{center}{Logical indicating whether or not to produce centered ICE
 curves (c-ICE curves). Only useful when \code{x} represents a set of ICE
-curves; see \code{\link[pdp]{partial}} for details. Default is \code{FALSE}.}
+curves; see \code{\link[=partial]{partial()}} for details. Default is \code{FALSE}.}
 
 \item{plot.pdp}{Logical indicating whether or not to plot the partial
 dependence function on top of the ICE curves. Default is \code{TRUE}.}
@@ -71,11 +71,11 @@ dependence function when \code{plot.pdp = TRUE}. Default is \code{"red2"}.}
 
 \item{pdp.lwd}{Integer specifying the line width to use for the partial
 dependence function when \code{plot.pdp = TRUE}. Default is \code{2}. See
-\code{\link[graphics]{par}} for more details.}
+\code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{pdp.lty}{Integer or character string specifying the line type to use
 for the partial dependence function when \code{plot.pdp = TRUE}. Default is
-\code{1}. See \code{\link[graphics]{par}} for more details.}
+\code{1}. See \code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
@@ -95,7 +95,7 @@ contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE}.}
 
-\item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha;
+\item{alpha}{Numeric value in \verb{[0, 1]} specifying the opacity alpha;
 most useful when plotting ICE/c-ICE curves. Default is \code{1} (i.e., no
 transparency).}
 
@@ -115,12 +115,12 @@ title of the false color level plot used for two continuous predictors.
 Default is \code{"yhat"}.}
 
 \item{lattice}{Logical indicating whether or not to draw the display using
-\code{\link[lattice]{lattice}} graphics instead of tinyplot/base graphics.
+\strong{lattice} graphics instead of tinyplot/base graphics.
 The lattice engine additionally supports three-predictor (paneled) displays
 and 3-D surfaces; see Details. Default is \code{FALSE}.}
 
 \item{...}{Additional optional arguments to be passed on to
-\code{\link[tinyplot]{tinyplot}} (e.g., \code{palette}, \code{main}, or
+\code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}} (e.g., \code{palette}, \code{main}, or
 \code{theme}) or, whenever \code{lattice = TRUE}, to the underlying lattice
 display (see Details).}
 }
@@ -135,53 +135,27 @@ manipulation (e.g., arranging multiple displays with
 Plot partial dependence functions (i.e., marginal effects) and individual
 conditional expectation (ICE) curves using lightweight base R graphics via
 the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package, or
-\code{\link[lattice]{lattice}} graphics whenever \code{lattice = TRUE}.
+\strong{lattice} graphics whenever \code{lattice = TRUE}.
 }
 \details{
 When \code{lattice = TRUE}, the display is constructed with
-\code{\link[lattice]{lattice}} graphics (this subsumes the now-deprecated
+\strong{lattice} graphics (this subsumes the now-deprecated
 \code{plotPartial()} interface). In that case, additional lattice-specific
 options can be supplied via \code{...}:
 \itemize{
-  \item \code{levelplot} - use a false color level plot (\code{TRUE};
-  default) or a 3-D \code{\link[lattice]{wireframe}} surface (\code{FALSE})
-  for two continuous predictors;
-  \item \code{chull} - overlay the convex hull of the first two predictors
-  (requires \code{train});
-  \item \code{col.regions} - color palette for level/wireframe plots;
-  \item \code{number}/\code{overlap} - number of conditioning intervals
-  (and their fraction of overlap) used to panel a third (continuous)
-  predictor;
-  \item any other argument accepted by \code{\link[lattice]{xyplot}},
-  \code{\link[lattice]{levelplot}}, \code{\link[lattice]{wireframe}}, or
-  \code{\link[lattice]{dotplot}} (e.g., \code{screen} or \code{drape}).
-}
+\item \code{levelplot} - use a false color level plot (\code{TRUE};
+default) or a 3-D \code{\link[lattice:cloud]{lattice::wireframe()}} surface (\code{FALSE})
+for two continuous predictors;
+\item \code{chull} - overlay the convex hull of the first two predictors
+(requires \code{train});
+\item \code{col.regions} - color palette for level/wireframe plots;
+\item \code{number}/\code{overlap} - number of conditioning intervals
+(and their fraction of overlap) used to panel a third (continuous)
+predictor;
+\item any other argument accepted by \code{\link[lattice:xyplot]{lattice::xyplot()}},
+\code{\link[lattice:levelplot]{lattice::levelplot()}}, \code{\link[lattice:cloud]{lattice::wireframe()}}, or
+\code{\link[lattice:xyplot]{lattice::dotplot()}} (e.g., \code{screen} or \code{drape}).
 The tinyplot-specific arguments \code{color.by}, \code{bars}, and
 \code{legend.title} are ignored when \code{lattice = TRUE}.
-}
-\examples{
-\dontrun{
-#
-# Regression example (requires randomForest package to run)
-#
-
-# Fit a random forest to the Boston housing data
-library(randomForest)
-data (boston)  # load the boston housing data
-set.seed(101)  # for reproducibility
-boston.rf <- randomForest(cmedv ~ ., data = boston)
-
-# Partial dependence of cmedv on lstat
-pd <- partial(boston.rf, pred.var = "lstat")
-plot(pd, rug = TRUE, train = boston)
-
-# Partial dependence of cmedv on lstat and rm
-pd2 <- partial(boston.rf, pred.var = c("lstat", "rm"), chull = TRUE)
-plot(pd2, contour = TRUE)
-
-# ICE and c-ICE curves
-rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
-plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
-plot(rm.ice, center = TRUE, alpha = 0.2)
 }
 }

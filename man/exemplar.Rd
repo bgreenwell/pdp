@@ -18,7 +18,7 @@ exemplar(object, ...)
 \arguments{
 \item{object}{A data frame, matrix, or
 \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} (the latter two are
-supported by \code{\link[xgboost]{xgboost}}).}
+supported by \code{\link[xgboost:xgboost]{xgboost::xgboost()}}).}
 
 \item{...}{Additional optional arguments (currently ignored).}
 
@@ -35,7 +35,7 @@ single row.
 }
 \description{
 Construct a single "exemplar" record from a data frame. For now, all numeric
-columns (including \code{"\link{Date}"} objects) are replaced with their
+columns (including \link{Date} objects) are replaced with their
 corresponding median value and non-numeric columns are replaced with their
 most frequent value.
 }

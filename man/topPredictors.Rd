@@ -20,14 +20,14 @@ topPredictors(object, n = 1L, ...)
 \code{1} meaning return the single most important predictor.}
 
 \item{...}{Additional optional arguments to be passed onto
-\code{\link[caret]{varImp}}.}
+\code{\link[caret:varImp]{caret::varImp()}}.}
 }
 \description{
 Extract the most "important" predictors for regression and classification
 models.
 }
 \details{
-This function uses the generic function \code{\link[caret]{varImp}} to
+This function uses the generic function \code{\link[caret:varImp]{caret::varImp()}} to
 calculate variable importance scores for each predictor. After that, they are
 sorted at the names of the \code{n} highest scoring predictors are returned.
 }

@@ -18,8 +18,7 @@ The development version can be found on GitHub: https://github.com/bgreenwell/pd
 As of right now, \code{pdp} exports the following functions:
 \itemize{
   \item{\code{partial}} - construct partial dependence functions (i.e., objects of class \code{"partial"}) from various fitted model objects;
-  \item{\code{plotPartial}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[lattice]{lattice}} graphics;
-  \item{\code{plot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using lightweight base R graphics via \code{\link[tinyplot]{tinyplot}};
+  \item{\code{plot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using lightweight base R graphics via \code{\link[tinyplot]{tinyplot}} (or \code{\link[lattice]{lattice}} graphics whenever \code{lattice = TRUE});
   \item{\code{exemplar}} - construct a single "exemplar" record from a data frame.
 }
 }

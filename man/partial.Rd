@@ -297,14 +297,13 @@ partial(boston.rf, pred.var = "lstat", plot = TRUE, rug = TRUE)
 partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
         plot = TRUE, chull = TRUE, progress = TRUE)
 
-# The plotPartial function offers more flexible plotting
+# The plot method produces lightweight base R graphics via the tinyplot
+# package by default; set `lattice = TRUE` for lattice graphics (e.g., for
+# 3-D surfaces or paneled three-predictor displays)
 pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
-plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
-            colorkey = FALSE, screen = list(z = -20, x = -60))
-
-# The plot method can be used to produce lightweight base R graphics via
-# the tinyplot package
 plot(pd, contour = TRUE)
+plot(pd, lattice = TRUE, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
+     colorkey = FALSE, screen = list(z = -20, x = -60))
 
 #
 # Individual conditional expectation (ICE) curves
@@ -312,7 +311,7 @@ plot(pd, contour = TRUE)
 
 # Use partial to obtain ICE/c-ICE curves
 rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
-plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
+plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 
 #

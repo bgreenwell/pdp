@@ -16,15 +16,15 @@ pd113 <- partial(fit113, pred.var = "x-var", train = d113,
                  grid.resolution = 5)
 expect_inherits(pd113, "partial")
 pdf(NULL)
-expect_inherits(plotPartial(pd113), "trellis")
+expect_inherits(plot(pd113, lattice = TRUE), "trellis")
 expect_inherits(plot(pd113), "partial")  # tinyplot engine
 pd113.2 <- partial(fit113, pred.var = c("x-var", "x 2"), train = d113,
                    grid.resolution = 5)
-expect_inherits(plotPartial(pd113.2), "trellis")
+expect_inherits(plot(pd113.2, lattice = TRUE), "trellis")
 expect_inherits(plot(pd113.2), "partial")
 ice113 <- partial(fit113, pred.var = "x-var", train = d113, ice = TRUE,
                   grid.resolution = 5)
-expect_inherits(plotPartial(ice113), "trellis")
+expect_inherits(plot(ice113, lattice = TRUE), "trellis")
 expect_inherits(plot(ice113), "ice")
 invisible(dev.off())
 
@@ -50,7 +50,8 @@ pd.multi <- partial(fit, pred.var = c("x1", "x2"), pred.fun = pfun, train = d,
                     grid.resolution = 3)
 expect_inherits(pd.multi, "ice")
 pdf(NULL)
-expect_error(plotPartial(pd.multi), pattern = "multiple\\s+.?predictors")
+expect_error(plot(pd.multi, lattice = TRUE),
+             pattern = "multiple\\s+.?predictors")
 expect_error(plot(pd.multi), pattern = "multiple\\s+.?predictors")
 invisible(dev.off())
 

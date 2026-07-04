@@ -2,7 +2,8 @@
 #'
 #' Plot partial dependence functions (i.e., marginal effects) and individual
 #' conditional expectation (ICE) curves using lightweight base R graphics via
-#' the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package.
+#' the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package, or
+#' \code{\link[lattice]{lattice}} graphics whenever \code{lattice = TRUE}.
 #'
 #' @param x An object that inherits from class \code{"partial"}, \code{"ice"},
 #' or \code{"cice"}; typically the result of a call to \code{\link{partial}}.
@@ -62,11 +63,43 @@
 #' title of the false color level plot used for two continuous predictors.
 #' Default is \code{"yhat"}.
 #'
+#' @param lattice Logical indicating whether or not to draw the display using
+#' \code{\link[lattice]{lattice}} graphics instead of tinyplot/base graphics.
+#' The lattice engine additionally supports three-predictor (paneled) displays
+#' and 3-D surfaces; see Details. Default is \code{FALSE}.
+#'
 #' @param ... Additional optional arguments to be passed on to
 #' \code{\link[tinyplot]{tinyplot}} (e.g., \code{palette}, \code{main}, or
-#' \code{theme}).
+#' \code{theme}) or, whenever \code{lattice = TRUE}, to the underlying lattice
+#' display (see Details).
 #'
-#' @return Draws a plot as a side effect and (invisibly) returns \code{x}.
+#' @details
+#' When \code{lattice = TRUE}, the display is constructed with
+#' \code{\link[lattice]{lattice}} graphics (this subsumes the now-deprecated
+#' \code{plotPartial()} interface). In that case, additional lattice-specific
+#' options can be supplied via \code{...}:
+#' \itemize{
+#'   \item \code{levelplot} - use a false color level plot (\code{TRUE};
+#'   default) or a 3-D \code{\link[lattice]{wireframe}} surface (\code{FALSE})
+#'   for two continuous predictors;
+#'   \item \code{chull} - overlay the convex hull of the first two predictors
+#'   (requires \code{train});
+#'   \item \code{col.regions} - color palette for level/wireframe plots;
+#'   \item \code{number}/\code{overlap} - number of conditioning intervals
+#'   (and their fraction of overlap) used to panel a third (continuous)
+#'   predictor;
+#'   \item any other argument accepted by \code{\link[lattice]{xyplot}},
+#'   \code{\link[lattice]{levelplot}}, \code{\link[lattice]{wireframe}}, or
+#'   \code{\link[lattice]{dotplot}} (e.g., \code{screen} or \code{drape}).
+#' }
+#' The tinyplot-specific arguments \code{color.by}, \code{bars}, and
+#' \code{legend.title} are ignored when \code{lattice = TRUE}.
+#'
+#' @return Draws a plot as a side effect. The tinyplot engine (invisibly)
+#' returns \code{x}; the lattice engine (\code{lattice = TRUE}) (invisibly)
+#' returns the \code{"trellis"} object, which can be captured for further
+#' manipulation (e.g., arranging multiple displays with
+#' \code{gridExtra::grid.arrange()}).
 #'
 #' @rdname plot.partial
 #'
@@ -101,7 +134,20 @@ plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
                          pdp.lwd = 2, pdp.lty = 1, smooth = FALSE, rug = FALSE,
                          contour = FALSE, contour.color = "white", train = NULL,
                          alpha = 1, color.by = NULL, bars = FALSE,
-                         legend.title = "yhat", ...) {
+                         legend.title = "yhat", lattice = FALSE, ...) {
+
+  # Use lattice graphics instead? Calls the method directly (rather than the
+  # deprecated plotPartial() generic) so no deprecation warning is signaled
+  if (isTRUE(lattice)) {
+    res <- plotPartial.partial(
+      x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, smooth = smooth, rug = rug,
+      contour = contour, contour.color = contour.color, train = train,
+      alpha = alpha, ...
+    )
+    print(res)  # draw as a side effect, like the tinyplot engine
+    return(invisible(res))
+  }
 
   # Determine if object contains multiple curves
   multi <- "yhat.id" %in% names(x)
@@ -154,7 +200,16 @@ plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
 #' @export
 plot.ice <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
                      pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL,
-                     alpha = 1, color.by = NULL, ...) {
+                     alpha = 1, color.by = NULL, lattice = FALSE, ...) {
+  if (isTRUE(lattice)) {
+    res <- plotPartial.ice(
+      x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
+      alpha = alpha, ...
+    )
+    print(res)
+    return(invisible(res))
+  }
   tinyplot_ice_curves(
     object = x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
     pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
@@ -169,7 +224,15 @@ plot.ice <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
 #' @export
 plot.cice <- function(x, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
                       pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1,
-                      color.by = NULL, ...) {
+                      color.by = NULL, lattice = FALSE, ...) {
+  if (isTRUE(lattice)) {
+    res <- plotPartial.cice(
+      x, plot.pdp = plot.pdp, pdp.col = pdp.col, pdp.lwd = pdp.lwd,
+      pdp.lty = pdp.lty, rug = rug, train = train, alpha = alpha, ...
+    )
+    print(res)
+    return(invisible(res))
+  }
   tinyplot_ice_curves(
     object = x, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
     pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,

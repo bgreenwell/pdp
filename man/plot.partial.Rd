@@ -22,6 +22,7 @@
   color.by = NULL,
   bars = FALSE,
   legend.title = "yhat",
+  lattice = FALSE,
   ...
 )
 
@@ -36,6 +37,7 @@
   train = NULL,
   alpha = 1,
   color.by = NULL,
+  lattice = FALSE,
   ...
 )
 
@@ -49,6 +51,7 @@
   train = NULL,
   alpha = 1,
   color.by = NULL,
+  lattice = FALSE,
   ...
 )
 }
@@ -111,17 +114,50 @@ points) whenever the predictor of interest is a factor. Default is
 title of the false color level plot used for two continuous predictors.
 Default is \code{"yhat"}.}
 
+\item{lattice}{Logical indicating whether or not to draw the display using
+\code{\link[lattice]{lattice}} graphics instead of tinyplot/base graphics.
+The lattice engine additionally supports three-predictor (paneled) displays
+and 3-D surfaces; see Details. Default is \code{FALSE}.}
+
 \item{...}{Additional optional arguments to be passed on to
 \code{\link[tinyplot]{tinyplot}} (e.g., \code{palette}, \code{main}, or
-\code{theme}).}
+\code{theme}) or, whenever \code{lattice = TRUE}, to the underlying lattice
+display (see Details).}
 }
 \value{
-Draws a plot as a side effect and (invisibly) returns \code{x}.
+Draws a plot as a side effect. The tinyplot engine (invisibly)
+returns \code{x}; the lattice engine (\code{lattice = TRUE}) (invisibly)
+returns the \code{"trellis"} object, which can be captured for further
+manipulation (e.g., arranging multiple displays with
+\code{gridExtra::grid.arrange()}).
 }
 \description{
 Plot partial dependence functions (i.e., marginal effects) and individual
 conditional expectation (ICE) curves using lightweight base R graphics via
-the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package.
+the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package, or
+\code{\link[lattice]{lattice}} graphics whenever \code{lattice = TRUE}.
+}
+\details{
+When \code{lattice = TRUE}, the display is constructed with
+\code{\link[lattice]{lattice}} graphics (this subsumes the now-deprecated
+\code{plotPartial()} interface). In that case, additional lattice-specific
+options can be supplied via \code{...}:
+\itemize{
+  \item \code{levelplot} - use a false color level plot (\code{TRUE};
+  default) or a 3-D \code{\link[lattice]{wireframe}} surface (\code{FALSE})
+  for two continuous predictors;
+  \item \code{chull} - overlay the convex hull of the first two predictors
+  (requires \code{train});
+  \item \code{col.regions} - color palette for level/wireframe plots;
+  \item \code{number}/\code{overlap} - number of conditioning intervals
+  (and their fraction of overlap) used to panel a third (continuous)
+  predictor;
+  \item any other argument accepted by \code{\link[lattice]{xyplot}},
+  \code{\link[lattice]{levelplot}}, \code{\link[lattice]{wireframe}}, or
+  \code{\link[lattice]{dotplot}} (e.g., \code{screen} or \code{drape}).
+}
+The tinyplot-specific arguments \code{color.by}, \code{bars}, and
+\code{legend.title} are ignored when \code{lattice = TRUE}.
 }
 \examples{
 \dontrun{

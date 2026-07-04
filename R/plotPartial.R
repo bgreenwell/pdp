@@ -1,7 +1,12 @@
-#' Plotting Partial Dependence Functions
+#' Plotting Partial Dependence Functions (deprecated)
 #'
 #' Plots partial dependence functions (i.e., marginal effects) using
 #' \code{\link[lattice]{lattice}} graphics.
+#'
+#' \strong{Deprecated:} \code{plotPartial()} is deprecated and will be removed
+#' in a future release; please use \code{plot(..., lattice = TRUE)} instead,
+#' which produces the same displays through a single interface (see
+#' \code{\link{plot.partial}} for details).
 #'
 #' @param object An object that inherits from the \code{"partial"} class.
 #'
@@ -104,6 +109,11 @@
 #' grid.arrange(p1, p2, ncol = 2)
 #' }
 plotPartial <- function(object, ...) {
+  .Deprecated(
+    msg = paste("pdp::plotPartial() is deprecated and will be removed in a",
+                "future release. Please use plot(..., lattice = TRUE)",
+                "instead; see ?pdp::plot.partial for details.")
+  )
   UseMethod("plotPartial")
 }
 

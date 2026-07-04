@@ -5,7 +5,7 @@
 \alias{plotPartial.ice}
 \alias{plotPartial.cice}
 \alias{plotPartial.partial}
-\title{Plotting Partial Dependence Functions}
+\title{Plotting Partial Dependence Functions (deprecated)}
 \usage{
 plotPartial(object, ...)
 
@@ -114,6 +114,12 @@ for further details.}
 \description{
 Plots partial dependence functions (i.e., marginal effects) using
 \code{\link[lattice]{lattice}} graphics.
+}
+\details{
+\strong{Deprecated:} \code{plotPartial()} is deprecated and will be removed
+in a future release; please use \code{plot(..., lattice = TRUE)} instead,
+which produces the same displays through a single interface (see
+\code{\link{plot.partial}} for details).
 }
 \examples{
 \dontrun{

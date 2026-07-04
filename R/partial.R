@@ -262,14 +262,13 @@
 #' partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
 #'         plot = TRUE, chull = TRUE, progress = TRUE)
 #'
-#' # The plotPartial function offers more flexible plotting
+#' # The plot method produces lightweight base R graphics via the tinyplot
+#' # package by default; set `lattice = TRUE` for lattice graphics (e.g., for
+#' # 3-D surfaces or paneled three-predictor displays)
 #' pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
-#' plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
-#'             colorkey = FALSE, screen = list(z = -20, x = -60))
-#'
-#' # The plot method can be used to produce lightweight base R graphics via
-#' # the tinyplot package
 #' plot(pd, contour = TRUE)
+#' plot(pd, lattice = TRUE, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
+#'      colorkey = FALSE, screen = list(z = -20, x = -60))
 #'
 #' #
 #' # Individual conditional expectation (ICE) curves
@@ -277,7 +276,7 @@
 #'
 #' # Use partial to obtain ICE/c-ICE curves
 #' rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
-#' plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
+#' plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 #' plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 #'
 #' #
@@ -546,17 +545,19 @@ partial.default <- function(
       }
       return(invisible(pd.df))
     }
-    # Return a graph (i.e., a "trellis" object)
+    # Return a graph (i.e., a "trellis" object); the methods are called
+    # directly (rather than via the deprecated plotPartial() generic) so no
+    # deprecation warning is signaled
     res <- if (inherits(pd.df, what = c("ice", "cice"))) {
-      plotPartial(
+      plotPartial.ice(
         object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
         alpha = alpha
       )
     } else {
-      plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
-                  levelplot = levelplot, contour = contour,
-                  contour.color = contour.color,
-                  screen = list(z = -30, x = -60))  # sensible default?
+      plotPartial.partial(pd.df, smooth = smooth, rug = rug, train = train,
+                          levelplot = levelplot, contour = contour,
+                          contour.color = contour.color,
+                          screen = list(z = -30, x = -60))  # sensible default?
     }
     attr(res, "partial.data") <- pd.df  # attach PDP data as an attribute
   } else {  # return a data frame (i.e., a "data.frame" and "partial" object)

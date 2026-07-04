@@ -1,5 +1,14 @@
 # pdp (development version)
 
+## Deprecations
+
+* `plotPartial()` is deprecated in favor of the consolidated `plot()`
+interface: the `plot()` methods gained a `lattice` argument, so
+`plot(..., lattice = TRUE)` now produces the same lattice-based displays
+(including 3-D wireframe surfaces and paneled three-predictor plots).
+`plotPartial()` continues to work (with a warning) but will be removed in a
+future release.
+
 ## Bug fixes
 
 * Plotting now works for non-syntactic predictor names (e.g., names containing

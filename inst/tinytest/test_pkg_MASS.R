@@ -39,10 +39,10 @@ if (require(MASS, quietly = TRUE)) {
 
   # Display plots in a grid
   grid.arrange(
-    plotPartial(pd_lda),
-    plotPartial(pd_lda_prob),
-    plotPartial(ice_lda),
-    plotPartial(ice_lda_prob),
+    plot(pd_lda, lattice = TRUE),
+    plot(pd_lda_prob, lattice = TRUE),
+    plot(ice_lda, lattice = TRUE),
+    plot(ice_lda_prob, lattice = TRUE),
     nrow = 2
   )
 
@@ -68,10 +68,10 @@ if (require(MASS, quietly = TRUE)) {
 
   # Display plots in a grid
   grid.arrange(
-    plotPartial(pd_qda),
-    plotPartial(pd_qda_prob),
-    plotPartial(ice_qda),
-    plotPartial(ice_qda_prob),
+    plot(pd_qda, lattice = TRUE),
+    plot(pd_qda_prob, lattice = TRUE),
+    plot(ice_qda, lattice = TRUE),
+    plot(ice_qda_prob, lattice = TRUE),
     nrow = 2
   )
 

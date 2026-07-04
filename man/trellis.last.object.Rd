@@ -7,6 +7,6 @@
 trellis.last.object(..., prefix)
 }
 \description{
-See \code{\link[lattice]{trellis.last.object}} for more details.
+See \code{\link[lattice:update.trellis]{lattice::trellis.last.object()}} for more details.
 }
 \keyword{internal}

@@ -1,3 +1,67 @@
+# pdp 0.9.1
+
+## Deprecations
+
+* `plotPartial()` is deprecated in favor of the consolidated `plot()`
+interface: the `plot()` methods gained a `lattice` argument, so
+`plot(..., lattice = TRUE)` now produces the same lattice-based displays
+(including 3-D wireframe surfaces and paneled three-predictor plots).
+`plotPartial()` continues to work (with a warning) but will be removed in a
+future release.
+
+## Bug fixes
+
+* Plotting now works for non-syntactic predictor names (e.g., names containing
+dashes or spaces) in both the tinyplot and lattice engines
+[(#113)](https://github.com/bgreenwell/pdp/issues/113).
+
+* `partial(chull = TRUE)` no longer fails for sparse (`"dgCMatrix"`) training
+data [(#77)](https://github.com/bgreenwell/pdp/issues/77).
+
+* Plotting multi-predictor output from `pred.fun` (i.e., objects with a
+`yhat.id` column and more than one predictor) now throws an informative error
+instead of producing a nonsense display
+[(#111)](https://github.com/bgreenwell/pdp/issues/111),
+[(#112)](https://github.com/bgreenwell/pdp/issues/112).
+
+* Failing to recover the training data (e.g., for recent **xgboost** models
+when `train` is not supplied) now always produces the informative "please
+supply the training data" error rather than a cryptic `match.call()` failure
+[(#137)](https://github.com/bgreenwell/pdp/issues/137).
+
+## New features
+
+* `pred.var` can now be omitted whenever `pred.grid` is supplied; it defaults
+to `colnames(pred.grid)`
+[(#122)](https://github.com/bgreenwell/pdp/issues/122).
+
+* New `frac` argument in `partial()` for randomly sampling a fraction of the
+training data before computing the partial dependence function; mostly useful
+for reducing the number of ICE curves and/or computation time
+[(#74)](https://github.com/bgreenwell/pdp/issues/74).
+
+* New `color.by` argument in the `plot()` methods for coloring ICE/c-ICE
+curves by another feature [(#81)](https://github.com/bgreenwell/pdp/issues/81).
+
+* New `bars` argument in `plot.partial()` for displaying factor predictors as
+bar plots instead of points
+[(#132)](https://github.com/bgreenwell/pdp/issues/132).
+
+* `exemplar()` gained a `cats` argument for matrix-like objects so categorical
+columns are summarized by their most frequent value (rather than a rounded
+median); used by `partial(approx = TRUE)`
+[(#115)](https://github.com/bgreenwell/pdp/issues/115).
+
+## Miscellaneous
+
+* Removed the (long stale) `slowtests/` directory; its coverage is redundant
+with the `tinytest` suite and the new vignettes.
+
+* Pruned Suggests packages that were no longer used anywhere in the package
+(**adabag**, **AmesHousing**, **Cubist**, **ipred**, **mda**, **partykit**,
+and **vip**).
+
+
 # pdp 0.9.0
 
 ## Breaking changes

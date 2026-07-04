@@ -3,19 +3,19 @@
 #' Extract the most "important" predictors for regression and classification
 #' models.
 #'
-#' @param object A fitted model object of appropriate class (e.g., \code{"gbm"},
-#' \code{"lm"}, \code{"randomForest"}, etc.).
+#' @param object A fitted model object of appropriate class (e.g., `"gbm"`,
+#' `"lm"`, `"randomForest"`, etc.).
 #'
 #' @param n Integer specifying the number of predictors to return. Default is
-#' \code{1} meaning return the single most important predictor.
+#' `1` meaning return the single most important predictor.
 #'
 #' @param ... Additional optional arguments to be passed onto
-#' \code{\link[caret]{varImp}}.
+#' [caret::varImp()].
 #'
 #' @details
-#' This function uses the generic function \code{\link[caret]{varImp}} to
+#' This function uses the generic function [caret::varImp()] to
 #' calculate variable importance scores for each predictor. After that, they are
-#' sorted at the names of the \code{n} highest scoring predictors are returned.
+#' sorted at the names of the `n` highest scoring predictors are returned.
 #'
 #' @rdname topPredictors
 #' @export

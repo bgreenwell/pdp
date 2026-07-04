@@ -2,13 +2,13 @@
 ^\.Rproj\.user$
 ^\.planning$
 ^AGENTS\.md$
+^CLAUDE\.md$
 ^codecov\.yml$
 ^_pkgdown\.yml$
 ^pkgdown$
 ^docs$
 ^data-raw$
 ^README\.html$
-^slowtests$
 ^tools$
 ^\.github$
 \.o$

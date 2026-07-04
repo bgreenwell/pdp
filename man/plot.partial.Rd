@@ -19,7 +19,10 @@
   contour.color = "white",
   train = NULL,
   alpha = 1,
+  color.by = NULL,
+  bars = FALSE,
   legend.title = "yhat",
+  lattice = FALSE,
   ...
 )
 
@@ -33,6 +36,8 @@
   rug = FALSE,
   train = NULL,
   alpha = 1,
+  color.by = NULL,
+  lattice = FALSE,
   ...
 )
 
@@ -45,16 +50,18 @@
   rug = FALSE,
   train = NULL,
   alpha = 1,
+  color.by = NULL,
+  lattice = FALSE,
   ...
 )
 }
 \arguments{
 \item{x}{An object that inherits from class \code{"partial"}, \code{"ice"},
-or \code{"cice"}; typically the result of a call to \code{\link{partial}}.}
+or \code{"cice"}; typically the result of a call to \code{\link[=partial]{partial()}}.}
 
 \item{center}{Logical indicating whether or not to produce centered ICE
 curves (c-ICE curves). Only useful when \code{x} represents a set of ICE
-curves; see \code{\link[pdp]{partial}} for details. Default is \code{FALSE}.}
+curves; see \code{\link[=partial]{partial()}} for details. Default is \code{FALSE}.}
 
 \item{plot.pdp}{Logical indicating whether or not to plot the partial
 dependence function on top of the ICE curves. Default is \code{TRUE}.}
@@ -64,11 +71,11 @@ dependence function when \code{plot.pdp = TRUE}. Default is \code{"red2"}.}
 
 \item{pdp.lwd}{Integer specifying the line width to use for the partial
 dependence function when \code{plot.pdp = TRUE}. Default is \code{2}. See
-\code{\link[graphics]{par}} for more details.}
+\code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{pdp.lty}{Integer or character string specifying the line type to use
 for the partial dependence function when \code{plot.pdp = TRUE}. Default is
-\code{1}. See \code{\link[graphics]{par}} for more details.}
+\code{1}. See \code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{smooth}{Logical indicating whether or not to overlay a LOESS smooth.
 Default is \code{FALSE}.}
@@ -88,25 +95,69 @@ contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 \item{train}{Data frame containing the original training data. Only required
 if \code{rug = TRUE}.}
 
-\item{alpha}{Numeric value in \code{[0, 1]} specifying the opacity alpha;
+\item{alpha}{Numeric value in \verb{[0, 1]} specifying the opacity alpha;
 most useful when plotting ICE/c-ICE curves. Default is \code{1} (i.e., no
 transparency).}
+
+\item{color.by}{Optional character string specifying the name of a column in
+\code{train} used to color the individual ICE/c-ICE curves; continuous
+variables are binned into (at most) five groups. Requires \code{train} and
+assumes the curve IDs (i.e., the \code{yhat.id} column) correspond to the
+rows of \code{train} (which is the case whenever \code{ice = TRUE}).
+Default is \code{NULL}.}
+
+\item{bars}{Logical indicating whether or not to use a bar plot (rather than
+points) whenever the predictor of interest is a factor. Default is
+\code{FALSE}.}
 
 \item{legend.title}{Character string specifying the text for the legend
 title of the false color level plot used for two continuous predictors.
 Default is \code{"yhat"}.}
 
+\item{lattice}{Logical indicating whether or not to draw the display using
+\strong{lattice} graphics instead of tinyplot/base graphics.
+The lattice engine additionally supports three-predictor (paneled) displays
+and 3-D surfaces; see Details. Default is \code{FALSE}.}
+
 \item{...}{Additional optional arguments to be passed on to
-\code{\link[tinyplot]{tinyplot}} (e.g., \code{palette}, \code{main}, or
-\code{theme}).}
+\code{\link[tinyplot:tinyplot]{tinyplot::tinyplot()}} (e.g., \code{palette}, \code{main}, or
+\code{theme}) or, whenever \code{lattice = TRUE}, to the underlying lattice
+display (see Details).}
 }
 \value{
-Draws a plot as a side effect and (invisibly) returns \code{x}.
+Draws a plot as a side effect. The tinyplot engine (invisibly)
+returns \code{x}; the lattice engine (\code{lattice = TRUE}) (invisibly)
+returns the \code{"trellis"} object, which can be captured for further
+manipulation (e.g., arranging multiple displays with
+\code{gridExtra::grid.arrange()}).
 }
 \description{
 Plot partial dependence functions (i.e., marginal effects) and individual
 conditional expectation (ICE) curves using lightweight base R graphics via
-the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package.
+the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package, or
+\strong{lattice} graphics whenever \code{lattice = TRUE}.
+}
+\details{
+When \code{lattice = TRUE}, the display is constructed with
+\strong{lattice} graphics (this subsumes the now-deprecated
+\code{plotPartial()} interface). In that case, additional lattice-specific
+options can be supplied via \code{...}:
+\itemize{
+\item \code{levelplot} - use a false color level plot (\code{TRUE};
+default) or a 3-D \code{\link[lattice:cloud]{lattice::wireframe()}} surface (\code{FALSE})
+for two continuous predictors;
+\item \code{chull} - overlay the convex hull of the first two predictors
+(requires \code{train});
+\item \code{col.regions} - color palette for level/wireframe plots;
+\item \code{number}/\code{overlap} - number of conditioning intervals
+(and their fraction of overlap) used to panel a third (continuous)
+predictor;
+\item any other argument accepted by \code{\link[lattice:xyplot]{lattice::xyplot()}},
+\code{\link[lattice:levelplot]{lattice::levelplot()}}, \code{\link[lattice:cloud]{lattice::wireframe()}}, or
+\code{\link[lattice:xyplot]{lattice::dotplot()}} (e.g., \code{screen} or \code{drape}).
+The tinyplot-specific arguments \code{color.by}, \code{bars}, and
+\code{legend.title} are ignored when \code{lattice = TRUE}.
+}
 }
 \examples{
 \dontrun{

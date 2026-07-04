@@ -5,7 +5,7 @@
 \alias{plotPartial.ice}
 \alias{plotPartial.cice}
 \alias{plotPartial.partial}
-\title{Plotting Partial Dependence Functions}
+\title{Plotting Partial Dependence Functions (deprecated)}
 \usage{
 plotPartial(object, ...)
 
@@ -60,7 +60,7 @@ plotPartial(object, ...)
 
 \item{center}{Logical indicating whether or not to produce centered ICE
 curves (c-ICE curves). Only useful when \code{object} represents a set of ICE
-curves; see \code{\link[pdp]{partial}} for details. Default is \code{FALSE}.}
+curves; see \code{\link[=partial]{partial()}} for details. Default is \code{FALSE}.}
 
 \item{plot.pdp}{Logical indicating whether or not to plot the partial
 dependence function on top of the ICE curves. Default is \code{TRUE}.}
@@ -70,11 +70,11 @@ dependence function when \code{plot.pdp = TRUE}. Default is \code{"red"}.}
 
 \item{pdp.lwd}{Integer specifying the line width to use for the partial
 dependence function when \code{plot.pdp = TRUE}. Default is \code{1}. See
-\code{\link[graphics]{par}} for more details.}
+\code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{pdp.lty}{Integer or character string specifying the line type to use
 for the partial dependence function when  \code{plot.pdp = TRUE}. Default is
-\code{1}. See \code{\link[graphics]{par}} for more details.}
+\code{1}. See \code{\link[graphics:par]{graphics::par()}} for more details.}
 
 \item{rug}{Logical indicating whether or not to include rug marks on the
 predictor axes. Default is \code{FALSE}.}
@@ -99,21 +99,27 @@ level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.}
 contour lines when \code{contour = TRUE}. Default is \code{"white"}.}
 
 \item{col.regions}{Vector of colors to be passed on to
-\code{\link[lattice]{levelplot}}'s \code{col.region} argument. Defaults to
+\code{\link[lattice:levelplot]{lattice::levelplot()}}'s \code{col.region} argument. Defaults to
 \code{grDevices::hcl.colors(100)} (which is the same viridis color palette
 used in the past).}
 
 \item{number}{Integer specifying the number of conditional intervals to use
-for the continuous panel variables. See \code{\link[graphics]{co.intervals}}
-and \code{\link[lattice]{equal.count}} for further details.}
+for the continuous panel variables. See \code{\link[graphics:coplot]{graphics::co.intervals()}}
+and \code{\link[lattice:shingles]{lattice::equal.count()}} for further details.}
 
 \item{overlap}{The fraction of overlap of the conditioning variables. See
-\code{\link[graphics]{co.intervals}} and \code{\link[lattice]{equal.count}}
+\code{\link[graphics:coplot]{graphics::co.intervals()}} and \code{\link[lattice:shingles]{lattice::equal.count()}}
 for further details.}
 }
 \description{
 Plots partial dependence functions (i.e., marginal effects) using
-\code{\link[lattice]{lattice}} graphics.
+\strong{lattice} graphics.
+}
+\details{
+\strong{Deprecated:} \code{plotPartial()} is deprecated and will be removed
+in a future release; please use \code{plot(..., lattice = TRUE)} instead,
+which produces the same displays through a single interface (see
+\code{\link[=plot.partial]{plot.partial()}} for details).
 }
 \examples{
 \dontrun{

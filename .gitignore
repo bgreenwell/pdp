@@ -4,7 +4,6 @@
 .RData
 .DS_Store
 .planning/
-slowtests/*.html
 src/*.o
 src/*.so
 inst/doc

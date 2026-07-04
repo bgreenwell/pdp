@@ -37,12 +37,12 @@ if (require(party, quietly = TRUE)) {
 
   # Display plots in a grid
   grid.arrange(
-    plotPartial(pd1),
-    plotPartial(pd2),
-    plotPartial(pd2_prob),
-    plotPartial(ice1),
-    plotPartial(ice2),
-    plotPartial(ice2_prob),
+    plot(pd1, lattice = TRUE),
+    plot(pd2, lattice = TRUE),
+    plot(pd2_prob, lattice = TRUE),
+    plot(ice1, lattice = TRUE),
+    plot(ice2, lattice = TRUE),
+    plot(ice2_prob, lattice = TRUE),
     nrow = 2
   )
 
@@ -73,12 +73,12 @@ if (require(party, quietly = TRUE)) {
 
   # Display plots in a grid
   grid.arrange(
-    plotPartial(pd3),
-    plotPartial(pd4),
-    plotPartial(pd4_prob),
-    plotPartial(ice3),
-    plotPartial(ice4),
-    plotPartial(ice4_prob),
+    plot(pd3, lattice = TRUE),
+    plot(pd4, lattice = TRUE),
+    plot(pd4_prob, lattice = TRUE),
+    plot(ice3, lattice = TRUE),
+    plot(ice4, lattice = TRUE),
+    plot(ice4_prob, lattice = TRUE),
     nrow = 2
   )
 

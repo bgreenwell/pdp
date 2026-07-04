@@ -5,226 +5,235 @@
 #' Compute partial dependence functions (i.e., marginal effects) for various
 #' model fitting objects.
 #'
-#' @param object A fitted model object of appropriate class (e.g., \code{"gbm"},
-#' \code{"lm"}, \code{"randomForest"}, \code{"train"}, etc.).
+#' @param object A fitted model object of appropriate class (e.g., `"gbm"`,
+#' `"lm"`, `"randomForest"`, `"train"`, etc.).
 #'
 #' @param pred.var Character string giving the names of the predictor variables
 #' of interest. For reasons of computation/interpretation, this should include
-#' no more than three variables.
+#' no more than three variables. Can be omitted whenever `pred.grid` is
+#' supplied, in which case it defaults to `colnames(pred.grid)`.
 #'
 #' @param pred.grid Data frame containing the joint values of interest for the
-#' variables listed in \code{pred.var}.
+#' variables listed in `pred.var`.
 #'
 #' @param pred.fun Optional prediction function that requires two arguments:
-#' \code{object} and \code{newdata}. If specified, then the function must return
+#' `object` and `newdata`. If specified, then the function must return
 #' a single prediction or a vector of predictions (i.e., not a matrix or data
-#' frame). Default is \code{NULL}.
+#' frame). Default is `NULL`.
 #'
 #' @param grid.resolution Integer giving the number of equally spaced points to
-#' use for the continuous variables listed in \code{pred.var} when
-#' \code{pred.grid} is not supplied. If left \code{NULL}, it will default to
-#' the minimum between \code{51} and the number of unique data points for each
-#' of the continuous independent variables listed in \code{pred.var}.
+#' use for the continuous variables listed in `pred.var` when
+#' `pred.grid` is not supplied. If left `NULL`, it will default to
+#' the minimum between `51` and the number of unique data points for each
+#' of the continuous independent variables listed in `pred.var`.
 #'
 #' @param ice Logical indicating whether or not to compute individual
-#' conditional expectation (ICE) curves. Default is \code{FALSE}. See
+#' conditional expectation (ICE) curves. Default is `FALSE`. See
 #' Goldstein et al. (2014) for details.
 #'
 #' @param center Logical indicating whether or not to produce centered ICE
-#' curves (c-ICE curves). Only used when \code{ice = TRUE}. Default is
-#' \code{FALSE}. See Goldstein et al. (2014) for details.
+#' curves (c-ICE curves). Only used when `ice = TRUE`. Default is
+#' `FALSE`. See Goldstein et al. (2014) for details.
 #'
 #' @param approx Logical indicating whether or not to compute a faster, but
 #' approximate, marginal effect plot (similar in spirit to the
-#' \strong{plotmo} package). If \code{TRUE}, then \code{partial()} will compute
-#' predictions across the predictors specified in \code{pred.var} while holding
+#' **plotmo** package). If `TRUE`, then `partial()` will compute
+#' predictions across the predictors specified in `pred.var` while holding
 #' the other predictors constant (a "poor man's partial dependence" function as
-#' Stephen Milborrow, the author of \strong{plotmo}, puts it).
-#' Default is \code{FALSE}. Note this works with \code{ice = TRUE} as well.
+#' Stephen Milborrow, the author of **plotmo**, puts it).
+#' Default is `FALSE`. Note this works with `ice = TRUE` as well.
 #' WARNING: This option is currently experimental. Use at your own risk. It is
 #' possible (and arguably safer) to do this manually by passing a specific
-#' "exemplar" observation to the train argument and specifying \code{pred.grid}
+#' "exemplar" observation to the train argument and specifying `pred.grid`
 #' manually.
 #'
 #' @param quantiles Logical indicating whether or not to use the sample
-#' quantiles of the continuous predictors listed in \code{pred.var}. If
-#' \code{quantiles = TRUE} and \code{grid.resolution = NULL} the sample
+#' quantiles of the continuous predictors listed in `pred.var`. If
+#' `quantiles = TRUE` and `grid.resolution = NULL` the sample
 #' quantiles will be used to generate the grid of joint values for which the
 #' partial dependence is computed.
 #'
-#' @param probs Numeric vector of probabilities with values in [0,1]. (Values up
+#' @param probs Numeric vector of probabilities with values in `[0, 1]`. (Values up
 #' to 2e-14 outside that range are accepted and moved to the nearby endpoint.)
-#' Default is \code{1:9/10} which corresponds to the deciles of the predictor
+#' Default is `1:9/10` which corresponds to the deciles of the predictor
 #' variables. These specify which quantiles to use for the continuous predictors
-#' listed in \code{pred.var} when \code{quantiles = TRUE}.
+#' listed in `pred.var` when `quantiles = TRUE`.
 #'
 #' @param trim.outliers Logical indicating whether or not to trim off outliers
-#' from the continuous predictors listed in \code{pred.var} (using the simple
+#' from the continuous predictors listed in `pred.var` (using the simple
 #' boxplot method) before generating the grid of joint values for which the
-#' partial dependence is computed. Default is \code{FALSE}.
+#' partial dependence is computed. Default is `FALSE`.
 #'
 #' @param type Character string specifying the type of supervised learning.
-#' Current options are \code{"auto"}, \code{"regression"} or
-#' \code{"classification"}. If \code{type = "auto"} then \code{partial} will try
-#' to extract the necessary information from \code{object}.
+#' Current options are `"auto"`, `"regression"` or
+#' `"classification"`. If `type = "auto"` then `partial` will try
+#' to extract the necessary information from `object`.
 #'
 #' @param inv.link Function specifying the transformation to be applied to the
 #' predictions before the partial dependence function is computed
-#' (experimental). Default is \code{NULL} (i.e., no transformation). This option
+#' (experimental). Default is `NULL` (i.e., no transformation). This option
 #' is intended to be used for models that allow for non-Gaussian response
 #' variables (e.g., counts). For these models, predictions are not typically
 #' returned on the original response scale by default. For example, Poisson GBMs
 #' typically return predictions on the log scale. In this case setting
-#' \code{inv.link = exp} will return the partial dependence function on the
+#' `inv.link = exp` will return the partial dependence function on the
 #' response (i.e., raw count) scale.
 #'
 #' @param which.class Integer specifying which column of the matrix of predicted
 #' probabilities to use as the "focus" class. Default is to use the first class.
 #' Only used for classification problems (i.e., when
-#' \code{type = "classification"}).
+#' `type = "classification"`).
 #'
 #' @param prob Logical indicating whether or not partial dependence for
 #' classification problems should be returned on the probability scale, rather
-#' than the centered logit. If \code{FALSE}, the partial dependence function is
-#' on a scale similar to the logit. Default is \code{FALSE}.
+#' than the centered logit. If `FALSE`, the partial dependence function is
+#' on a scale similar to the logit. Default is `FALSE`.
 #'
 #' @param recursive Logical indicating whether or not to use the weighted tree
 #' traversal method described in Friedman (2001). This only applies to objects
-#' that inherit from class \code{"gbm"}. Default is \code{TRUE} which is much
+#' that inherit from class `"gbm"`. Default is `TRUE` which is much
 #' faster than the exact brute force approach used for all other models. (Based
-#' on the C++ code behind \code{\link[gbm]{plot.gbm}}.)
+#' on the C++ code behind [gbm::plot.gbm()].)
 #'
 #' @param plot Logical indicating whether to return a data frame containing the
-#' partial dependence values (\code{FALSE}) or plot the partial dependence
-#' function directly (\code{TRUE}). Default is \code{FALSE}. See
-#' \code{\link{plotPartial}} for plotting details.
+#' partial dependence values (`FALSE`) or plot the partial dependence
+#' function directly (`TRUE`). Default is `FALSE`. See
+#' [plotPartial()] for plotting details.
 #'
 #' @param plot.engine Character string specifying which plotting engine to use
-#' whenever \code{plot = TRUE}. Options include \code{"tinyplot"} (default;
+#' whenever `plot = TRUE`. Options include `"tinyplot"` (default;
 #' lightweight base R graphics via the
-#' \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package) or
-#' \code{"lattice"}.
+#' [tinyplot](https://grantmcdermott.com/tinyplot/) package) or
+#' `"lattice"`.
 #'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
-#' Default is \code{FALSE}.
+#' Default is `FALSE`.
 #'
 #' @param rug Logical indicating whether or not to include a rug display on the
 #' predictor axes. The tick marks indicate the min/max and deciles of the
 #' predictor distributions. This helps reduce the risk of interpreting the
 #' partial dependence plot outside the region of the data (i.e., extrapolating).
-#' Only used when \code{plot = TRUE}. Default is \code{FALSE}.
+#' Only used when `plot = TRUE`. Default is `FALSE`.
 #'
 #' @param levelplot Logical indicating whether or not to use a false color level
-#' plot (\code{TRUE}) or a 3-D surface (\code{FALSE}). Default is \code{TRUE}.
+#' plot (`TRUE`) or a 3-D surface (`FALSE`). Default is `TRUE`.
 #'
 #' @param contour Logical indicating whether or not to add contour lines to the
-#' level plot. Only used when \code{levelplot = TRUE}. Default is \code{FALSE}.
+#' level plot. Only used when `levelplot = TRUE`. Default is `FALSE`.
 #'
 #' @param contour.color Character string specifying the color to use for the
-#' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
+#' contour lines when `contour = TRUE`. Default is `"white"`.
 #'
-#' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha (
+#' @param alpha Numeric value in `[0, 1]` specifying the opacity alpha (
 #' most useful when plotting ICE/c-ICE curves). Default is 1 (i.e., no
 #' transparency). In fact, this option only affects ICE/c-ICE curves and level
 #' plots.
 #'
 #' @param chull Logical indicating whether or not to restrict the values of the
-#' first two variables in \code{pred.var} to lie within the convex hull of their
-#' training values; this affects \code{pred.grid}. This helps reduce the risk of
+#' first two variables in `pred.var` to lie within the convex hull of their
+#' training values; this affects `pred.grid`. This helps reduce the risk of
 #' interpreting the partial dependence plot outside the region of the data
-#' (i.e., extrapolating).Default is \code{FALSE}.
+#' (i.e., extrapolating).Default is `FALSE`.
 #'
 #' @param train An optional data frame, matrix, or sparse matrix containing the
 #' original training data. This may be required depending on the class of
-#' \code{object}. For objects that do not store a copy of the original training
+#' `object`. For objects that do not store a copy of the original training
 #' data, this argument is required. For reasons discussed below, it is good
 #' practice to always specify this argument.
 #'
-#' @param cats Character string indicating which columns of \code{train} should
-#' be treated as categorical variables. Only used when \code{train} inherits
-#' from class \code{"matrix"} or \code{"dgCMatrix"}.
+#' @param cats Character string indicating which columns of `train` should
+#' be treated as categorical variables. Only used when `train` inherits
+#' from class `"matrix"` or `"dgCMatrix"`.
 #'
 #' @param check.class Logical indicating whether or not to make sure each column
-#' in \code{pred.grid} has the correct class, levels, etc. Default is
-#' \code{TRUE}.
+#' in `pred.grid` has the correct class, levels, etc. Default is
+#' `TRUE`.
 #'
 #' @param batch.size Optional positive integer specifying the (approximate)
-#' maximum number of rows to score per call to \code{\link[stats]{predict}}. By
-#' default (\code{batch.size = NULL}), \code{partial()} calls
-#' \code{\link[stats]{predict}} once per grid point (i.e., \code{nrow(train)}
+#' maximum number of rows to score per call to [stats::predict()]. By
+#' default (`batch.size = NULL`), `partial()` calls
+#' [stats::predict()] once per grid point (i.e., `nrow(train)`
 #' rows at a time). Specifying a larger batch size (e.g.,
-#' \code{batch.size = 1e6}) stacks multiple grid points into a single call to
-#' \code{\link[stats]{predict}}, which is often substantially faster since it
+#' `batch.size = 1e6`) stacks multiple grid points into a single call to
+#' [stats::predict()], which is often substantially faster since it
 #' avoids the per-call overhead of most prediction methods, at the cost of
 #' additional memory. Requires the prediction function to return one prediction
-#' per row of \code{newdata}, so it cannot be used with a \code{pred.fun} that
+#' per row of `newdata`, so it cannot be used with a `pred.fun` that
 #' aggregates its own predictions. Prediction names are also ignored when
-#' batching (i.e., \code{yhat.id} will always contain integer IDs). Ignored
-#' whenever the recursive method is used (i.e., for \code{"gbm"} objects with
-#' \code{recursive = TRUE}).
+#' batching (i.e., `yhat.id` will always contain integer IDs). Ignored
+#' whenever the recursive method is used (i.e., for `"gbm"` objects with
+#' `recursive = TRUE`).
 #'
 #' @param progress Logical indicating whether or not to display a text-based
-#' progress bar. Default is \code{FALSE}.
+#' progress bar. Default is `FALSE`.
 #'
-#' @param parallel Logical indicating whether or not to run \code{partial} in
-#' parallel using a backend provided by the \code{foreach} package. Default is
-#' \code{FALSE}.
+#' @param parallel Logical indicating whether or not to run `partial` in
+#' parallel using a backend provided by the `foreach` package. Default is
+#' `FALSE`.
 #'
 #' @param paropts List containing additional options to be passed onto
-#' \code{\link[foreach]{foreach}} when \code{parallel = TRUE}.
+#' [foreach::foreach()] when `parallel = TRUE`.
+#'
+#' @param frac Numeric value in (0, 1] specifying the fraction of the training
+#' data to randomly sample (without replacement) before computing the partial
+#' dependence function. Default is `1` (i.e., use all of the training
+#' data). Mostly useful for reducing the number of ICE curves and/or
+#' computation time; use [base::set.seed()] for reproducibility.
+#' Ignored whenever the recursive method is used (i.e., for `"gbm"`
+#' objects with `recursive = TRUE`).
 #'
 #' @param ... Additional optional arguments to be passed onto
-#' \code{\link[stats]{predict}}.
+#' [stats::predict()].
 #'
-#' @return By default, \code{partial} returns an object of class
-#' \code{c("data.frame", "partial")}. If \code{ice = TRUE} and
-#' \code{center = FALSE} then an object of class \code{c("data.frame", "ice")}
-#' is returned. If \code{ice = TRUE} and \code{center = TRUE} then an object of
-#' class \code{c("data.frame", "cice")} is returned. These three classes
+#' @return By default, `partial` returns an object of class
+#' `c("data.frame", "partial")`. If `ice = TRUE` and
+#' `center = FALSE` then an object of class `c("data.frame", "ice")`
+#' is returned. If `ice = TRUE` and `center = TRUE` then an object of
+#' class `c("data.frame", "cice")` is returned. These three classes
 #' determine the behavior of the plotting functions that are automatically
-#' called whenever \code{plot = TRUE}. Specifically, when \code{plot = TRUE}
-#' and \code{plot.engine = "tinyplot"} (the default), the plot is drawn
+#' called whenever `plot = TRUE`. Specifically, when `plot = TRUE`
+#' and `plot.engine = "tinyplot"` (the default), the plot is drawn
 #' directly (as a side effect) and the data frame of partial dependence values
-#' is returned invisibly. When \code{plot = TRUE} and
-#' \code{plot.engine = "lattice"}, a \code{"trellis"} object is returned (see
-#' \code{\link[lattice]{lattice}} for details); the \code{"trellis"} object
-#' will also include an additional attribute, \code{"partial.data"}, containing
+#' is returned invisibly. When `plot = TRUE` and
+#' `plot.engine = "lattice"`, a `"trellis"` object is returned (see
+#' **lattice** for details); the `"trellis"` object
+#' will also include an additional attribute, `"partial.data"`, containing
 #' the data displayed in the plot.
 #'
 #' @note
-#' In some cases it is difficult for \code{partial} to extract the original
-#' training data from \code{object}. In these cases an error message is
+#' In some cases it is difficult for `partial` to extract the original
+#' training data from `object`. In these cases an error message is
 #' displayed requesting the user to supply the training data via the
-#' \code{train} argument in the call to \code{partial}. In most cases where
-#' \code{partial} can extract the required training data from \code{object},
-#' it is taken from the same environment in which \code{partial} is called.
+#' `train` argument in the call to `partial`. In most cases where
+#' `partial` can extract the required training data from `object`,
+#' it is taken from the same environment in which `partial` is called.
 #' Therefore, it is important to not change the training data used to construct
-#' \code{object} before calling \code{partial}. This problem is completely
-#' avoided when the training data are passed to the \code{train} argument in the
-#' call to \code{partial}.
+#' `object` before calling `partial`. This problem is completely
+#' avoided when the training data are passed to the `train` argument in the
+#' call to `partial`.
 #'
-#' It is recommended to call \code{partial} with \code{plot = FALSE} and store
+#' It is recommended to call `partial` with `plot = FALSE` and store
 #' the results. This allows for more flexible plotting, and the user will not
-#' have to waste time calling \code{partial} again if the default plot is not
+#' have to waste time calling `partial` again if the default plot is not
 #' sufficient.
 #'
-#' It is possible to retrieve the last printed \code{"trellis"} object, such as
-#' those produced by \code{plotPartial}, using \code{trellis.last.object()}.
+#' It is possible to retrieve the last printed `"trellis"` object, such as
+#' those produced by `plotPartial`, using `trellis.last.object()`.
 #'
-#' If \code{ice = TRUE} or the prediction function given to \code{pred.fun}
-#' returns a prediction for each observation in \code{newdata}, then the result
+#' If `ice = TRUE` or the prediction function given to `pred.fun`
+#' returns a prediction for each observation in `newdata`, then the result
 #' will be a curve for each observation. These are called individual conditional
 #' expectation (ICE) curves; see Goldstein et al. (2015) and
-#' \code{\link[ICEbox]{ice}} for details.
+#' [ICEbox::ice()] for details.
 #'
 #' @references
 #' J. H. Friedman. Greedy function approximation: A gradient boosting machine.
-#' \emph{Annals of Statistics}, \bold{29}: 1189-1232, 2001.
+#' *Annals of Statistics*, **29**: 1189-1232, 2001.
 #'
 #' Goldstein, A., Kapelner, A., Bleich, J., and Pitkin, E., Peeking Inside the
 #' Black Box: Visualizing Statistical Learning With Plots of Individual
-#' Conditional Expectation. (2014) \emph{Journal of Computational and Graphical
-#' Statistics}, \bold{24}(1): 44-65, 2015.
+#' Conditional Expectation. (2014) *Journal of Computational and Graphical
+#' Statistics*, **24**(1): 44-65, 2015.
 #'
 #' @rdname partial
 #'
@@ -253,14 +262,13 @@
 #' partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
 #'         plot = TRUE, chull = TRUE, progress = TRUE)
 #'
-#' # The plotPartial function offers more flexible plotting
+#' # The plot method produces lightweight base R graphics via the tinyplot
+#' # package by default; set `lattice = TRUE` for lattice graphics (e.g., for
+#' # 3-D surfaces or paneled three-predictor displays)
 #' pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
-#' plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
-#'             colorkey = FALSE, screen = list(z = -20, x = -60))
-#'
-#' # The plot method can be used to produce lightweight base R graphics via
-#' # the tinyplot package
 #' plot(pd, contour = TRUE)
+#' plot(pd, lattice = TRUE, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
+#'      colorkey = FALSE, screen = list(z = -20, x = -60))
 #'
 #' #
 #' # Individual conditional expectation (ICE) curves
@@ -268,7 +276,7 @@
 #'
 #' # Use partial to obtain ICE/c-ICE curves
 #' rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
-#' plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
+#' plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 #' plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 #'
 #' #
@@ -305,13 +313,26 @@ partial.default <- function(
   smooth = FALSE, rug = FALSE, chull = FALSE, levelplot = TRUE,
   contour = FALSE, contour.color = "white",
   alpha = 1, train, cats = NULL, check.class = TRUE, batch.size = NULL,
-  progress = FALSE, parallel = FALSE, paropts = NULL, ...
+  progress = FALSE, parallel = FALSE, paropts = NULL, frac = 1, ...
 ) {
 
   # Check batch size if given
   if (!is.null(batch.size) &&
       (!is.numeric(batch.size) || length(batch.size) != 1 || batch.size < 1)) {
     stop("`batch.size` should be a single positive number.")
+  }
+
+  # Check training data fraction
+  if (!is.numeric(frac) || length(frac) != 1 || frac <= 0 || frac > 1) {
+    stop("`frac` should be a single number in (0, 1].")
+  }
+
+  # Infer the predictors of interest whenever only `pred.grid` is supplied
+  if (missing(pred.var) && !missing(pred.grid)) {
+    if (!is.data.frame(pred.grid)) {
+      stop("`pred.grid` should be a data frame.")
+    }
+    pred.var <- colnames(pred.grid)
   }
 
   # Check prediction function if given
@@ -419,8 +440,16 @@ partial.default <- function(
   }
 
   # Compute "poor man's partial dependence"
-  if (isTRUE(approx)) {       # FIXME: What about when `rug/chull = TRUE`
-    train <- exemplar(train)  # FIXME: Better handling for matrix-like objects
+  if (isTRUE(approx)) {  # FIXME: What about when `rug/chull = TRUE`
+    train <- exemplar(train, cats = cats)
+  }
+
+  # Randomly sample a fraction of the training data (mostly useful for
+  # reducing the number of ICE curves and/or computation time); done after the
+  # grid is constructed so the grid still spans the full training data
+  if (frac < 1 && !isTRUE(approx)) {  # nothing to sample from an exemplar
+    train <- train[sample(nrow(train), size = max(1, floor(frac * nrow(train)))),
+                   , drop = FALSE]
   }
 
   # Calculate partial dependence values
@@ -516,17 +545,19 @@ partial.default <- function(
       }
       return(invisible(pd.df))
     }
-    # Return a graph (i.e., a "trellis" object)
+    # Return a graph (i.e., a "trellis" object); the methods are called
+    # directly (rather than via the deprecated plotPartial() generic) so no
+    # deprecation warning is signaled
     res <- if (inherits(pd.df, what = c("ice", "cice"))) {
-      plotPartial(
+      plotPartial.ice(
         object = pd.df, plot.pdp = TRUE, rug = rug, train = train,
         alpha = alpha
       )
     } else {
-      plotPartial(pd.df, smooth = smooth, rug = rug, train = train,
-                  levelplot = levelplot, contour = contour,
-                  contour.color = contour.color,
-                  screen = list(z = -30, x = -60))  # sensible default?
+      plotPartial.partial(pd.df, smooth = smooth, rug = rug, train = train,
+                          levelplot = levelplot, contour = contour,
+                          contour.color = contour.color,
+                          screen = list(z = -30, x = -60))  # sensible default?
     }
     attr(res, "partial.data") <- pd.df  # attach PDP data as an attribute
   } else {  # return a data frame (i.e., a "data.frame" and "partial" object)

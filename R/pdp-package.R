@@ -1,5 +1,5 @@
 #' pdp: A general framework for constructing partial dependence (i.e., marginal
-#' effect) plots from various types machine learning models in R.
+#' effect) plots from various types of machine learning models in R.
 #'
 #' Partial dependence plots (PDPs) help visualize the relationship between a
 #' subset of the features (typically 1-3) and the response while accounting for
@@ -7,14 +7,18 @@
 #' particularly effective with black box models like random forests and support
 #' vector machines.
 #'
-#' The development version can be found on GitHub: https://github.com/bgreenwell/pdp.
-#' As of right now, \code{pdp} exports the following functions:
-#' \itemize{
-#'   \item{\code{partial}} - construct partial dependence functions (i.e., objects of class \code{"partial"}) from various fitted model objects;
-#'   \item{\code{plotPartial}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using \code{\link[lattice]{lattice}} graphics;
-#'   \item{\code{plot}} - plot partial dependence functions (i.e., objects of class \code{"partial"}) using lightweight base R graphics via \code{\link[tinyplot]{tinyplot}};
-#'   \item{\code{exemplar}} - construct a single "exemplar" record from a data frame.
-#' }
+#' The development version can be found on GitHub:
+#' <https://github.com/bgreenwell/pdp>. As of right now, pdp exports the
+#' following functions:
+#'
+#' - `partial()` - construct partial dependence functions (i.e., objects of
+#'   class `"partial"`) from various fitted model objects;
+#' - `plot()` - plot partial dependence functions (i.e., objects of class
+#'   `"partial"`) using lightweight base R graphics via
+#'   [tinyplot::tinyplot()] (or **lattice** graphics whenever
+#'   `lattice = TRUE`);
+#' - `exemplar()` - construct a single "exemplar" record from a data frame.
+#'
 #' @keywords internal
 "_PACKAGE"
 

@@ -2,60 +2,102 @@
 #'
 #' Plot partial dependence functions (i.e., marginal effects) and individual
 #' conditional expectation (ICE) curves using lightweight base R graphics via
-#' the \href{https://grantmcdermott.com/tinyplot/}{tinyplot} package.
+#' the [tinyplot](https://grantmcdermott.com/tinyplot/) package, or
+#' **lattice** graphics whenever `lattice = TRUE`.
 #'
-#' @param x An object that inherits from class \code{"partial"}, \code{"ice"},
-#' or \code{"cice"}; typically the result of a call to \code{\link{partial}}.
+#' @param x An object that inherits from class `"partial"`, `"ice"`,
+#' or `"cice"`; typically the result of a call to [partial()].
 #'
 #' @param center Logical indicating whether or not to produce centered ICE
-#' curves (c-ICE curves). Only useful when \code{x} represents a set of ICE
-#' curves; see \code{\link[pdp]{partial}} for details. Default is \code{FALSE}.
+#' curves (c-ICE curves). Only useful when `x` represents a set of ICE
+#' curves; see [pdp::partial()] for details. Default is `FALSE`.
 #'
 #' @param plot.pdp Logical indicating whether or not to plot the partial
-#' dependence function on top of the ICE curves. Default is \code{TRUE}.
+#' dependence function on top of the ICE curves. Default is `TRUE`.
 #'
 #' @param pdp.col Character string specifying the color to use for the partial
-#' dependence function when \code{plot.pdp = TRUE}. Default is \code{"red2"}.
+#' dependence function when `plot.pdp = TRUE`. Default is `"red2"`.
 #'
 #' @param pdp.lwd Integer specifying the line width to use for the partial
-#' dependence function when \code{plot.pdp = TRUE}. Default is \code{2}. See
-#' \code{\link[graphics]{par}} for more details.
+#' dependence function when `plot.pdp = TRUE`. Default is `2`. See
+#' [graphics::par()] for more details.
 #'
 #' @param pdp.lty Integer or character string specifying the line type to use
-#' for the partial dependence function when \code{plot.pdp = TRUE}. Default is
-#' \code{1}. See \code{\link[graphics]{par}} for more details.
+#' for the partial dependence function when `plot.pdp = TRUE`. Default is
+#' `1`. See [graphics::par()] for more details.
 #'
 #' @param smooth Logical indicating whether or not to overlay a LOESS smooth.
-#' Default is \code{FALSE}.
+#' Default is `FALSE`.
 #'
 #' @param rug Logical indicating whether or not to include rug marks (i.e.,
 #' the min/max and deciles of the predictor distribution) on the predictor
 #' axes. Not currently supported for faceted displays (i.e., partial dependence
-#' of two predictors where at least one is a factor). Default is \code{FALSE}.
+#' of two predictors where at least one is a factor). Default is `FALSE`.
 #'
 #' @param contour Logical indicating whether or not to add contour lines to the
 #' false color level plot used for two continuous predictors. Default is
-#' \code{FALSE}.
+#' `FALSE`.
 #'
 #' @param contour.color Character string specifying the color to use for the
-#' contour lines when \code{contour = TRUE}. Default is \code{"white"}.
+#' contour lines when `contour = TRUE`. Default is `"white"`.
 #'
 #' @param train Data frame containing the original training data. Only required
-#' if \code{rug = TRUE}.
+#' if `rug = TRUE`.
 #'
-#' @param alpha Numeric value in \code{[0, 1]} specifying the opacity alpha;
-#' most useful when plotting ICE/c-ICE curves. Default is \code{1} (i.e., no
+#' @param alpha Numeric value in `[0, 1]` specifying the opacity alpha;
+#' most useful when plotting ICE/c-ICE curves. Default is `1` (i.e., no
 #' transparency).
+#'
+#' @param color.by Optional character string specifying the name of a column in
+#' `train` used to color the individual ICE/c-ICE curves; continuous
+#' variables are binned into (at most) five groups. Requires `train` and
+#' assumes the curve IDs (i.e., the `yhat.id` column) correspond to the
+#' rows of `train` (which is the case whenever `ice = TRUE`).
+#' Default is `NULL`.
+#'
+#' @param bars Logical indicating whether or not to use a bar plot (rather than
+#' points) whenever the predictor of interest is a factor. Default is
+#' `FALSE`.
 #'
 #' @param legend.title Character string specifying the text for the legend
 #' title of the false color level plot used for two continuous predictors.
-#' Default is \code{"yhat"}.
+#' Default is `"yhat"`.
+#'
+#' @param lattice Logical indicating whether or not to draw the display using
+#' **lattice** graphics instead of tinyplot/base graphics.
+#' The lattice engine additionally supports three-predictor (paneled) displays
+#' and 3-D surfaces; see Details. Default is `FALSE`.
 #'
 #' @param ... Additional optional arguments to be passed on to
-#' \code{\link[tinyplot]{tinyplot}} (e.g., \code{palette}, \code{main}, or
-#' \code{theme}).
+#' [tinyplot::tinyplot()] (e.g., `palette`, `main`, or
+#' `theme`) or, whenever `lattice = TRUE`, to the underlying lattice
+#' display (see Details).
 #'
-#' @return Draws a plot as a side effect and (invisibly) returns \code{x}.
+#' @details
+#' When `lattice = TRUE`, the display is constructed with
+#' **lattice** graphics (this subsumes the now-deprecated
+#' `plotPartial()` interface). In that case, additional lattice-specific
+#' options can be supplied via `...`:
+#'   - `levelplot` - use a false color level plot (`TRUE`;
+#'   default) or a 3-D [lattice::wireframe()] surface (`FALSE`)
+#'   for two continuous predictors;
+#'   - `chull` - overlay the convex hull of the first two predictors
+#'   (requires `train`);
+#'   - `col.regions` - color palette for level/wireframe plots;
+#'   - `number`/`overlap` - number of conditioning intervals
+#'   (and their fraction of overlap) used to panel a third (continuous)
+#'   predictor;
+#'   - any other argument accepted by [lattice::xyplot()],
+#'   [lattice::levelplot()], [lattice::wireframe()], or
+#'   [lattice::dotplot()] (e.g., `screen` or `drape`).
+#' The tinyplot-specific arguments `color.by`, `bars`, and
+#' `legend.title` are ignored when `lattice = TRUE`.
+#'
+#' @return Draws a plot as a side effect. The tinyplot engine (invisibly)
+#' returns `x`; the lattice engine (`lattice = TRUE`) (invisibly)
+#' returns the `"trellis"` object, which can be captured for further
+#' manipulation (e.g., arranging multiple displays with
+#' `gridExtra::grid.arrange()`).
 #'
 #' @rdname plot.partial
 #'
@@ -89,7 +131,21 @@
 plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
                          pdp.lwd = 2, pdp.lty = 1, smooth = FALSE, rug = FALSE,
                          contour = FALSE, contour.color = "white", train = NULL,
-                         alpha = 1, legend.title = "yhat", ...) {
+                         alpha = 1, color.by = NULL, bars = FALSE,
+                         legend.title = "yhat", lattice = FALSE, ...) {
+
+  # Use lattice graphics instead? Calls the method directly (rather than the
+  # deprecated plotPartial() generic) so no deprecation warning is signaled
+  if (isTRUE(lattice)) {
+    res <- plotPartial.partial(
+      x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, smooth = smooth, rug = rug,
+      contour = contour, contour.color = contour.color, train = train,
+      alpha = alpha, ...
+    )
+    print(res)  # draw as a side effect, like the tinyplot engine
+    return(invisible(res))
+  }
 
   # Determine if object contains multiple curves
   multi <- "yhat.id" %in% names(x)
@@ -108,13 +164,13 @@ plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
     tinyplot_ice_curves(
       object = x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
       pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-      alpha = alpha, ...
+      alpha = alpha, color.by = color.by, ...
     )
 
   } else if (nx == 1L) {
 
     tinyplot_one_predictor_pdp(  # single predictor
-      object = x, smooth = smooth, rug = rug, train = train, ...
+      object = x, smooth = smooth, rug = rug, train = train, bars = bars, ...
     )
 
   } else if (nx == 2L) {
@@ -142,11 +198,20 @@ plot.partial <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
 #' @export
 plot.ice <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
                      pdp.lwd = 2, pdp.lty = 1, rug = FALSE, train = NULL,
-                     alpha = 1, ...) {
+                     alpha = 1, color.by = NULL, lattice = FALSE, ...) {
+  if (isTRUE(lattice)) {
+    res <- plotPartial.ice(
+      x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
+      pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
+      alpha = alpha, ...
+    )
+    print(res)
+    return(invisible(res))
+  }
   tinyplot_ice_curves(
     object = x, center = center, plot.pdp = plot.pdp, pdp.col = pdp.col,
     pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-    alpha = alpha, ...
+    alpha = alpha, color.by = color.by, ...
   )
   invisible(x)
 }
@@ -156,11 +221,20 @@ plot.ice <- function(x, center = FALSE, plot.pdp = TRUE, pdp.col = "red2",
 #'
 #' @export
 plot.cice <- function(x, plot.pdp = TRUE, pdp.col = "red2", pdp.lwd = 2,
-                      pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1, ...) {
+                      pdp.lty = 1, rug = FALSE, train = NULL, alpha = 1,
+                      color.by = NULL, lattice = FALSE, ...) {
+  if (isTRUE(lattice)) {
+    res <- plotPartial.cice(
+      x, plot.pdp = plot.pdp, pdp.col = pdp.col, pdp.lwd = pdp.lwd,
+      pdp.lty = pdp.lty, rug = rug, train = train, alpha = alpha, ...
+    )
+    print(res)
+    return(invisible(res))
+  }
   tinyplot_ice_curves(
     object = x, center = FALSE, plot.pdp = plot.pdp, pdp.col = pdp.col,
     pdp.lwd = pdp.lwd, pdp.lty = pdp.lty, rug = rug, train = train,
-    alpha = alpha, ...
+    alpha = alpha, color.by = color.by, ...
   )
   invisible(x)
 }
@@ -182,12 +256,48 @@ rug_quantiles <- function(train, x.name, side = 1) {
 
 #' @keywords internal
 tinyplot_ice_curves <- function(object, center, plot.pdp, pdp.col, pdp.lwd,
-                                pdp.lty, rug, train, alpha, ...) {
+                                pdp.lty, rug, train, alpha, color.by = NULL,
+                                ...) {
+
+  # Each curve should vary over a single predictor; anything else cannot be
+  # displayed sensibly and is better plotted manually
+  if (ncol(object) - 2L > 1L) {
+    stop("Cannot automatically plot individual curves for multiple ",
+         "predictors; each curve would vary over a multi-dimensional grid. ",
+         "Try plotting the returned data manually (e.g., by filtering or ",
+         "faceting on the additional predictors).", call. = FALSE)
+  }
 
   # Should the curves be centered to start at yhat = 0?
   if (center) {
     object <- center_ice_curves(object)  # converts ICE curves to c-ICE curves
   }
+
+  # Color the individual curves (all black by default, or mapped to a column
+  # of `train` whenever `color.by` is specified)
+  if (is.null(color.by)) {
+    curve.cols <- grDevices::adjustcolor("black", alpha.f = alpha)
+    color.groups <- NULL
+  } else {
+    if (is.null(train)) {
+      stop("The training data must be supplied for `color.by` display.")
+    }
+    ids <- sort(unique(object[["yhat.id"]]))  # one color per curve
+    vals <- train[ids, color.by, drop = TRUE]  # assumes IDs index `train`
+    color.groups <- if (is.numeric(vals)) {
+      cut(vals, breaks = min(5L, length(unique(vals))))
+    } else {
+      as.factor(vals)
+    }
+    pal <- grDevices::hcl.colors(nlevels(color.groups), palette = "viridis")
+    curve.cols <- grDevices::adjustcolor(pal[as.integer(color.groups)],
+                                         alpha.f = alpha)
+  }
+
+  # Group curves by a *factor* so tinyplot treats the IDs as discrete (and so
+  # per-group colors map predictably to sorted IDs)
+  object[["yhat.id"]] <- factor(object[["yhat.id"]],
+                                levels = sort(unique(object[["yhat.id"]])))
 
   # Draw one curve per observation (with points if the predictor is a factor);
   # use do.call() so the call that tinyplot records for tinyplot_add() holds
@@ -196,19 +306,25 @@ tinyplot_ice_curves <- function(object, center, plot.pdp, pdp.col, pdp.lwd,
   plot.type <- if (is.factor(object[[1L]])) "b" else "l"
   do.call(tinyplot::tinyplot, args = c(
     list(
-      stats::as.formula(paste("yhat ~", x.name, "| yhat.id")), data = object,
-      type = plot.type, col = grDevices::adjustcolor("black", alpha.f = alpha),
-      legend = FALSE
+      stats::as.formula(paste("yhat ~", backtick(x.name), "| yhat.id")),
+      data = object, type = plot.type, col = curve.cols, legend = FALSE
     ),
     list(...)
   ))
+  if (!is.null(color.by)) {  # add a simple legend for the color groups
+    graphics::legend(
+      "topleft", legend = levels(color.groups), title = color.by,
+      col = grDevices::hcl.colors(nlevels(color.groups), palette = "viridis"),
+      lty = 1, bty = "n", cex = 0.8
+    )
+  }
 
   # Should the PDP (i.e., average curve) be displayed too?
   if (plot.pdp) {
     pd <- average_ice_curves(object)
     tinyplot::tinyplot_add(
-      stats::as.formula(paste("yhat ~", x.name)), data = pd, type = "l",
-      col = pdp.col, lwd = pdp.lwd, lty = pdp.lty
+      stats::as.formula(paste("yhat ~", backtick(x.name))), data = pd,
+      type = "l", col = pdp.col, lwd = pdp.lwd, lty = pdp.lty
     )
   }
 
@@ -221,15 +337,20 @@ tinyplot_ice_curves <- function(object, center, plot.pdp, pdp.col, pdp.lwd,
 
 
 #' @keywords internal
-tinyplot_one_predictor_pdp <- function(object, smooth, rug, train, ...) {
+tinyplot_one_predictor_pdp <- function(object, smooth, rug, train,
+                                       bars = FALSE, ...) {
 
-  # Draw a line plot (or scatterplot whenever the predictor is a factor); see
-  # tinyplot_ice_curves() for why do.call() is used here
+  # Draw a line plot (or a scatterplot/bar plot whenever the predictor is a
+  # factor); see tinyplot_ice_curves() for why do.call() is used here
   x.name <- names(object)[1L]
-  plot.type <- if (is.factor(object[[1L]])) "p" else "l"
+  plot.type <- if (is.factor(object[[1L]])) {
+    if (isTRUE(bars)) "barplot" else "p"
+  } else {
+    "l"
+  }
   do.call(tinyplot::tinyplot, args = c(
     list(
-      stats::as.formula(paste("yhat ~", x.name)), data = object,
+      stats::as.formula(paste("yhat ~", backtick(x.name))), data = object,
       type = plot.type
     ),
     list(...)
@@ -263,8 +384,8 @@ tinyplot_two_predictor_pdp <- function(object, smooth, rug, train, contour,
     # why do.call() is used here
     do.call(tinyplot::tinyplot, args = c(
       list(
-        stats::as.formula(paste("yhat ~", x.names[axis.pos])),
-        facet = stats::as.formula(paste("~", x.names[facet.pos])),
+        stats::as.formula(paste("yhat ~", backtick(x.names[axis.pos]))),
+        facet = stats::as.formula(paste("~", backtick(x.names[facet.pos]))),
         data = object, type = plot.type
       ),
       list(...)

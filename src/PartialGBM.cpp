@@ -27,7 +27,6 @@ SEXP PartialGBM(SEXP radX, SEXP rcRows, SEXP rcCols, SEXP rcNumClasses,
   // rCSplits      categorical split list object
   // raiVarType    vector of variable types
 
-  unsigned long hr = 0;
   int i = 0;
   int iTree = 0;
   int iObs = 0;
@@ -55,13 +54,9 @@ SEXP PartialGBM(SEXP radX, SEXP rcRows, SEXP rcCols, SEXP rcNumClasses,
   int cStackNodes = 0;
   int iPredVar = 0;
 
-  // allocate the predictions to return
+  // allocate the predictions to return (Rf_allocVector cannot return NULL;
+  // it signals an R error on allocation failure)
   PROTECT(radPredF = Rf_allocVector(REALSXP, cRows*cNumClasses));
-  if(radPredF == NULL)
-  {
-    hr = GBM_OUTOFMEMORY;
-    goto Error;
-  }
   for(iObs=0; iObs<cRows*cNumClasses; iObs++)
   {
     REAL(radPredF)[iObs] = REAL(rdInitF)[0];
@@ -168,11 +163,8 @@ SEXP PartialGBM(SEXP radX, SEXP rcRows, SEXP rcCols, SEXP rcNumClasses,
     } // iClass
   } // iTree
 
-  Cleanup:
-    UNPROTECT(1);  // radPredF
+  UNPROTECT(1);  // radPredF
   return radPredF;
-  Error:
-    goto Cleanup;
 
 } // PartialGBM
 

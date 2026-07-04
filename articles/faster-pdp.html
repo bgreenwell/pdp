@@ -93,13 +93,13 @@ number of rows to score per call:</p>
 <span>  <span class="va">pd1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.416   0.009   0.425</span></span>
+<span><span class="co">#&gt;   0.416   0.012   0.429</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span>  <span class="co"># batched: score up to one million rows per predict() call</span></span>
 <span>  <span class="va">pd2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span>,</span>
 <span>                 batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.177   0.001   0.178</span></span>
+<span><span class="co">#&gt;   0.177   0.000   0.177</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">pd1</span>, <span class="va">pd2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Batching only changes <em>how</em> the predictions are computed, not
@@ -156,13 +156,13 @@ training data:</p>
 <span>                          train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span>  <span class="co"># recursive = TRUE is the default</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.001   0.000   0.002</span></span>
+<span><span class="co">#&gt;   0.003   0.000   0.002</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
 <span>  <span class="va">pd.brute</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.gbm</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, n.trees <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>                      recursive <span class="op">=</span> <span class="cn">FALSE</span>, train <span class="op">=</span> <span class="va">boston</span>, batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.289   0.002   0.290</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.307   0.000   0.307</span></span></code></pre></div>
 <p>Overlaying the results shows that the two methods produce nearly the
 same curve:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">

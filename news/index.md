@@ -1,5 +1,13 @@
 # Changelog
 
+## pdp (development version)
+
+### Breaking changes
+
+- Removed `topPredictors()`, which had been deprecated since pdp 0.8.0;
+  use the [vip](https://bgreenwell.github.io/vip/) package to identify
+  important predictors instead.
+
 ## pdp 0.9.1
 
 ### Deprecations
@@ -144,9 +152,8 @@
 - Removed unused packages from Suggests (**keras**, **reticulate**, and
   **dplyr**).
 
-- [`topPredictors()`](https://bgreenwell.github.io/pdp/reference/topPredictors.md)
-  (which is deprecated) now throws an informative error when **caret**
-  is not installed.
+- `topPredictors()` (which is deprecated) now throws an informative
+  error when **caret** is not installed.
 
 - Internal cleanup: the brute force method (`pardep()`) was consolidated
   from four nearly identical loops into one, and the prediction wrappers
@@ -240,10 +247,9 @@ CRAN release: 2022-05-11
   `grDevices::hcl.colors(100)`, which defaults to the same viridis color
   palette as before, just without the dependency.
 
-- [`topPredictors()`](https://bgreenwell.github.io/pdp/reference/topPredictors.md)
-  is now deprecated and will be removed in the next update. Users are
-  advised to use the [vip](https://github.com/koalaverse/vip) package
-  instead.
+- `topPredictors()` is now deprecated and will be removed in the next
+  update. Users are advised to use the
+  [vip](https://github.com/koalaverse/vip) package instead.
 
 ### Minor changes
 
@@ -480,11 +486,10 @@ CRAN release: 2017-01-07
   exploits a computational shortcut that does not involve any passes
   over the training data.)
 
-- New (experimental) function
-  [`topPredictors()`](https://bgreenwell.github.io/pdp/reference/topPredictors.md)
-  for extracting the names of the most “important” predictors. This
-  should make it one step easier (in most cases) to construct PDPs for
-  the most “important”” features in a fitted model.
+- New (experimental) function `topPredictors()` for extracting the names
+  of the most “important” predictors. This should make it one step
+  easier (in most cases) to construct PDPs for the most “important””
+  features in a fitted model.
 
 - A new argument, `pred.fun`, allows the user to supply their own
   prediction function. Hence, it is possible to obtain PDPs based on the

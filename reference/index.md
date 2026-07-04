@@ -28,8 +28,3 @@ base R graphics (via tinyplot) or lattice graphics.
   Boston Housing Data
 - [`pima`](https://bgreenwell.github.io/pdp/reference/pima.md) : Pima
   Indians Diabetes Data
-
-## Deprecated
-
-- [`topPredictors()`](https://bgreenwell.github.io/pdp/reference/topPredictors.md)
-  : Extract Most "Important" Predictors (Experimental)

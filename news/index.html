@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,13 @@
       <small>Source: <a href="https://github.com/bgreenwell/pdp/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="pdp-development-version">pdp (development version)<a class="anchor" aria-label="anchor" href="#pdp-development-version"></a></h2>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>Removed <code>topPredictors()</code>, which had been deprecated since pdp 0.8.0; use the <a href="https://bgreenwell.github.io/vip/" class="external-link">vip</a> package to identify important predictors instead.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.1" id="pdp-091">pdp 0.9.1<a class="anchor" aria-label="anchor" href="#pdp-091"></a></h2>
 <div class="section level3">
@@ -90,7 +97,7 @@
 <h3 id="miscellaneous-0-9-0">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-9-0"></a></h3>
 <ul><li><p><strong>foreach</strong> was moved from Imports to Suggests; it is now only required for parallel execution (i.e., whenever <code>parallel = TRUE</code>).</p></li>
 <li><p>Removed unused packages from Suggests (<strong>keras</strong>, <strong>reticulate</strong>, and <strong>dplyr</strong>).</p></li>
-<li><p><code><a href="../reference/topPredictors.html">topPredictors()</a></code> (which is deprecated) now throws an informative error when <strong>caret</strong> is not installed.</p></li>
+<li><p><code>topPredictors()</code> (which is deprecated) now throws an informative error when <strong>caret</strong> is not installed.</p></li>
 <li><p>Internal cleanup: the brute force method (<code>pardep()</code>) was consolidated from four nearly identical loops into one, and the prediction wrappers in <code>get_predictions.R</code> now share a common helper.</p></li>
 <li><p>Fixed failing tests due to changes in the <code>xgboost</code> package.</p></li>
 </ul></div>
@@ -133,7 +140,7 @@
 <ul><li><p>Bumped the R dependency to R (&gt;= 3.6.0) to support the use of <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">grDevices::hcl.colors()</a></code> in <code><a href="../reference/plotPartial.html">plotPartial()</a></code>.</p></li>
 <li><p>Function <code><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange()</a></code> and the forward pipe operator <code>%&gt;%</code> are no longer automatically imported from packages <a href="https://cran.r-project.org/package=gridExtra" class="external-link">gridExtra</a> and <a href="https://cran.r-project.org/package=magrittr" class="external-link">magrittr</a>, respectively; users are encouraged to load them manually if needed.</p></li>
 <li><p>Removed the <code>palette</code> and <code>alpha</code> arguments from <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code>autoplot()</code>; the latter just got absorbed into the <code>...</code> argument. By default, <code><a href="../reference/plotPartial.html">plotPartial()</a></code>’s <code>col.regions</code> argument now corresponds to <code>grDevices::hcl.colors(100)</code>, which defaults to the same viridis color palette as before, just without the dependency.</p></li>
-<li><p><code><a href="../reference/topPredictors.html">topPredictors()</a></code> is now deprecated and will be removed in the next update. Users are advised to use the <a href="https://github.com/koalaverse/vip" class="external-link">vip</a> package instead.</p></li>
+<li><p><code>topPredictors()</code> is now deprecated and will be removed in the next update. Users are advised to use the <a href="https://github.com/koalaverse/vip" class="external-link">vip</a> package instead.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-8-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-8-0"></a></h3>
@@ -209,7 +216,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="pdp-040">pdp 0.4.0<a class="anchor" aria-label="anchor" href="#pdp-040"></a></h2><p class="text-muted">CRAN release: 2017-01-07</p>
 <ul><li><p><code><a href="../reference/partial.html">partial()</a></code> is now much faster with <code>"gbm"</code> object due to a call to <code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> whenever <code>pred.grid</code> is not explicitly given by the user. (<code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> exploits a computational shortcut that does not involve any passes over the training data.)</p></li>
-<li><p>New (experimental) function <code><a href="../reference/topPredictors.html">topPredictors()</a></code> for extracting the names of the most “important” predictors. This should make it one step easier (in most cases) to construct PDPs for the most “important”” features in a fitted model.</p></li>
+<li><p>New (experimental) function <code>topPredictors()</code> for extracting the names of the most “important” predictors. This should make it one step easier (in most cases) to construct PDPs for the most “important”” features in a fitted model.</p></li>
 <li><p>A new argument, <code>pred.fun</code>, allows the user to supply their own prediction function. Hence, it is possible to obtain PDPs based on the median, rather than the mean. It is also possible to obtain PDPs for classification problems on the probability scale. See <code><a href="../reference/partial.html">?partial</a></code> for examples.</p></li>
 <li><p>Minor bug fixes and documentation tweaks.</p></li>
 </ul></div>

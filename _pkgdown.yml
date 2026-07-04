@@ -38,6 +38,3 @@ reference:
   contents:
   - boston
   - pima
-- title: Deprecated
-  contents:
-  - topPredictors

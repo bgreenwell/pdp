@@ -1,3 +1,12 @@
+# pdp (development version)
+
+## Breaking changes
+
+* Removed `topPredictors()`, which had been deprecated since pdp 0.8.0; use
+  the [vip](https://bgreenwell.github.io/vip/) package to identify important
+  predictors instead.
+
+
 # pdp 0.9.1
 
 ## Deprecations

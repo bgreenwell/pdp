@@ -12,8 +12,10 @@ workhorse), `plot()` methods (tinyplot/base graphics, default engine),
 - **`main`**: stable releases only, tagged `vX.Y.Z`. r-universe
   (pinned to main in bgreenwell/bgreenwell.r-universe.dev) and the pkgdown
   site both build from main — never push experimental work there.
-- Release: merge devel → main, drop the `.9000` suffix and dev NEWS heading,
-  tag, push; then bump devel to the next `.9000`.
+- Release: merge devel → main (`--no-ff`), drop the `.9000` suffix and dev
+  NEWS heading, tag, push, `gh release create`; then **merge main back into
+  devel** (else the release merge commit leaves devel "behind" main) and bump
+  devel to the next `.9000`.
 - Shared fixes that main needs immediately (CI, README): commit to **main
   first, then merge main → devel**. Never cherry-pick devel → main — it
   duplicates commits and makes main appear "ahead" of devel.

@@ -9,7 +9,7 @@ model fitting objects."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,6 +84,7 @@ model fitting objects.</p>
 <span>  progress <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  paropts <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  frac <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -102,13 +103,14 @@ model fitting objects.</p>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional optional arguments to be passed onto
-<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></code>.</p></dd>
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">stats::predict()</a></code>.</p></dd>
 
 
 <dt id="arg-pred-var">pred.var<a class="anchor" aria-label="anchor" href="#arg-pred-var"></a></dt>
 <dd><p>Character string giving the names of the predictor variables
 of interest. For reasons of computation/interpretation, this should include
-no more than three variables.</p></dd>
+no more than three variables. Can be omitted whenever <code>pred.grid</code> is
+supplied, in which case it defaults to <code>colnames(pred.grid)</code>.</p></dd>
 
 
 <dt id="arg-pred-grid">pred.grid<a class="anchor" aria-label="anchor" href="#arg-pred-grid"></a></dt>
@@ -166,7 +168,7 @@ partial dependence is computed.</p></dd>
 
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
-<dd><p>Numeric vector of probabilities with values in [0,1]. (Values up
+<dd><p>Numeric vector of probabilities with values in <code>[0, 1]</code>. (Values up
 to 2e-14 outside that range are accepted and moved to the nearby endpoint.)
 Default is <code>1:9/10</code> which corresponds to the deciles of the predictor
 variables. These specify which quantiles to use for the continuous predictors
@@ -218,14 +220,14 @@ on a scale similar to the logit. Default is <code>FALSE</code>.</p></dd>
 traversal method described in Friedman (2001). This only applies to objects
 that inherit from class <code>"gbm"</code>. Default is <code>TRUE</code> which is much
 faster than the exact brute force approach used for all other models. (Based
-on the C++ code behind <code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">plot.gbm</a></code>.)</p></dd>
+on the C++ code behind <code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code>.)</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>Logical indicating whether to return a data frame containing the
 partial dependence values (<code>FALSE</code>) or plot the partial dependence
 function directly (<code>TRUE</code>). Default is <code>FALSE</code>. See
-<code><a href="plotPartial.html">plotPartial</a></code> for plotting details.</p></dd>
+<code><a href="plotPartial.html">plotPartial()</a></code> for plotting details.</p></dd>
 
 
 <dt id="arg-plot-engine">plot.engine<a class="anchor" aria-label="anchor" href="#arg-plot-engine"></a></dt>
@@ -301,12 +303,12 @@ in <code>pred.grid</code> has the correct class, levels, etc. Default is
 
 <dt id="arg-batch-size">batch.size<a class="anchor" aria-label="anchor" href="#arg-batch-size"></a></dt>
 <dd><p>Optional positive integer specifying the (approximate)
-maximum number of rows to score per call to <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></code>. By
+maximum number of rows to score per call to <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">stats::predict()</a></code>. By
 default (<code>batch.size = NULL</code>), <code>partial()</code> calls
-<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></code> once per grid point (i.e., <code>nrow(train)</code>
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">stats::predict()</a></code> once per grid point (i.e., <code>nrow(train)</code>
 rows at a time). Specifying a larger batch size (e.g.,
 <code>batch.size = 1e6</code>) stacks multiple grid points into a single call to
-<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></code>, which is often substantially faster since it
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">stats::predict()</a></code>, which is often substantially faster since it
 avoids the per-call overhead of most prediction methods, at the cost of
 additional memory. Requires the prediction function to return one prediction
 per row of <code>newdata</code>, so it cannot be used with a <code>pred.fun</code> that
@@ -329,7 +331,17 @@ parallel using a backend provided by the <code>foreach</code> package. Default i
 
 <dt id="arg-paropts">paropts<a class="anchor" aria-label="anchor" href="#arg-paropts"></a></dt>
 <dd><p>List containing additional options to be passed onto
-<code><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach</a></code> when <code>parallel = TRUE</code>.</p></dd>
+<code><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach::foreach()</a></code> when <code>parallel = TRUE</code>.</p></dd>
+
+
+<dt id="arg-frac">frac<a class="anchor" aria-label="anchor" href="#arg-frac"></a></dt>
+<dd><p>Numeric value in (0, 1] specifying the fraction of the training
+data to randomly sample (without replacement) before computing the partial
+dependence function. Default is <code>1</code> (i.e., use all of the training
+data). Mostly useful for reducing the number of ICE curves and/or
+computation time; use <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">base::set.seed()</a></code> for reproducibility.
+Ignored whenever the recursive method is used (i.e., for <code>"gbm"</code>
+objects with <code>recursive = TRUE</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -345,7 +357,7 @@ and <code>plot.engine = "tinyplot"</code> (the default), the plot is drawn
 directly (as a side effect) and the data frame of partial dependence values
 is returned invisibly. When <code>plot = TRUE</code> and
 <code>plot.engine = "lattice"</code>, a <code>"trellis"</code> object is returned (see
-<code><a href="https://rdrr.io/pkg/lattice/man/Lattice.html" class="external-link">lattice</a></code> for details); the <code>"trellis"</code> object
+<strong>lattice</strong> for details); the <code>"trellis"</code> object
 will also include an additional attribute, <code>"partial.data"</code>, containing
 the data displayed in the plot.</p>
     </div>
@@ -371,16 +383,16 @@ those produced by <code>plotPartial</code>, using <code><a href="trellis.last.ob
 returns a prediction for each observation in <code>newdata</code>, then the result
 will be a curve for each observation. These are called individual conditional
 expectation (ICE) curves; see Goldstein et al. (2015) and
-<code><a href="https://rdrr.io/pkg/ICEbox/man/ice.html" class="external-link">ice</a></code> for details.</p>
+<code><a href="https://rdrr.io/pkg/ICEbox/man/ice.html" class="external-link">ICEbox::ice()</a></code> for details.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>J. H. Friedman. Greedy function approximation: A gradient boosting machine.
-<em>Annals of Statistics</em>, <b>29</b>: 1189-1232, 2001.</p>
+<em>Annals of Statistics</em>, <strong>29</strong>: 1189-1232, 2001.</p>
 <p>Goldstein, A., Kapelner, A., Bleich, J., and Pitkin, E., Peeking Inside the
 Black Box: Visualizing Statistical Learning With Plots of Individual
 Conditional Expectation. (2014) <em>Journal of Computational and Graphical
-Statistics</em>, <b>24</b>(1): 44-65, 2015.</p>
+Statistics</em>, <strong>24</strong>(1): 44-65, 2015.</p>
     </div>
 
     <div class="section level2">
@@ -407,14 +419,13 @@ Statistics</em>, <b>24</b>(1): 44-65, 2015.</p>
 <span class="r-in"><span><span class="fu">partial</span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span><span class="op">)</span>, grid.resolution <span class="op">=</span> <span class="fl">40</span>,</span></span>
 <span class="r-in"><span>        plot <span class="op">=</span> <span class="cn">TRUE</span>, chull <span class="op">=</span> <span class="cn">TRUE</span>, progress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># The plotPartial function offers more flexible plotting</span></span></span>
+<span class="r-in"><span><span class="co"># The plot method produces lightweight base R graphics via the tinyplot</span></span></span>
+<span class="r-in"><span><span class="co"># package by default; set `lattice = TRUE` for lattice graphics (e.g., for</span></span></span>
+<span class="r-in"><span><span class="co"># 3-D surfaces or paneled three-predictor displays)</span></span></span>
 <span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu">partial</span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span><span class="op">)</span>, grid.resolution <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="plotPartial.html">plotPartial</a></span><span class="op">(</span><span class="va">pd</span>, levelplot <span class="op">=</span> <span class="cn">FALSE</span>, zlab <span class="op">=</span> <span class="st">"cmedv"</span>, drape <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>            colorkey <span class="op">=</span> <span class="cn">FALSE</span>, screen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z <span class="op">=</span> <span class="op">-</span><span class="fl">20</span>, x <span class="op">=</span> <span class="op">-</span><span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># The plot method can be used to produce lightweight base R graphics via</span></span></span>
-<span class="r-in"><span><span class="co"># the tinyplot package</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd</span>, contour <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd</span>, lattice <span class="op">=</span> <span class="cn">TRUE</span>, levelplot <span class="op">=</span> <span class="cn">FALSE</span>, zlab <span class="op">=</span> <span class="st">"cmedv"</span>, drape <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>     colorkey <span class="op">=</span> <span class="cn">FALSE</span>, screen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z <span class="op">=</span> <span class="op">-</span><span class="fl">20</span>, x <span class="op">=</span> <span class="op">-</span><span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span><span class="co"># Individual conditional expectation (ICE) curves</span></span></span>
@@ -422,7 +433,7 @@ Statistics</em>, <b>24</b>(1): 44-65, 2015.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Use partial to obtain ICE/c-ICE curves</span></span></span>
 <span class="r-in"><span><span class="va">rm.ice</span> <span class="op">&lt;-</span> <span class="fu">partial</span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"rm"</span>, ice <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="plotPartial.html">plotPartial</a></span><span class="op">(</span><span class="va">rm.ice</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rm.ice</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">rm.ice</span>, center <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>

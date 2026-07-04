@@ -38,7 +38,7 @@ system.time(  # batched: score up to one million rows per predict() call
                  batch.size = 1e6)
 )
 #>    user  system elapsed 
-#>   0.177   0.000   0.177
+#>   0.176   0.000   0.176
 identical(pd1, pd2)
 #> [1] TRUE
 ```
@@ -112,7 +112,7 @@ system.time(
                       recursive = FALSE, train = boston, batch.size = 1e6)
 )
 #>    user  system elapsed 
-#>   0.287   0.003   0.291
+#>   0.289   0.000   0.290
 ```
 
 Overlaying the results shows that the two methods produce nearly the

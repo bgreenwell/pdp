@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,7 +99,7 @@ number of rows to score per call:</p>
 <span>                 batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.177   0.000   0.177</span></span>
+<span><span class="co">#&gt;   0.176   0.000   0.176</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">pd1</span>, <span class="va">pd2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Batching only changes <em>how</em> the predictions are computed, not
@@ -162,7 +162,7 @@ training data:</p>
 <span>                      recursive <span class="op">=</span> <span class="cn">FALSE</span>, train <span class="op">=</span> <span class="va">boston</span>, batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.287   0.003   0.291</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.289   0.000   0.290</span></span></code></pre></div>
 <p>Overlaying the results shows that the two methods produce nearly the
 same curve:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">

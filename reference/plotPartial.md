@@ -1,7 +1,7 @@
-# Plotting Partial Dependence Functions
+# Plotting Partial Dependence Functions (deprecated)
 
 Plots partial dependence functions (i.e., marginal effects) using
-[`lattice`](https://rdrr.io/pkg/lattice/man/Lattice.html) graphics.
+**lattice** graphics.
 
 ## Usage
 
@@ -71,8 +71,8 @@ plotPartial(
   Logical indicating whether or not to produce centered ICE curves
   (c-ICE curves). Only useful when `object` represents a set of ICE
   curves; see
-  [`partial`](https://bgreenwell.github.io/pdp/reference/partial.md) for
-  details. Default is `FALSE`.
+  [`partial()`](https://bgreenwell.github.io/pdp/reference/partial.md)
+  for details. Default is `FALSE`.
 
 - plot.pdp:
 
@@ -88,13 +88,15 @@ plotPartial(
 
   Integer specifying the line width to use for the partial dependence
   function when `plot.pdp = TRUE`. Default is `1`. See
-  [`par`](https://rdrr.io/r/graphics/par.html) for more details.
+  [`graphics::par()`](https://rdrr.io/r/graphics/par.html) for more
+  details.
 
 - pdp.lty:
 
   Integer or character string specifying the line type to use for the
   partial dependence function when `plot.pdp = TRUE`. Default is `1`.
-  See [`par`](https://rdrr.io/r/graphics/par.html) for more details.
+  See [`graphics::par()`](https://rdrr.io/r/graphics/par.html) for more
+  details.
 
 - rug:
 
@@ -135,7 +137,7 @@ plotPartial(
 - col.regions:
 
   Vector of colors to be passed on to
-  [`levelplot`](https://rdrr.io/pkg/lattice/man/levelplot.html)'s
+  [`lattice::levelplot()`](https://rdrr.io/pkg/lattice/man/levelplot.html)'s
   `col.region` argument. Defaults to `grDevices::hcl.colors(100)` (which
   is the same viridis color palette used in the past).
 
@@ -143,16 +145,26 @@ plotPartial(
 
   Integer specifying the number of conditional intervals to use for the
   continuous panel variables. See
-  [`co.intervals`](https://rdrr.io/r/graphics/coplot.html) and
-  [`equal.count`](https://rdrr.io/pkg/lattice/man/shingles.html) for
-  further details.
+  [`graphics::co.intervals()`](https://rdrr.io/r/graphics/coplot.html)
+  and
+  [`lattice::equal.count()`](https://rdrr.io/pkg/lattice/man/shingles.html)
+  for further details.
 
 - overlap:
 
   The fraction of overlap of the conditioning variables. See
-  [`co.intervals`](https://rdrr.io/r/graphics/coplot.html) and
-  [`equal.count`](https://rdrr.io/pkg/lattice/man/shingles.html) for
-  further details.
+  [`graphics::co.intervals()`](https://rdrr.io/r/graphics/coplot.html)
+  and
+  [`lattice::equal.count()`](https://rdrr.io/pkg/lattice/man/shingles.html)
+  for further details.
+
+## Details
+
+**Deprecated:** `plotPartial()` is deprecated and will be removed in a
+future release; please use `plot(..., lattice = TRUE)` instead, which
+produces the same displays through a single interface (see
+[`plot.partial()`](https://bgreenwell.github.io/pdp/reference/plot.partial.md)
+for details).
 
 ## Examples
 

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,23 +115,19 @@ data via the <code>train</code> argument.</p>
 <span><span class="co">#&gt; 6 5.3540 26.90529</span></span></code></pre></div>
 <p>By default <code><a href="../reference/partial.html">partial()</a></code> returns a data frame, which makes
 it easy to plot with whatever graphics package you prefer.
-<strong>pdp</strong> ships with two plotting options:</p>
-<ul>
-<li>
-<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> — lightweight base R graphics via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a>;</li>
-<li>
-<code><a href="../reference/plotPartial.html">plotPartial()</a></code> — <a href="https://cran.r-project.org/package=lattice" class="external-link">lattice</a>
-graphics.</li>
-</ul>
+<strong>pdp</strong> ships with a <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method that draws
+lightweight base R graphics via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a> by default, or
+<a href="https://cran.r-project.org/package=lattice" class="external-link">lattice</a>
+graphics whenever <code>lattice = TRUE</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># tinyplot-based plot() method; rug marks show the min/max and deciles of</span></span>
-<span><span class="co"># lstat to help avoid interpreting the plot where there's little data</span></span>
+<code class="sourceCode R"><span><span class="co"># tinyplot-based display; rug marks show the min/max and deciles of lstat to</span></span>
+<span><span class="co"># help avoid interpreting the plot where there's little data</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pdp_files/figure-html/boston-plot-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># lattice-based equivalent</span></span>
-<span><span class="fu"><a href="../reference/plotPartial.html">plotPartial</a></span><span class="op">(</span><span class="va">pd</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span></code></pre></div>
-<p><img src="pdp_files/figure-html/boston-plotPartial-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span>, lattice <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="pdp_files/figure-html/boston-plot-lattice-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
 <p>You can also let <code><a href="../reference/partial.html">partial()</a></code> plot directly by setting
 <code>plot = TRUE</code> and choosing a <code>plot.engine</code>
 (<code>"tinyplot"</code>, the default, or <code>"lattice"</code>).</p>
@@ -152,13 +148,34 @@ reduces the risk of extrapolating outside the region of the data. Factor
 predictors are handled automatically and result in faceted displays.</p>
 </div>
 <div class="section level2">
+<h2 id="d-surfaces-and-three-predictors-lattice">3-D surfaces and three predictors (lattice)<a class="anchor" aria-label="anchor" href="#d-surfaces-and-three-predictors-lattice"></a>
+</h2>
+<p>The lattice engine (<code>lattice = TRUE</code>) additionally
+supports 3-D surfaces and paneled three-predictor displays, like the
+figures in the <a href="https://journal.r-project.org/articles/RJ-2017-016/" class="external-link">R Journal
+paper</a>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># 3-D surface instead of a false color level plot</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd2</span>, lattice <span class="op">=</span> <span class="cn">TRUE</span>, levelplot <span class="op">=</span> <span class="cn">FALSE</span>, zlab <span class="op">=</span> <span class="st">"cmedv"</span>, drape <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>     colorkey <span class="op">=</span> <span class="cn">FALSE</span>, screen <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>z <span class="op">=</span> <span class="op">-</span><span class="fl">20</span>, x <span class="op">=</span> <span class="op">-</span><span class="fl">60</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="pdp_files/figure-html/boston-wireframe-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Three predictors: the third is binned into overlapping intervals and used</span></span>
+<span><span class="co"># to panel the display (see the `number` and `overlap` arguments)</span></span>
+<span><span class="va">pd3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span>, <span class="st">"age"</span><span class="op">)</span>,</span>
+<span>               grid.resolution <span class="op">=</span> <span class="fl">10</span>, chull <span class="op">=</span> <span class="cn">TRUE</span>, batch.size <span class="op">=</span> <span class="fl">1e6</span>,</span>
+<span>               train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd3</span>, lattice <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><img src="pdp_files/figure-html/boston-three-1.png" class="r-plt" alt="" width="672" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level2">
 <h2 id="classification">Classification<a class="anchor" aria-label="anchor" href="#classification"></a>
 </h2>
 <p>For classification models, partial dependence is computed for the
 predicted probability of the “focus” class (the first class, by default;
 use <code>which.class</code> to change it) on the centered logit scale.
 Set <code>prob = TRUE</code> to use the probability scale instead:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">pima</span><span class="op">)</span>  <span class="co"># load the Pima Indians diabetes data</span></span>
 <span><span class="va">pima2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="va">pima</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span></span>
@@ -176,7 +193,7 @@ Set <code>prob = TRUE</code> to use the probability scale instead:</p>
 models often predict on the log scale). Use <code>inv.link</code> to
 transform the predictions back to the response scale <em>before</em> the
 partial dependence function is computed:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html" class="external-link">glm</a></span><span class="op">(</span><span class="va">carb</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">mtcars</span>, family <span class="op">=</span> <span class="va">poisson</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Partial dependence of the number of carburetors on mpg (response scale)</span></span>
@@ -204,7 +221,7 @@ constructing the grid;</li>
 <code>pred.grid</code> — supply the exact grid of values
 yourself.</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, quantiles <span class="op">=</span> <span class="cn">TRUE</span>, probs <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">19</span><span class="op">/</span><span class="fl">20</span>,</span>
 <span>        plot <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pdp_files/figure-html/grid-1.png" class="r-plt" alt="" width="576" style="display: block; margin: auto;"></p>

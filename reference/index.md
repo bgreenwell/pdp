@@ -20,7 +20,7 @@ base R graphics (via tinyplot) or lattice graphics.
   [`plot(`*`<cice>`*`)`](https://bgreenwell.github.io/pdp/reference/plot.partial.md)
   : Plotting Partial Dependence Functions
 - [`plotPartial()`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
-  : Plotting Partial Dependence Functions
+  : Plotting Partial Dependence Functions (deprecated)
 
 ## Data sets
 

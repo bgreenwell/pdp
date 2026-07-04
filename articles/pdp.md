@@ -58,17 +58,17 @@ head(pd)
 By default
 [`partial()`](https://bgreenwell.github.io/pdp/reference/partial.md)
 returns a data frame, which makes it easy to plot with whatever graphics
-package you prefer. **pdp** ships with two plotting options:
-
-- [`plot()`](https://rdrr.io/r/graphics/plot.default.html) — lightweight
-  base R graphics via [tinyplot](https://grantmcdermott.com/tinyplot/);
-- [`plotPartial()`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
-  — [lattice](https://cran.r-project.org/package=lattice) graphics.
+package you prefer. **pdp** ships with a
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) method that
+draws lightweight base R graphics via
+[tinyplot](https://grantmcdermott.com/tinyplot/) by default, or
+[lattice](https://cran.r-project.org/package=lattice) graphics whenever
+`lattice = TRUE`:
 
 ``` r
 
-# tinyplot-based plot() method; rug marks show the min/max and deciles of
-# lstat to help avoid interpreting the plot where there's little data
+# tinyplot-based display; rug marks show the min/max and deciles of lstat to
+# help avoid interpreting the plot where there's little data
 plot(pd, rug = TRUE, train = boston)
 ```
 
@@ -77,10 +77,10 @@ plot(pd, rug = TRUE, train = boston)
 ``` r
 
 # lattice-based equivalent
-plotPartial(pd, rug = TRUE, train = boston)
+plot(pd, rug = TRUE, train = boston, lattice = TRUE)
 ```
 
-![](pdp_files/figure-html/boston-plotPartial-1.png)
+![](pdp_files/figure-html/boston-plot-lattice-1.png)
 
 You can also let
 [`partial()`](https://bgreenwell.github.io/pdp/reference/partial.md)
@@ -105,6 +105,33 @@ Here `chull = TRUE` restricts the grid to the convex hull of the
 training values of `lstat` and `rm`, which reduces the risk of
 extrapolating outside the region of the data. Factor predictors are
 handled automatically and result in faceted displays.
+
+## 3-D surfaces and three predictors (lattice)
+
+The lattice engine (`lattice = TRUE`) additionally supports 3-D surfaces
+and paneled three-predictor displays, like the figures in the [R Journal
+paper](https://journal.r-project.org/articles/RJ-2017-016/):
+
+``` r
+
+# 3-D surface instead of a false color level plot
+plot(pd2, lattice = TRUE, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
+     colorkey = FALSE, screen = list(z = -20, x = -60))
+```
+
+![](pdp_files/figure-html/boston-wireframe-1.png)
+
+``` r
+
+# Three predictors: the third is binned into overlapping intervals and used
+# to panel the display (see the `number` and `overlap` arguments)
+pd3 <- partial(boston.rf, pred.var = c("lstat", "rm", "age"),
+               grid.resolution = 10, chull = TRUE, batch.size = 1e6,
+               train = boston)
+plot(pd3, lattice = TRUE)
+```
+
+![](pdp_files/figure-html/boston-three-1.png)
 
 ## Classification
 

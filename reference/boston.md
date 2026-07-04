@@ -4,7 +4,7 @@ Data on median housing values from 506 census tracts in the suburbs of
 Boston from the 1970 census. This data frame is a corrected version of
 the original data by Harrison and Rubinfeld (1978) with additional
 spatial information. The data were taken directly from
-[`BostonHousing2`](https://rdrr.io/pkg/mlbench/man/BostonHousing.html)
+[`mlbench::BostonHousing2()`](https://rdrr.io/pkg/mlbench/man/BostonHousing.html)
 and unneeded columns (i.e., name of town, census tract, and the
 uncorrected median home value) were removed.
 
@@ -62,9 +62,9 @@ Data. Journal of Environmental Economics and Management, 31, 403-405.
 
 Newman, D.J. & Hettich, S. & Blake, C.L. & Merz, C.J. (1998). UCI
 Repository of machine learning databases
-\[http://www.ics.uci.edu/~mlearn/MLRepository.html\] Irvine, CA:
-University of California, Department of Information and Computer
-Science.
+[http://www.ics.uci.edu/~mlearn/MLRepository.html](http://www.ics.uci.edu/~mlearn/MLRepository.md)
+Irvine, CA: University of California, Department of Information and
+Computer Science.
 
 Pace, R. Kelley, and O.W. Gilley (1997). Using the Spatial Configuration
 of the Data to Improve Estimation. Journal of the Real Estate Finance

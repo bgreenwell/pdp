@@ -42,6 +42,7 @@ partial(
   progress = FALSE,
   parallel = FALSE,
   paropts = NULL,
+  frac = 1,
   ...
 )
 
@@ -59,13 +60,15 @@ partial(object, ...)
 - ...:
 
   Additional optional arguments to be passed onto
-  [`predict`](https://rdrr.io/r/stats/predict.html).
+  [`stats::predict()`](https://rdrr.io/r/stats/predict.html).
 
 - pred.var:
 
   Character string giving the names of the predictor variables of
   interest. For reasons of computation/interpretation, this should
-  include no more than three variables.
+  include no more than three variables. Can be omitted whenever
+  `pred.grid` is supplied, in which case it defaults to
+  `colnames(pred.grid)`.
 
 - pred.grid:
 
@@ -122,7 +125,7 @@ partial(object, ...)
 
 - probs:
 
-  Numeric vector of probabilities with values in \[0,1\]. (Values up to
+  Numeric vector of probabilities with values in `[0, 1]`. (Values up to
   2e-14 outside that range are accepted and moved to the nearby
   endpoint.) Default is `1:9/10` which corresponds to the deciles of the
   predictor variables. These specify which quantiles to use for the
@@ -175,14 +178,14 @@ partial(object, ...)
   inherit from class `"gbm"`. Default is `TRUE` which is much faster
   than the exact brute force approach used for all other models. (Based
   on the C++ code behind
-  [`plot.gbm`](https://rdrr.io/pkg/gbm/man/plot.gbm.html).)
+  [`gbm::plot.gbm()`](https://rdrr.io/pkg/gbm/man/plot.gbm.html).)
 
 - plot:
 
   Logical indicating whether to return a data frame containing the
   partial dependence values (`FALSE`) or plot the partial dependence
   function directly (`TRUE`). Default is `FALSE`. See
-  [`plotPartial`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
+  [`plotPartial()`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
   for plotting details.
 
 - plot.engine:
@@ -257,12 +260,13 @@ partial(object, ...)
 
   Optional positive integer specifying the (approximate) maximum number
   of rows to score per call to
-  [`predict`](https://rdrr.io/r/stats/predict.html). By default
+  [`stats::predict()`](https://rdrr.io/r/stats/predict.html). By default
   (`batch.size = NULL`), `partial()` calls
-  [`predict`](https://rdrr.io/r/stats/predict.html) once per grid point
-  (i.e., `nrow(train)` rows at a time). Specifying a larger batch size
-  (e.g., `batch.size = 1e6`) stacks multiple grid points into a single
-  call to [`predict`](https://rdrr.io/r/stats/predict.html), which is
+  [`stats::predict()`](https://rdrr.io/r/stats/predict.html) once per
+  grid point (i.e., `nrow(train)` rows at a time). Specifying a larger
+  batch size (e.g., `batch.size = 1e6`) stacks multiple grid points into
+  a single call to
+  [`stats::predict()`](https://rdrr.io/r/stats/predict.html), which is
   often substantially faster since it avoids the per-call overhead of
   most prediction methods, at the cost of additional memory. Requires
   the prediction function to return one prediction per row of `newdata`,
@@ -285,8 +289,19 @@ partial(object, ...)
 - paropts:
 
   List containing additional options to be passed onto
-  [`foreach`](https://rdrr.io/pkg/foreach/man/foreach.html) when
-  `parallel = TRUE`.
+  [`foreach::foreach()`](https://rdrr.io/pkg/foreach/man/foreach.html)
+  when `parallel = TRUE`.
+
+- frac:
+
+  Numeric value in (0, 1\] specifying the fraction of the training data
+  to randomly sample (without replacement) before computing the partial
+  dependence function. Default is `1` (i.e., use all of the training
+  data). Mostly useful for reducing the number of ICE curves and/or
+  computation time; use
+  [`base::set.seed()`](https://rdrr.io/r/base/Random.html) for
+  reproducibility. Ignored whenever the recursive method is used (i.e.,
+  for `"gbm"` objects with `recursive = TRUE`).
 
 ## Value
 
@@ -300,9 +315,9 @@ Specifically, when `plot = TRUE` and `plot.engine = "tinyplot"` (the
 default), the plot is drawn directly (as a side effect) and the data
 frame of partial dependence values is returned invisibly. When
 `plot = TRUE` and `plot.engine = "lattice"`, a `"trellis"` object is
-returned (see [`lattice`](https://rdrr.io/pkg/lattice/man/Lattice.html)
-for details); the `"trellis"` object will also include an additional
-attribute, `"partial.data"`, containing the data displayed in the plot.
+returned (see **lattice** for details); the `"trellis"` object will also
+include an additional attribute, `"partial.data"`, containing the data
+displayed in the plot.
 
 ## Note
 
@@ -330,7 +345,7 @@ If `ice = TRUE` or the prediction function given to `pred.fun` returns a
 prediction for each observation in `newdata`, then the result will be a
 curve for each observation. These are called individual conditional
 expectation (ICE) curves; see Goldstein et al. (2015) and
-[`ice`](https://rdrr.io/pkg/ICEbox/man/ice.html) for details.
+[`ICEbox::ice()`](https://rdrr.io/pkg/ICEbox/man/ice.html) for details.
 
 ## References
 
@@ -367,14 +382,13 @@ partial(boston.rf, pred.var = "lstat", plot = TRUE, rug = TRUE)
 partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40,
         plot = TRUE, chull = TRUE, progress = TRUE)
 
-# The plotPartial function offers more flexible plotting
+# The plot method produces lightweight base R graphics via the tinyplot
+# package by default; set `lattice = TRUE` for lattice graphics (e.g., for
+# 3-D surfaces or paneled three-predictor displays)
 pd <- partial(boston.rf, pred.var = c("lstat", "rm"), grid.resolution = 40)
-plotPartial(pd, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
-            colorkey = FALSE, screen = list(z = -20, x = -60))
-
-# The plot method can be used to produce lightweight base R graphics via
-# the tinyplot package
 plot(pd, contour = TRUE)
+plot(pd, lattice = TRUE, levelplot = FALSE, zlab = "cmedv", drape = TRUE,
+     colorkey = FALSE, screen = list(z = -20, x = -60))
 
 #
 # Individual conditional expectation (ICE) curves
@@ -382,7 +396,7 @@ plot(pd, contour = TRUE)
 
 # Use partial to obtain ICE/c-ICE curves
 rm.ice <- partial(boston.rf, pred.var = "rm", ice = TRUE)
-plotPartial(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
+plot(rm.ice, rug = TRUE, train = boston, alpha = 0.2)
 plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 
 #

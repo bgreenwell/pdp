@@ -1,5 +1,81 @@
 # Changelog
 
+## pdp 0.9.1
+
+### Deprecations
+
+- [`plotPartial()`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
+  is deprecated in favor of the consolidated
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) interface:
+  the [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods
+  gained a `lattice` argument, so `plot(..., lattice = TRUE)` now
+  produces the same lattice-based displays (including 3-D wireframe
+  surfaces and paneled three-predictor plots).
+  [`plotPartial()`](https://bgreenwell.github.io/pdp/reference/plotPartial.md)
+  continues to work (with a warning) but will be removed in a future
+  release.
+
+### Bug fixes
+
+- Plotting now works for non-syntactic predictor names (e.g., names
+  containing dashes or spaces) in both the tinyplot and lattice engines
+  [(](https://github.com/bgreenwell/pdp/issues/113)[\#113](https://github.com/bgreenwell/pdp/issues/113)).
+
+- `partial(chull = TRUE)` no longer fails for sparse (`"dgCMatrix"`)
+  training data
+  [(](https://github.com/bgreenwell/pdp/issues/77)[\#77](https://github.com/bgreenwell/pdp/issues/77)).
+
+- Plotting multi-predictor output from `pred.fun` (i.e., objects with a
+  `yhat.id` column and more than one predictor) now throws an
+  informative error instead of producing a nonsense display
+  [(](https://github.com/bgreenwell/pdp/issues/111)[\#111](https://github.com/bgreenwell/pdp/issues/111)),
+  [(](https://github.com/bgreenwell/pdp/issues/112)[\#112](https://github.com/bgreenwell/pdp/issues/112)).
+
+- Failing to recover the training data (e.g., for recent **xgboost**
+  models when `train` is not supplied) now always produces the
+  informative “please supply the training data” error rather than a
+  cryptic [`match.call()`](https://rdrr.io/r/base/match.call.html)
+  failure
+  [(](https://github.com/bgreenwell/pdp/issues/137)[\#137](https://github.com/bgreenwell/pdp/issues/137)).
+
+### New features
+
+- `pred.var` can now be omitted whenever `pred.grid` is supplied; it
+  defaults to `colnames(pred.grid)`
+  [(](https://github.com/bgreenwell/pdp/issues/122)[\#122](https://github.com/bgreenwell/pdp/issues/122)).
+
+- New `frac` argument in
+  [`partial()`](https://bgreenwell.github.io/pdp/reference/partial.md)
+  for randomly sampling a fraction of the training data before computing
+  the partial dependence function; mostly useful for reducing the number
+  of ICE curves and/or computation time
+  [(](https://github.com/bgreenwell/pdp/issues/74)[\#74](https://github.com/bgreenwell/pdp/issues/74)).
+
+- New `color.by` argument in the
+  [`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods for
+  coloring ICE/c-ICE curves by another feature
+  [(](https://github.com/bgreenwell/pdp/issues/81)[\#81](https://github.com/bgreenwell/pdp/issues/81)).
+
+- New `bars` argument in
+  [`plot.partial()`](https://bgreenwell.github.io/pdp/reference/plot.partial.md)
+  for displaying factor predictors as bar plots instead of points
+  [(](https://github.com/bgreenwell/pdp/issues/132)[\#132](https://github.com/bgreenwell/pdp/issues/132)).
+
+- [`exemplar()`](https://bgreenwell.github.io/pdp/reference/exemplar.md)
+  gained a `cats` argument for matrix-like objects so categorical
+  columns are summarized by their most frequent value (rather than a
+  rounded median); used by `partial(approx = TRUE)`
+  [(](https://github.com/bgreenwell/pdp/issues/115)[\#115](https://github.com/bgreenwell/pdp/issues/115)).
+
+### Miscellaneous
+
+- Removed the (long stale) `slowtests/` directory; its coverage is
+  redundant with the `tinytest` suite and the new vignettes.
+
+- Pruned Suggests packages that were no longer used anywhere in the
+  package (**adabag**, **AmesHousing**, **Cubist**, **ipred**, **mda**,
+  **partykit**, and **vip**).
+
 ## pdp 0.9.0
 
 ### Breaking changes

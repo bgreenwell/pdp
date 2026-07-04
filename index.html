@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,36 +59,71 @@
 </h1></div>
 <!-- badges: start -->
 
-<div class="section level2">
-<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
-</h2>
-<p><a href="https://bgreenwell.r-universe.dev/pdp" class="external-link">pdp</a> is an R package for constructing <em><strong>p</strong>artial <strong>d</strong>ependence <strong>p</strong>lots</em> (PDPs) and <em><strong>i</strong>ndividual <strong>c</strong>onditional <strong>e</strong>xpectation</em> (ICE) curves. PDPs and ICE curves are part of a larger framework referred to as <em>interpretable machine learning</em> (IML), which also includes (but not limited to) <em><strong>v</strong>ariable <strong>i</strong>mportance <strong>p</strong>lots</em> (VIPs). While VIPs (available in the R package <a href="https://koalaverse.github.io/vip/index.html" class="external-link">vip</a>) help visualize feature impact (either locally or globally), PDPs and ICE curves help visualize feature effects. An in-progress, but comprehensive, overview of IML can be found at the following URL: <a href="https://github.com/christophM/interpretable-ml-book" class="external-link uri">https://github.com/christophM/interpretable-ml-book</a>.</p>
-<p>A detailed introduction to <a href="https://bgreenwell.r-universe.dev/pdp" class="external-link">pdp</a> has been published in The R Journal: “pdp: An R Package for Constructing Partial Dependence Plots”, <a href="https://journal.r-project.org/articles/RJ-2017-016/index.html" class="external-link uri">https://journal.r-project.org/articles/RJ-2017-016/index.html</a>. You can track development at <a href="https://github.com/bgreenwell/pdp" class="external-link uri">https://github.com/bgreenwell/pdp</a>. To report bugs or issues, contact the main author directly or submit them to <a href="https://github.com/bgreenwell/pdp/issues" class="external-link uri">https://github.com/bgreenwell/pdp/issues</a>. For additional documentation and examples, visit the <a href="https://bgreenwell.github.io/pdp/index.html">package website</a>.</p>
-<p>As of right now, <code>pdp</code> exports the following functions:</p>
+<p>Partial dependence plots (PDPs) and individual conditional expectation (ICE) curves for R: visualize how a fitted model’s predictions depend on a subset of its features.</p>
 <ul>
-<li><p><code><a href="reference/partial.html">partial()</a></code> - compute partial dependence functions and individual conditional expectations (i.e., objects of class <code>"partial"</code> and <code>"ice"</code>, respectively) from various fitted model objects;</p></li>
-<li><p><code><a href="reference/plotPartial.html">plotPartial()</a></code> - construct <code>lattice</code>-based PDPs and ICE curves;</p></li>
-<li><p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> - construct lightweight base R PDPs and ICE curves via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a>;</p></li>
-<li><p><del><code><a href="reference/topPredictors.html">topPredictors()</a></code> extract most “important” predictors from various types of fitted models.</del> see <a href="https://koalaverse.github.io/vip/index.html" class="external-link">vip</a> instead for a more robust and flexible replacement;</p></li>
-<li><p><code><a href="reference/exemplar.html">exemplar()</a></code> - construct an exemplar record from a data frame (<strong>experimental</strong> feature that may be useful for constructing fast, approximate feature effect plots.)</p></li>
+<li>
+<strong>Model-agnostic</strong> — works with dozens of model classes out of the box (randomForest, ranger, gbm, xgboost, caret, e1071, …) and with <em>any</em> model via a user-supplied prediction function (<code>pred.fun</code>)</li>
+<li>
+<strong>PDPs and ICE/c-ICE curves</strong> for regression and classification</li>
+<li>
+<strong>Lightweight plotting</strong> via <a href="https://grantmcdermott.com/tinyplot/" class="external-link">tinyplot</a> (base R graphics), with <a href="https://cran.r-project.org/package=lattice" class="external-link">lattice</a> displays (3-D surfaces, paneled three-predictor plots) behind <code>plot(..., lattice = TRUE)</code>
+</li>
+<li>
+<strong>Fast</strong>: batched predictions (<code>batch.size</code>), parallel execution via <a href="https://cran.r-project.org/package=foreach" class="external-link">foreach</a>, training-data subsampling (<code>frac</code>), and Friedman’s exact weighted tree-traversal method for <a href="https://cran.r-project.org/package=gbm" class="external-link">gbm</a> models</li>
+<li>
+<strong>Minimal dependencies</strong>: imports only base R packages plus lattice and tinyplot</li>
 </ul>
-</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p><strong>pdp</strong> is no longer available on CRAN due to CRAN’s stringent and ever-changing policies. It is now hosted on <a href="https://bgreenwell.r-universe.dev/pdp" class="external-link">r-universe</a>, which provides a reliable alternative for distributing R packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install the latest stable release from r-universe (recommended):</span></span>
+<code class="sourceCode R"><span><span class="co"># Latest stable release (recommended)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pdp"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://bgreenwell.r-universe.dev"</span>, <span class="st">"https://cloud.r-project.org"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Or install with pak (if needed: install.packages("pak")):</span></span>
+<span><span class="co"># Or with pak</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"bgreenwell/pdp@main"</span><span class="op">)</span>  <span class="co"># latest stable release</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"bgreenwell/pdp"</span><span class="op">)</span>       <span class="co"># development version (devel branch)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/bgreenwell/pdp" class="external-link">pdp</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.stat.berkeley.edu/~breiman/RandomForests/" class="external-link">randomForest</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">boston</span><span class="op">)</span>  <span class="co"># ships with pdp</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">101</span><span class="op">)</span></span>
+<span><span class="va">rfo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html" class="external-link">randomForest</a></span><span class="op">(</span><span class="va">cmedv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Partial dependence of cmedv on lstat</span></span>
+<span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/partial.html">partial</a></span><span class="op">(</span><span class="va">rfo</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pd</span>, rug <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Two predictors (false color level plot), restricted to the convex hull</span></span>
+<span><span class="fu"><a href="reference/partial.html">partial</a></span><span class="op">(</span><span class="va">rfo</span>, pred.var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lstat"</span>, <span class="st">"rm"</span><span class="op">)</span>, chull <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span>,</span>
+<span>        plot <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ICE curves colored by another feature</span></span>
+<span><span class="va">ice</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/partial.html">partial</a></span><span class="op">(</span><span class="va">rfo</span>, pred.var <span class="op">=</span> <span class="st">"rm"</span>, ice <span class="op">=</span> <span class="cn">TRUE</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ice</span>, alpha <span class="op">=</span> <span class="fl">0.1</span>, color.by <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/partial.html">partial()</a></code> returns a plain data frame, so results are easy to post-process or plot with any graphics package.</p>
+</div>
+<div class="section level2">
+<h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
+</h2>
+<ul>
+<li>
+<a href="https://bgreenwell.github.io/pdp/">Package website</a> — function reference and vignettes (<a href="https://bgreenwell.github.io/pdp/articles/pdp.html">getting started</a>, <a href="https://bgreenwell.github.io/pdp/articles/ice-curves.html">ICE curves</a>, <a href="https://bgreenwell.github.io/pdp/articles/faster-pdp.html">performance tips</a>)</li>
+<li>Greenwell, B. M. (2017). “pdp: An R Package for Constructing Partial Dependence Plots.” <em>The R Journal</em>, 9(1), 421–436. <a href="https://doi.org/10.32614/RJ-2017-016" class="external-link">doi:10.32614/RJ-2017-016</a> (<code>citation("pdp")</code>)</li>
+<li>For variable importance (which pairs naturally with feature effects), see <a href="https://koalaverse.github.io/vip/" class="external-link">vip</a>
+</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
-<p>Development happens on the <a href="https://github.com/bgreenwell/pdp/tree/devel" class="external-link"><code>devel</code></a> branch (the repository default); the <code>main</code> branch is reserved for stable releases, which is what <a href="https://bgreenwell.r-universe.dev/pdp" class="external-link">r-universe</a> builds and the <a href="https://bgreenwell.github.io/pdp/">package website</a> documents. Please open pull requests against <code>devel</code>.</p>
+<p>Development happens on the <a href="https://github.com/bgreenwell/pdp/tree/devel" class="external-link"><code>devel</code></a> branch (the repository default); <code>main</code> holds stable releases, which is what r-universe builds and the website documents. Please open pull requests against <code>devel</code> and report bugs via the <a href="https://github.com/bgreenwell/pdp/issues" class="external-link">issue tracker</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

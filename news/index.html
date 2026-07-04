@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,34 @@
       <small>Source: <a href="https://github.com/bgreenwell/pdp/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.1" id="pdp-091">pdp 0.9.1<a class="anchor" aria-label="anchor" href="#pdp-091"></a></h2>
+<div class="section level3">
+<h3 id="deprecations-0-9-1">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-0-9-1"></a></h3>
+<ul><li>
+<code><a href="../reference/plotPartial.html">plotPartial()</a></code> is deprecated in favor of the consolidated <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> interface: the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods gained a <code>lattice</code> argument, so <code>plot(..., lattice = TRUE)</code> now produces the same lattice-based displays (including 3-D wireframe surfaces and paneled three-predictor plots). <code><a href="../reference/plotPartial.html">plotPartial()</a></code> continues to work (with a warning) but will be removed in a future release.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-9-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-9-1"></a></h3>
+<ul><li><p>Plotting now works for non-syntactic predictor names (e.g., names containing dashes or spaces) in both the tinyplot and lattice engines <a href="https://github.com/bgreenwell/pdp/issues/113" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/113" class="external-link">#113</a>).</p></li>
+<li><p><code>partial(chull = TRUE)</code> no longer fails for sparse (<code>"dgCMatrix"</code>) training data <a href="https://github.com/bgreenwell/pdp/issues/77" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/77" class="external-link">#77</a>).</p></li>
+<li><p>Plotting multi-predictor output from <code>pred.fun</code> (i.e., objects with a <code>yhat.id</code> column and more than one predictor) now throws an informative error instead of producing a nonsense display <a href="https://github.com/bgreenwell/pdp/issues/111" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/111" class="external-link">#111</a>), <a href="https://github.com/bgreenwell/pdp/issues/112" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/112" class="external-link">#112</a>).</p></li>
+<li><p>Failing to recover the training data (e.g., for recent <strong>xgboost</strong> models when <code>train</code> is not supplied) now always produces the informative “please supply the training data” error rather than a cryptic <code><a href="https://rdrr.io/r/base/match.call.html" class="external-link">match.call()</a></code> failure <a href="https://github.com/bgreenwell/pdp/issues/137" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/137" class="external-link">#137</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-0-9-1">New features<a class="anchor" aria-label="anchor" href="#new-features-0-9-1"></a></h3>
+<ul><li><p><code>pred.var</code> can now be omitted whenever <code>pred.grid</code> is supplied; it defaults to <code>colnames(pred.grid)</code> <a href="https://github.com/bgreenwell/pdp/issues/122" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/122" class="external-link">#122</a>).</p></li>
+<li><p>New <code>frac</code> argument in <code><a href="../reference/partial.html">partial()</a></code> for randomly sampling a fraction of the training data before computing the partial dependence function; mostly useful for reducing the number of ICE curves and/or computation time <a href="https://github.com/bgreenwell/pdp/issues/74" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/74" class="external-link">#74</a>).</p></li>
+<li><p>New <code>color.by</code> argument in the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods for coloring ICE/c-ICE curves by another feature <a href="https://github.com/bgreenwell/pdp/issues/81" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/81" class="external-link">#81</a>).</p></li>
+<li><p>New <code>bars</code> argument in <code><a href="../reference/plot.partial.html">plot.partial()</a></code> for displaying factor predictors as bar plots instead of points <a href="https://github.com/bgreenwell/pdp/issues/132" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/132" class="external-link">#132</a>).</p></li>
+<li><p><code><a href="../reference/exemplar.html">exemplar()</a></code> gained a <code>cats</code> argument for matrix-like objects so categorical columns are summarized by their most frequent value (rather than a rounded median); used by <code>partial(approx = TRUE)</code> <a href="https://github.com/bgreenwell/pdp/issues/115" class="external-link">(</a><a href="https://github.com/bgreenwell/pdp/issues/115" class="external-link">#115</a>).</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="miscellaneous-0-9-1">Miscellaneous<a class="anchor" aria-label="anchor" href="#miscellaneous-0-9-1"></a></h3>
+<ul><li><p>Removed the (long stale) <code>slowtests/</code> directory; its coverage is redundant with the <code>tinytest</code> suite and the new vignettes.</p></li>
+<li><p>Pruned Suggests packages that were no longer used anywhere in the package (<strong>adabag</strong>, <strong>AmesHousing</strong>, <strong>Cubist</strong>, <strong>ipred</strong>, <strong>mda</strong>, <strong>partykit</strong>, and <strong>vip</strong>).</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="pdp-090">pdp 0.9.0<a class="anchor" aria-label="anchor" href="#pdp-090"></a></h2>
 <div class="section level3">

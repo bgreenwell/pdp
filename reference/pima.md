@@ -4,7 +4,7 @@ Diabetes test results collected by the the US National Institute of
 Diabetes and Digestive and Kidney Diseases from a population of women
 who were at least 21 years old, of Pima Indian heritage, and living near
 Phoenix, Arizona. The data were taken directly from
-[`PimaIndiansDiabetes2`](https://rdrr.io/pkg/mlbench/man/PimaIndiansDiabetes.html).
+[`mlbench::PimaIndiansDiabetes2()`](https://rdrr.io/pkg/mlbench/man/PimaIndiansDiabetes.html).
 
 ## Usage
 
@@ -38,9 +38,9 @@ A data frame with 768 observations on 9 variables.
 
 Newman, D.J. & Hettich, S. & Blake, C.L. & Merz, C.J. (1998). UCI
 Repository of machine learning databases
-\[http://www.ics.uci.edu/~mlearn/MLRepository.html\]. Irvine, CA:
-University of California, Department of Information and Computer
-Science.
+[http://www.ics.uci.edu/~mlearn/MLRepository.html](http://www.ics.uci.edu/~mlearn/MLRepository.md).
+Irvine, CA: University of California, Department of Information and
+Computer Science.
 
 Brian D. Ripley (1996), Pattern Recognition and Neural Networks,
 Cambridge University Press, Cambridge.

@@ -30,14 +30,15 @@ topPredictors(object, n = 1L, ...)
 - ...:
 
   Additional optional arguments to be passed onto
-  [`varImp`](https://rdrr.io/pkg/caret/man/varImp.html).
+  [`caret::varImp()`](https://rdrr.io/pkg/caret/man/varImp.html).
 
 ## Details
 
 This function uses the generic function
-[`varImp`](https://rdrr.io/pkg/caret/man/varImp.html) to calculate
-variable importance scores for each predictor. After that, they are
-sorted at the names of the `n` highest scoring predictors are returned.
+[`caret::varImp()`](https://rdrr.io/pkg/caret/man/varImp.html) to
+calculate variable importance scores for each predictor. After that,
+they are sorted at the names of the `n` highest scoring predictors are
+returned.
 
 ## Examples
 

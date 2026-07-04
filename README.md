@@ -79,7 +79,7 @@ plot with any graphics package.
   [doi:10.32614/RJ-2017-016](https://doi.org/10.32614/RJ-2017-016)
   (`citation("pdp")`)
 - For variable importance (which pairs naturally with feature effects), see
-  [vip](https://koalaverse.github.io/vip/)
+  [vip](https://bgreenwell.github.io/vip/)
 
 ## Development
 

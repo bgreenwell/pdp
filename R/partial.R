@@ -283,8 +283,8 @@
 #' # Classification example (requires randomForest package to run)
 #' #
 #'
-#' # Fit a random forest to the Pima Indians diabetes data
-#' data (pima)  # load the Pima Indians diabetes data
+#' # Fit a random forest to the (synthetic) diabetes data
+#' data (pima)  # load the synthetic diabetes data
 #' set.seed(102)  # for reproducibility
 #' pima.rf <- randomForest(diabetes ~ ., data = pima, na.action = na.omit)
 #'

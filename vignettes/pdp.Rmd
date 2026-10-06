@@ -126,7 +126,7 @@ probability of the "focus" class (the first class, by default; use
 use the probability scale instead:
 
 ```{r pima-rf}
-data(pima)  # load the Pima Indians diabetes data
+data(pima)  # load the synthetic diabetes data
 pima2 <- na.omit(pima)
 set.seed(102)
 pima.rf <- randomForest(diabetes ~ ., data = pima2, ntree = 250)

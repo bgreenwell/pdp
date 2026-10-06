@@ -1,10 +1,14 @@
-# pdp (development version)
+# pdp 0.10.0
 
 ## Breaking changes
 
 * Removed `topPredictors()`, which had been deprecated since pdp 0.8.0; use
   the [vip](https://bgreenwell.github.io/vip/) package to identify important
   predictors instead.
+
+* `pima` now contains synthetic data from `mlbench::SynthDiabetes2`, replacing
+  the original Pima Indians diabetes data that mlbench withdrew over consent
+  concerns; same name and columns, different values.
 
 
 # pdp 0.9.1

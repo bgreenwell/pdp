@@ -9,3 +9,5 @@ src/*.so
 inst/doc
 docs/
 /revdep/.cache.rds
+/vignettes/*.html
+/vignettes/*.R

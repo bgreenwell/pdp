@@ -185,7 +185,7 @@ four nearly identical loops into one, and the prediction wrappers in
 
 * Removed the `palette` and `alpha` arguments from `plotPartial()` and `autoplot()`; the latter just got absorbed into the `...` argument. By default, `plotPartial()`'s `col.regions` argument now corresponds to `grDevices::hcl.colors(100)`, which defaults to the same viridis color palette as before, just without the dependency.
 
-* `topPredictors()` is now deprecated and will be removed in the next update. Users are advised to use the [vip](https://github.com/koalaverse/vip) package instead.
+* `topPredictors()` is now deprecated and will be removed in the next update. Users are advised to use the [vip](https://github.com/bgreenwell/vip) package instead.
 
 ## Minor changes
 

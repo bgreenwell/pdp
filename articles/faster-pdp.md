@@ -32,13 +32,13 @@ system.time(  # classic: one predict() call per grid point
   pd1 <- partial(boston.rf, pred.var = "lstat", train = boston)
 )
 #>    user  system elapsed 
-#>   0.355   0.008   0.363
+#>   0.419   0.008   0.427
 system.time(  # batched: score up to one million rows per predict() call
   pd2 <- partial(boston.rf, pred.var = "lstat", train = boston,
                  batch.size = 1e6)
 )
 #>    user  system elapsed 
-#>   0.145   0.000   0.145
+#>   0.176   0.000   0.176
 identical(pd1, pd2)
 #> [1] TRUE
 ```
@@ -106,13 +106,13 @@ system.time(
                           train = boston)  # recursive = TRUE is the default
 )
 #>    user  system elapsed 
-#>   0.002   0.001   0.002
+#>   0.002   0.000   0.002
 system.time(
   pd.brute <- partial(boston.gbm, pred.var = "lstat", n.trees = 500,
                       recursive = FALSE, train = boston, batch.size = 1e6)
 )
 #>    user  system elapsed 
-#>   0.223   0.000   0.223
+#>   0.301   0.000   0.300
 ```
 
 Overlaying the results shows that the two methods produce nearly the

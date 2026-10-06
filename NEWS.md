@@ -1,4 +1,4 @@
-# pdp (development version)
+# pdp 0.10.0
 
 ## Breaking changes
 

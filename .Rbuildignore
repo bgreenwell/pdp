@@ -14,3 +14,7 @@
 \.o$
 \.so$
 ^\.nojekyll$
+^cran-comments\.md$
+^revdep$
+^\.claude$
+^\.agents$

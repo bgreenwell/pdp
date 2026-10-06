@@ -1,3 +1,10 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Replaced the invalid UCI repository URL in `man/boston.Rd`.
+* Updated the moved vip repository URL in NEWS.md.
+
 ## Submission
 
 Update from 0.8.3 to 0.10.0. The ggplot2-based `autoplot()` methods were

@@ -1,5 +1,7 @@
 # AGENTS.md — pdp
 
+@../CLAUDE.md
+
 R package for **partial dependence plots (PDPs)** and **individual conditional
 expectation (ICE) curves** from fitted ML models. Exports: `partial()` (the
 workhorse), `plot()` methods (tinyplot/base graphics, default engine),

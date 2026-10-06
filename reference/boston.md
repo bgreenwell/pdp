@@ -61,8 +61,7 @@ Gilley, O.W., and R. Kelley Pace (1996). On the Harrison and Rubinfeld
 Data. Journal of Environmental Economics and Management, 31, 403-405.
 
 Newman, D.J. & Hettich, S. & Blake, C.L. & Merz, C.J. (1998). UCI
-Repository of machine learning databases
-[http://www.ics.uci.edu/~mlearn/MLRepository.html](http://www.ics.uci.edu/~mlearn/MLRepository.md)
+Repository of machine learning databases <https://archive.ics.uci.edu/>.
 Irvine, CA: University of California, Department of Information and
 Computer Science.
 

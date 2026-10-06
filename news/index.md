@@ -255,7 +255,7 @@ CRAN release: 2022-05-11
 
 - `topPredictors()` is now deprecated and will be removed in the next
   update. Users are advised to use the
-  [vip](https://github.com/koalaverse/vip) package instead.
+  [vip](https://github.com/bgreenwell/vip) package instead.
 
 ### Minor changes
 

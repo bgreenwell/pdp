@@ -35,7 +35,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/bgreenwell/pdp/blob/v0.10.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/bgreenwell/pdp/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -141,7 +141,7 @@
 <ul><li><p>Bumped the R dependency to R (&gt;= 3.6.0) to support the use of <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">grDevices::hcl.colors()</a></code> in <code><a href="../reference/plotPartial.html">plotPartial()</a></code>.</p></li>
 <li><p>Function <code><a href="https://rdrr.io/pkg/gridExtra/man/arrangeGrob.html" class="external-link">grid.arrange()</a></code> and the forward pipe operator <code>%&gt;%</code> are no longer automatically imported from packages <a href="https://cran.r-project.org/package=gridExtra" class="external-link">gridExtra</a> and <a href="https://cran.r-project.org/package=magrittr" class="external-link">magrittr</a>, respectively; users are encouraged to load them manually if needed.</p></li>
 <li><p>Removed the <code>palette</code> and <code>alpha</code> arguments from <code><a href="../reference/plotPartial.html">plotPartial()</a></code> and <code>autoplot()</code>; the latter just got absorbed into the <code>...</code> argument. By default, <code><a href="../reference/plotPartial.html">plotPartial()</a></code>’s <code>col.regions</code> argument now corresponds to <code>grDevices::hcl.colors(100)</code>, which defaults to the same viridis color palette as before, just without the dependency.</p></li>
-<li><p><code>topPredictors()</code> is now deprecated and will be removed in the next update. Users are advised to use the <a href="https://github.com/koalaverse/vip" class="external-link">vip</a> package instead.</p></li>
+<li><p><code>topPredictors()</code> is now deprecated and will be removed in the next update. Users are advised to use the <a href="https://github.com/bgreenwell/vip" class="external-link">vip</a> package instead.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="minor-changes-0-8-0">Minor changes<a class="anchor" aria-label="anchor" href="#minor-changes-0-8-0"></a></h3>

@@ -3,7 +3,7 @@
 \docType{data}
 \name{pima}
 \alias{pima}
-\title{Pima Indians Diabetes Data}
+\title{Synthetic Diabetes Data}
 \format{
 A data frame with 768 observations on 9 variables.
 \itemize{
@@ -22,21 +22,30 @@ A data frame with 768 observations on 9 variables.
 data(pima)
 }
 \description{
-Diabetes test results collected by the the US National Institute of Diabetes
-and Digestive and Kidney Diseases from a population of women who were at
-least 21 years old, of Pima Indian heritage, and living near Phoenix,
-Arizona. The data were taken directly from
-\code{\link[mlbench:PimaIndiansDiabetes]{mlbench::PimaIndiansDiabetes2()}}.
+A fully synthetic diabetes data set created by Matthias Templ to mimic the
+Pima Indians diabetes data analyzed by Smith et al. (1988). Every value is
+synthetic and no row corresponds to a real person. The data were taken
+directly from \link[mlbench:SynthDiabetes]{mlbench::SynthDiabetes2}, which mimics the missing-value
+pattern of the original data (physically impossible zeros are coded as
+\code{NA}).
+}
+\details{
+Earlier versions of pdp shipped a copy of the original data (taken from
+\code{mlbench::PimaIndiansDiabetes2}) under this name. The original data had
+most likely been shared without the consent of the participants, and both
+the UCI repository and mlbench (as of version 2.1-11) have stopped
+distributing it. The \code{pima} name is kept so existing code continues to run,
+but results will differ from those based on the original data.
 }
 \examples{
 head(pima)
 
 }
 \references{
-Newman, D.J. & Hettich, S. & Blake, C.L. & Merz, C.J. (1998). UCI Repository
-of machine learning databases
-\url{http://www.ics.uci.edu/~mlearn/MLRepository.html}. Irvine, CA: University of
-California, Department of Information and Computer Science.
+Smith, J.W., Everhart, J.E., Dickson, W.C., Knowler, W.C., and Johannes,
+R.S. (1988). Using the ADAP Learning Algorithm to Forecast the Onset of
+Diabetes Mellitus. In Proceedings of the Symposium on Computer Applications
+and Medical Care, 261-265.
 
 Brian D. Ripley (1996), Pattern Recognition and Neural Networks, Cambridge
 University Press, Cambridge.
@@ -46,7 +55,7 @@ Classification a.k.a. Risk Estimation via Penalized Log Likelihood and
 Smoothing Spline Analysis of Variance, in D. H. Wolpert (1995), The
 Mathematics of Generalization, 331-359, Addison-Wesley, Reading, MA.
 
-Friedrich Leisch & Evgenia Dimitriadou (2010). mlbench: Machine Learning
-Benchmark Problems. R package version 2.1-1.
+Friedrich Leisch & Evgenia Dimitriadou (2026). mlbench: Machine Learning
+Benchmark Problems. R package version 2.1-11.
 }
 \keyword{datasets}

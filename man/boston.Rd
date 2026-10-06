@@ -49,7 +49,7 @@ Journal of Environmental Economics and Management, 31, 403-405.
 
 Newman, D.J. & Hettich, S. & Blake, C.L. & Merz, C.J. (1998). UCI Repository
 of machine learning databases
-\url{http://www.ics.uci.edu/~mlearn/MLRepository.html} Irvine, CA: University of
+\url{https://archive.ics.uci.edu/}. Irvine, CA: University of
 California, Department of Information and Computer Science.
 
 Pace, R. Kelley, and O.W. Gilley (1997). Using the Spatial Configuration of

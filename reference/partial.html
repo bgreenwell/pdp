@@ -9,7 +9,7 @@ model fitting objects."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -220,7 +220,7 @@ on a scale similar to the logit. Default is <code>FALSE</code>.</p></dd>
 traversal method described in Friedman (2001). This only applies to objects
 that inherit from class <code>"gbm"</code>. Default is <code>TRUE</code> which is much
 faster than the exact brute force approach used for all other models. (Based
-on the C++ code behind <code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code>.)</p></dd>
+on the C++ code behind <code><a href="https://gbm-developers.github.io/gbm/reference/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code>.)</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
@@ -440,8 +440,8 @@ Statistics</em>, <strong>24</strong>(1): 44-65, 2015.</p>
 <span class="r-in"><span><span class="co"># Classification example (requires randomForest package to run)</span></span></span>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Fit a random forest to the Pima Indians diabetes data</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span> <span class="op">(</span><span class="va">pima</span><span class="op">)</span>  <span class="co"># load the Pima Indians diabetes data</span></span></span>
+<span class="r-in"><span><span class="co"># Fit a random forest to the (synthetic) diabetes data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span> <span class="op">(</span><span class="va">pima</span><span class="op">)</span>  <span class="co"># load the synthetic diabetes data</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">102</span><span class="op">)</span>  <span class="co"># for reproducibility</span></span></span>
 <span class="r-in"><span><span class="va">pima.rf</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/randomForest/man/randomForest.html" class="external-link">randomForest</a></span><span class="op">(</span><span class="va">diabetes</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">pima</span>, na.action <span class="op">=</span> <span class="va">na.omit</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -464,7 +464,7 @@ Statistics</em>, <strong>24</strong>(1): 44-65, 2015.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

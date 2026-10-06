@@ -178,7 +178,7 @@ partial(object, ...)
   inherit from class `"gbm"`. Default is `TRUE` which is much faster
   than the exact brute force approach used for all other models. (Based
   on the C++ code behind
-  [`gbm::plot.gbm()`](https://rdrr.io/pkg/gbm/man/plot.gbm.html).)
+  [`gbm::plot.gbm()`](https://gbm-developers.github.io/gbm/reference/plot.gbm.html).)
 
 - plot:
 
@@ -403,8 +403,8 @@ plot(rm.ice, center = TRUE, alpha = 0.2, rug = TRUE, train = boston)
 # Classification example (requires randomForest package to run)
 #
 
-# Fit a random forest to the Pima Indians diabetes data
-data (pima)  # load the Pima Indians diabetes data
+# Fit a random forest to the (synthetic) diabetes data
+data (pima)  # load the synthetic diabetes data
 set.seed(102)  # for reproducibility
 pima.rf <- randomForest(diabetes ~ ., data = pima, na.action = na.omit)
 

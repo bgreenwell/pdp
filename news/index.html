@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,10 +39,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="pdp-development-version">pdp (development version)<a class="anchor" aria-label="anchor" href="#pdp-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.10.0" id="pdp-0100">pdp 0.10.0<a class="anchor" aria-label="anchor" href="#pdp-0100"></a></h2>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li>Removed <code>topPredictors()</code>, which had been deprecated since pdp 0.8.0; use the <a href="https://bgreenwell.github.io/vip/" class="external-link">vip</a> package to identify important predictors instead.</li>
+<h3 id="breaking-changes-0-10-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-10-0"></a></h3>
+<ul><li><p>Removed <code>topPredictors()</code>, which had been deprecated since pdp 0.8.0; use the <a href="https://bgreenwell.github.io/vip/" class="external-link">vip</a> package to identify important predictors instead.</p></li>
+<li><p><code>pima</code> now contains synthetic data from <code><a href="https://rdrr.io/pkg/mlbench/man/SynthDiabetes.html" class="external-link">mlbench::SynthDiabetes2</a></code>, replacing the original Pima Indians diabetes data that mlbench withdrew over consent concerns; same name and columns, different values.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -206,7 +207,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="pdp-050">pdp 0.5.0<a class="anchor" aria-label="anchor" href="#pdp-050"></a></h2>
-<ul><li><p>Added support for <code><a href="https://rdrr.io/pkg/MASS/man/lda.html" class="external-link">MASS::lda()</a></code>, <code><a href="https://rdrr.io/pkg/MASS/man/qda.html" class="external-link">MASS::qda()</a></code>, and <code><a href="https://rdrr.io/pkg/mda/man/mars.html" class="external-link">mda::mars()</a></code>.</p></li>
+<ul><li><p>Added support for <code><a href="https://rdrr.io/pkg/MASS/man/lda.html" class="external-link">MASS::lda()</a></code>, <code><a href="https://rdrr.io/pkg/MASS/man/qda.html" class="external-link">MASS::qda()</a></code>, and <code>mda::mars()</code>.</p></li>
 <li><p>New arguments <code>quantiles</code>, <code>probs</code>, and <code>trim.outliers</code> in <code>partial</code>. These arguments make it easier to construct PDPs over the relevant range of a numeric predictor without having to specify <code>pred.grid</code>, especially when outliers are present in the predictors (which can distort the plotted relationship).</p></li>
 <li><p>The <code>train</code> argument can now accept matrices; in particular, object of class <code>"matrix"</code> or <code>"dgCMatrix"</code>. This is useful, for example, when working with XGBoost models (i.e., objects of class <code>"xgb.Booster"</code>).</p></li>
 <li><p>New logical argument <code>prob</code> indicating whether or not partial dependence values for classification problems should be returned on the original probability scale, rather than the centered logit; details for the centered logit can be found on page 370 in the second edition of <em>The Elements of Statistical Learning</em>.</p></li>
@@ -215,7 +216,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="pdp-040">pdp 0.4.0<a class="anchor" aria-label="anchor" href="#pdp-040"></a></h2><p class="text-muted">CRAN release: 2017-01-07</p>
-<ul><li><p><code><a href="../reference/partial.html">partial()</a></code> is now much faster with <code>"gbm"</code> object due to a call to <code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> whenever <code>pred.grid</code> is not explicitly given by the user. (<code><a href="https://rdrr.io/pkg/gbm/man/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> exploits a computational shortcut that does not involve any passes over the training data.)</p></li>
+<ul><li><p><code><a href="../reference/partial.html">partial()</a></code> is now much faster with <code>"gbm"</code> object due to a call to <code><a href="https://gbm-developers.github.io/gbm/reference/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> whenever <code>pred.grid</code> is not explicitly given by the user. (<code><a href="https://gbm-developers.github.io/gbm/reference/plot.gbm.html" class="external-link">gbm::plot.gbm()</a></code> exploits a computational shortcut that does not involve any passes over the training data.)</p></li>
 <li><p>New (experimental) function <code>topPredictors()</code> for extracting the names of the most “important” predictors. This should make it one step easier (in most cases) to construct PDPs for the most “important”” features in a fitted model.</p></li>
 <li><p>A new argument, <code>pred.fun</code>, allows the user to supply their own prediction function. Hence, it is possible to obtain PDPs based on the median, rather than the mean. It is also possible to obtain PDPs for classification problems on the probability scale. See <code><a href="../reference/partial.html">?partial</a></code> for examples.</p></li>
 <li><p>Minor bug fixes and documentation tweaks.</p></li>
@@ -275,7 +276,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

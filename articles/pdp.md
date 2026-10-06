@@ -142,7 +142,7 @@ use `which.class` to change it) on the centered logit scale. Set
 
 ``` r
 
-data(pima)  # load the Pima Indians diabetes data
+data(pima)  # load the synthetic diabetes data
 pima2 <- na.omit(pima)
 set.seed(102)
 pima.rf <- randomForest(diabetes ~ ., data = pima2, ntree = 250)

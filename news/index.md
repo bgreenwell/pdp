@@ -1,12 +1,18 @@
 # Changelog
 
-## pdp (development version)
+## pdp 0.10.0
 
 ### Breaking changes
 
 - Removed `topPredictors()`, which had been deprecated since pdp 0.8.0;
   use the [vip](https://bgreenwell.github.io/vip/) package to identify
   important predictors instead.
+
+- `pima` now contains synthetic data from
+  [`mlbench::SynthDiabetes2`](https://rdrr.io/pkg/mlbench/man/SynthDiabetes.html),
+  replacing the original Pima Indians diabetes data that mlbench
+  withdrew over consent concerns; same name and columns, different
+  values.
 
 ## pdp 0.9.1
 
@@ -451,7 +457,7 @@ CRAN release: 2017-03-13
 - Added support for
   [`MASS::lda()`](https://rdrr.io/pkg/MASS/man/lda.html),
   [`MASS::qda()`](https://rdrr.io/pkg/MASS/man/qda.html), and
-  [`mda::mars()`](https://rdrr.io/pkg/mda/man/mars.html).
+  `mda::mars()`.
 
 - New arguments `quantiles`, `probs`, and `trim.outliers` in `partial`.
   These arguments make it easier to construct PDPs over the relevant
@@ -480,9 +486,9 @@ CRAN release: 2017-01-07
 
 - [`partial()`](https://bgreenwell.github.io/pdp/reference/partial.md)
   is now much faster with `"gbm"` object due to a call to
-  [`gbm::plot.gbm()`](https://rdrr.io/pkg/gbm/man/plot.gbm.html)
+  [`gbm::plot.gbm()`](https://gbm-developers.github.io/gbm/reference/plot.gbm.html)
   whenever `pred.grid` is not explicitly given by the user.
-  ([`gbm::plot.gbm()`](https://rdrr.io/pkg/gbm/man/plot.gbm.html)
+  ([`gbm::plot.gbm()`](https://gbm-developers.github.io/gbm/reference/plot.gbm.html)
   exploits a computational shortcut that does not involve any passes
   over the training data.)
 

@@ -117,8 +117,8 @@ base R graphics (via tinyplot) or lattice graphics.
 
 - [`boston`](https://bgreenwell.github.io/pdp/reference/boston.md) :
   Boston Housing Data
-- [`pima`](https://bgreenwell.github.io/pdp/reference/pima.md) : Pima
-  Indians Diabetes Data
+- [`pima`](https://bgreenwell.github.io/pdp/reference/pima.md) :
+  Synthetic Diabetes Data
 
 # Articles
 

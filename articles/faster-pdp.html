@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">pdp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,13 +93,13 @@ number of rows to score per call:</p>
 <span>  <span class="va">pd1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.419   0.006   0.425</span></span>
+<span><span class="co">#&gt;   0.445   0.011   0.455</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span>  <span class="co"># batched: score up to one million rows per predict() call</span></span>
 <span>  <span class="va">pd2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partial.html">partial</a></span><span class="op">(</span><span class="va">boston.rf</span>, pred.var <span class="op">=</span> <span class="st">"lstat"</span>, train <span class="op">=</span> <span class="va">boston</span>,</span>
 <span>                 batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.176   0.000   0.176</span></span>
+<span><span class="co">#&gt;   0.158   0.000   0.159</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">pd1</span>, <span class="va">pd2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Batching only changes <em>how</em> the predictions are computed, not
@@ -145,10 +145,10 @@ traversal method (implemented in C++) instead of the brute force
 approach. It is <em>much</em> faster since it never has to touch the
 training data:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gbm-developers/gbm" class="external-link">gbm</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gbm-developers.github.io/gbm/" class="external-link">gbm</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">103</span><span class="op">)</span></span>
-<span><span class="va">boston.gbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/gbm/man/gbm.html" class="external-link">gbm</a></span><span class="op">(</span><span class="va">cmedv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">boston</span>, distribution <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
+<span><span class="va">boston.gbm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://gbm-developers.github.io/gbm/reference/gbm.html" class="external-link">gbm</a></span><span class="op">(</span><span class="va">cmedv</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="va">boston</span>, distribution <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>                  n.trees <span class="op">=</span> <span class="fl">500</span>, interaction.depth <span class="op">=</span> <span class="fl">3</span>, shrinkage <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span></span>
@@ -162,7 +162,7 @@ training data:</p>
 <span>                      recursive <span class="op">=</span> <span class="cn">FALSE</span>, train <span class="op">=</span> <span class="va">boston</span>, batch.size <span class="op">=</span> <span class="fl">1e6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.289   0.002   0.290</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.371   0.000   0.371</span></span></code></pre></div>
 <p>Overlaying the results shows that the two methods produce nearly the
 same curve:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -207,7 +207,7 @@ record to <code>train</code> and, optionally, your own
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

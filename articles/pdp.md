@@ -19,7 +19,7 @@ fitted model objects, along with simple plotting methods.
 
 # Install from r-universe (recommended):
 install.packages("pdp", repos = c("https://bgreenwell.r-universe.dev",
-                                  "https://cloud.r-project.org"))
+                                  "https://CRAN.R-project.org"))
 
 # Install the latest development version from GitHub:
 pak::pak("bgreenwell/pdp")
